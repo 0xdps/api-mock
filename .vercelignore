@@ -1,0 +1,50 @@
+# Vercel ignore file
+# Don't upload these to Vercel
+
+# Dependencies
+node_modules/
+.next/
+
+# Development
+.env.local
+.env.development
+
+# Testing
+coverage/
+*.test.go
+*_test.go
+
+# Documentation (not needed for runtime)
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore all Go files in api subfolders (Vercel should only see api/index.go)
+api/handlers/
+api/middleware/
+api/schema/
+api/lib/
+api/main.go
+api/api/
+
+# Ignore Go source folder
+go-api/

@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Review",
+  "type": "object",
+  "description": "Product reviews",
+  "x-resource": {
+    "name": "reviews",
+    "singular": "review",
+    "description": "Customer product reviews",
+    "routes": {
+      "path": "/reviews",
+      "methods": ["GET", "POST", "PUT", "DELETE"],
+      "aliases": ["/product-reviews", "/v2/reviews"]
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Review ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 10000
+      }
+    },
+    "product_id": {
+      "type": "integer",
+      "description": "Product ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 1000
+      }
+    },
+    "user_id": {
+      "type": "integer",
+      "description": "Reviewer user ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 100
+      }
+    },
+    "rating": {
+      "type": "integer",
+      "description": "Rating (1-5 stars)",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 5
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Review title",
+      "x-generator": "sentence"
+    },
+    "body": {
+      "type": "string",
+      "description": "Review content",
+      "x-generator": "paragraph"
+    },
+    "verified_purchase": {
+      "type": "boolean",
+      "description": "Verified buyer",
+      "x-generator": "boolean"
+    },
+    "helpful_count": {
+      "type": "integer",
+      "description": "Helpful votes",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 0,
+        "max": 500
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Review date",
+      "x-generator": "past_date"
+    }
+  },
+  "required": ["id", "product_id", "user_id", "rating"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "apimock-codes",
+  "version": "1.0.0",
+  "description": "Schema-driven mock API service",
+  "private": true,
+  "scripts": {
+    "generate-types": "node scripts/generate-types.js",
+    "api:dev": "cd api && go run main.go",
+    "api:build": "cd api && go build -o bin/apimock main.go",
+    "types:watch": "watch 'npm run generate-types' shared/schemas"
+  },
+  "keywords": [
+    "mock",
+    "api",
+    "fake-data",
+    "json-schema"
+  ],
+  "author": "",
+  "license": "MIT"
+}
