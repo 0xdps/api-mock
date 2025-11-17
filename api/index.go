@@ -44,7 +44,7 @@ func init() {
 		c.JSON(200, gin.H{
 			"message":   "Mockly API",
 			"version":   "1.0.0",
-			"docs":      "https://apimock02.vercel.app/docs",
+			"docs":      "https://mockly.codes/docs",
 			"resources": registry.GetAllResourceNames(),
 		})
 	})

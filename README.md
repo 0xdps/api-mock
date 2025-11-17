@@ -7,9 +7,9 @@
 
 ---
 
-🌐 **Live:** https://apimock02.vercel.app  
-📚 **Docs:** https://apimock02.vercel.app/docs  
-🎮 **Playground:** https://apimock02.vercel.app/playground
+🌐 **Live:** https://mockly.codes  
+📚 **Docs:** https://mockly.codes/docs  
+🎮 **Playground:** https://mockly.codes/playground
 
 ## ✨ Features
 
