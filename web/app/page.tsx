@@ -100,7 +100,7 @@ export default async function Home() {
         <div className="max-w-4xl mx-auto">
           <CodeExample 
             title="Fetch Users"
-            code={`fetch('${API_URL}/api/users?count=5')
+            code={`fetch('${API_URL}/users?count=5')
   .then(res => res.json())
   .then(data => console.log(data));`}
             language="javascript"

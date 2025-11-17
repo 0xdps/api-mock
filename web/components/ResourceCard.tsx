@@ -16,15 +16,15 @@ export function ResourceCard({ name }: ResourceCardProps) {
       
       <div className="space-y-2 text-sm">
         <EndpointLink 
-          href={`${apiUrl}/api/${name}?count=5`}
+          href={`${apiUrl}/${name}?count=5`}
           label={`GET /${name}`}
         />
         <EndpointLink 
-          href={`${apiUrl}/api/${name}/1`}
+          href={`${apiUrl}/${name}/1`}
           label={`GET /${name}/:id`}
         />
         <EndpointLink 
-          href={`${apiUrl}/api/${name}/meta`}
+          href={`${apiUrl}/${name}/meta`}
           label={`GET /${name}/meta`}
         />
       </div>

@@ -34,11 +34,11 @@ export default function PlaygroundPage() {
     
     switch (endpointType) {
       case 'collection':
-        return `${API_URL}/api/${selectedResource}?count=${count}`
+        return `${API_URL}/${selectedResource}?count=${count}`
       case 'single':
-        return `${API_URL}/api/${selectedResource}/${itemId || '1'}`
+        return `${API_URL}/${selectedResource}/${itemId || '1'}`
       case 'meta':
-        return `${API_URL}/api/${selectedResource}/meta`
+        return `${API_URL}/${selectedResource}/meta`
       default:
         return ''
     }

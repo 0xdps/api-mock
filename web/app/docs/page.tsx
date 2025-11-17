@@ -39,15 +39,15 @@ export default async function DocsPage() {
           
           <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700 mb-6">
             <h3 className="text-xl font-semibold text-white mb-4">Base URL</h3>
-            <code className="text-primary-500 text-lg">{API_URL}/api</code>
+            <code className="text-primary-500 text-lg">{API_URL}</code>
           </div>
           
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
               <h3 className="text-xl font-semibold text-white mb-4">JavaScript/Fetch</h3>
               <CodeExample 
-                title="Fetch Users"
-                code={`fetch('${API_URL}/api/users?count=10')
+                title="JavaScript Fetch"
+                code={`fetch('${API_URL}/users?count=10')
   .then(res => res.json())
   .then(data => console.log(data));`}
               />
@@ -57,7 +57,7 @@ export default async function DocsPage() {
               <h3 className="text-xl font-semibold text-white mb-4">cURL</h3>
               <CodeExample 
                 title="Fetch Users"
-                code={`curl "${API_URL}/api/users?count=10"`}
+                code={`curl "${API_URL}/users?count=10"`}
               />
             </div>
             
@@ -67,7 +67,7 @@ export default async function DocsPage() {
                 title="Fetch Users"
                 code={`import requests
 
-response = requests.get('${API_URL}/api/users?count=10')
+response = requests.get('${API_URL}/users?count=10')
 users = response.json()
 print(users)`}
               />
@@ -79,7 +79,7 @@ print(users)`}
                 title="Fetch Users"
                 code={`const axios = require('axios');
 
-const response = await axios.get('${API_URL}/api/users?count=10');
+const response = await axios.get('${API_URL}/users?count=10');
 console.log(response.data);`}
               />
             </div>
@@ -227,16 +227,16 @@ function ResourceDoc({ name, schema }: any) {
       </div>
       
       <div className="flex gap-2">
-        <a 
-          href={`${API_URL}/api/${name}?count=3`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded transition"
-        >
-          Try It →
-        </a>
-        <a 
-          href={`${API_URL}/api/${name}/meta`}
+                  <a 
+            href={`${API_URL}/${name}?count=3`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded text-sm font-medium transition"
+          >
+            Try it →
+          </a>
+          <a 
+            href={`${API_URL}/${name}/meta`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded transition"
