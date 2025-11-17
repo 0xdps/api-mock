@@ -33,9 +33,9 @@ func main() {
 	// Health check
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message":   "apimock.codes API",
+			"message":   "Mockly API",
 			"version":   "1.0.0",
-			"docs":      "https://apimock.codes/docs",
+			"docs":      "https://apimock02.vercel.app/docs",
 			"resources": registry.GetAllResourceNames(),
 		})
 	})

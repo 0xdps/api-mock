@@ -1,4 +1,4 @@
-# apimock.codes Website
+# Mockly Website
 
 Next.js 14 website with landing page, documentation, and interactive playground.
 
@@ -13,7 +13,11 @@ Website runs on http://localhost:3000
 
 ## Environment Variables
 
-Create `.env.local`:
+**Note:** Environment variables are optional. The app automatically detects the API URL:
+- **Production:** Uses current domain + `/api` (e.g., `https://apimock02.vercel.app/api`)
+- **Development:** Uses `http://localhost:8080`
+
+To override, create `.env.local`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```

@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-white font-semibold mb-4">apimock.codes</h3>
+            <h3 className="text-white font-semibold mb-4">Mockly</h3>
             <p className="text-slate-400 text-sm">
               Free, schema-driven mock API service for developers.
             </p>
@@ -54,7 +54,7 @@ export function Footer() {
         </div>
         
         <div className="mt-8 pt-8 border-t border-slate-700 text-center text-slate-400 text-sm">
-          <p>© 2025 apimock.codes. Open source and free to use.</p>
+          <p>© 2025 Mockly. Open source and free to use.</p>
         </div>
       </div>
     </footer>

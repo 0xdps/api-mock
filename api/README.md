@@ -1,10 +1,15 @@
-# apimock.codes API
+# Mockly API
 
-Go backend API with dynamic route registration from JSON schemas.
+Go serverless function handler for Vercel deployment with dynamic route registration from JSON schemas.
 
-## Development
+## Note
+
+This directory contains the Vercel serverless function handler (`index.go`). 
+
+For **local development**, use the `local/` directory instead:
 
 ```bash
+cd ../local
 go run main.go
 ```
 

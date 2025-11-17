@@ -34,7 +34,7 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-6xl font-bold text-white mb-6">
-          apimock<span className="text-primary-500">.codes</span>
+          Mockly
         </h1>
         <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
           Schema-driven mock API service with realistic data. 

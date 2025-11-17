@@ -1,10 +1,10 @@
-# apimock.codes
+# Mockly
 
 **Free mock API service for testing and development** - A modern, schema-driven alternative to JSONPlaceholder.
 
-🌐 **Live:** https://apimock-opyavp46a-0xdps-team.vercel.app  
-📚 **Docs:** https://apimock-opyavp46a-0xdps-team.vercel.app/docs  
-🎮 **Playground:** https://apimock-opyavp46a-0xdps-team.vercel.app/playground
+🌐 **Live:** https://apimock02.vercel.app  
+📚 **Docs:** https://apimock02.vercel.app/docs  
+🎮 **Playground:** https://apimock02.vercel.app/playground
 
 ## ✨ Features
 
@@ -20,7 +20,7 @@
 ## 📦 Project Structure
 
 ```
-apimock/
+mockly/
 ├── api/              # Go API server (Gin + gofakeit)
 │   ├── main.go       # Entry point, dynamic route registration
 │   ├── schema/       # Schema loader and data generator
@@ -41,13 +41,13 @@ apimock/
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/0xdps/fake-stack.git
-cd fake-stack/apimock
+git clone https://github.com/0xdps/api-mock.git
+cd api-mock
 ```
 
-**2. Start the API:**
+**2. Start the API (locally):**
 ```bash
-cd api
+cd local
 go run main.go
 ```
 API runs on http://localhost:8080
@@ -134,7 +134,7 @@ All endpoints support:
 
 **2. Restart the server:**
 ```bash
-cd api && go run main.go
+cd local && go run main.go
 ```
 
 **That's it!** Your new endpoint is live at `/api/orders` 🎉
@@ -183,7 +183,7 @@ npm install -g vercel
 
 **2. Link project:**
 ```bash
-cd apimock
+cd mockly
 vercel link
 ```
 
@@ -213,7 +213,7 @@ Configure in Vercel project settings:
 
 ### Disable Deployment Protection
 
-1. Go to https://vercel.com/[your-team]/apimock/settings/deployment-protection
+1. Go to https://vercel.com/[your-team]/mockly/settings/deployment-protection
 2. Select "Disabled" or "Standard" mode
 3. Redeploy if necessary
 
@@ -253,19 +253,14 @@ Visit the `/playground` page to:
 Contributions welcome! The easiest way to contribute is to add new resource schemas:
 
 1. Create `shared/schemas/your-resource.json`
-2. Test locally with `cd api && go run main.go`
+2. Test locally with `cd local && go run main.go`
 3. Submit a PR
 
-See [../CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
-## 📁 Related Projects
+## � License
 
-- **[fakestack](../README.md)** - Database population tool (Python, Node.js, Go)
-- Parent project that powers the data generation
-
-## 📄 License
-
-MIT License - see [../LICENSE](../LICENSE)
+MIT License - see [LICENSE](./LICENSE)
 
 ## 🙏 Acknowledgments
 
@@ -273,7 +268,6 @@ Built with:
 - [gofakeit](https://github.com/brianvoe/gofakeit) - Fake data generation
 - [Gin](https://github.com/gin-gonic/gin) - Web framework
 - [Next.js](https://nextjs.org/) - React framework
-- Part of the [fakestack](https://github.com/0xdps/fake-stack) ecosystem
 
 ---
 
