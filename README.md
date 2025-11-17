@@ -1,6 +1,11 @@
-# Mockly
+<div align="center">
+  <img src="assets/logo.svg" alt="Mockly Logo" width="120" height="120">
+  <h1>Mockly</h1>
+  <p><strong>Free mock API service for testing and development</strong></p>
+  <p>A modern, schema-driven alternative to JSONPlaceholder</p>
+</div>
 
-**Free mock API service for testing and development** - A modern, schema-driven alternative to JSONPlaceholder.
+---
 
 🌐 **Live:** https://apimock02.vercel.app  
 📚 **Docs:** https://apimock02.vercel.app/docs  
