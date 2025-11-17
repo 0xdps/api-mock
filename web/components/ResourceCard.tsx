@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import { getApiUrl } from '@/lib/api'
 
 interface ResourceCardProps {
   name: string
 }
 
 export function ResourceCard({ name }: ResourceCardProps) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const apiUrl = getApiUrl()
   
   return (
     <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700 hover:border-primary-500 transition">

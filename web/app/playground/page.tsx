@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { getApiUrl } from '@/lib/api'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080')
+const API_URL = getApiUrl()
 
 export default function PlaygroundPage() {
   const [resources, setResources] = useState<string[]>([])

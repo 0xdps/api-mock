@@ -3,8 +3,9 @@ import { ResourceCard } from '@/components/ResourceCard'
 import { CodeExample } from '@/components/CodeExample'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { getApiUrl } from '@/lib/api'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080')
+const API_URL = getApiUrl()
 
 async function getResources() {
   // For now, return static list since API might not be deployed yet

@@ -1,10 +1,11 @@
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { CodeExample } from '@/components/CodeExample'
+import { getApiUrl } from '@/lib/api'
 import fs from 'fs'
 import path from 'path'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080')
+const API_URL = getApiUrl()
 
 async function getSchemas() {
   const schemasDir = path.join(process.cwd(), 'shared/schemas')
