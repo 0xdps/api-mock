@@ -81,33 +81,35 @@ npm run web:dev
 
 ```bash
 # Get 10 users
-curl http://localhost:8080/api/users?count=10
+curl http://localhost:8080/users?count=10
 
 # Get single user by ID
-curl http://localhost:8080/api/users/123
+curl http://localhost:8080/users/123
 
 # Get resource metadata
-curl http://localhost:8080/api/users/meta
+curl http://localhost:8080/users/meta
 
 # Get products
-curl http://localhost:8080/api/products?count=50
+curl http://localhost:8080/products?count=50
 ```
 
 ## 📚 Available Resources
 
 | Resource | Endpoint | Fields |
 |----------|----------|--------|
-| Users | `/api/users` | id, username, email, name, avatar, bio, etc. |
-| Posts | `/api/posts` | id, user_id, title, content, published_at, etc. |
-| Products | `/api/products` | id, name, description, price, category, etc. |
-| Comments | `/api/comments` | id, post_id, user_id, content, created_at |
-| Todos | `/api/todos` | id, user_id, title, completed, due_date |
-| Reviews | `/api/reviews` | id, product_id, user_id, rating, comment |
+| Users | `/users` | id, username, email, name, avatar, bio, etc. |
+| Posts | `/posts` | id, user_id, title, content, published_at, etc. |
+| Products | `/products` | id, name, description, price, category, etc. |
+| Comments | `/comments` | id, post_id, user_id, content, created_at |
+| Todos | `/todos` | id, user_id, title, completed, due_date |
+| Reviews | `/reviews` | id, product_id, user_id, rating, comment |
 
 All endpoints support:
-- **Collection:** `GET /api/{resource}?count=N` (max 1000)
-- **Single Item:** `GET /api/{resource}/:id`
-- **Metadata:** `GET /api/{resource}/meta`
+- **Collection:** `GET /{resource}?count=N` (max 1000)
+- **Single Item:** `GET /{resource}/:id`
+- **Metadata:** `GET /{resource}/meta`
+
+> **Note:** In production (mockly.codes), all endpoints are prefixed with `/api` (e.g., `/api/users`)
 
 ## 🎯 Schema-Driven Development
 
@@ -154,7 +156,7 @@ All endpoints support:
 cd local && go run main.go
 ```
 
-**That's it!** Your new endpoint is live at `/api/orders` 🎉
+**That's it!** Your new endpoint is live at `/orders` 🎉 (or `/api/orders` in production)
 
 ### Custom Routes
 
@@ -174,9 +176,9 @@ Define custom paths, aliases, and methods in schemas:
 ```
 
 This creates:
-- ✅ `GET /api/v1/todos`
-- ✅ `GET /api/tasks` (alias)
-- ✅ `GET /api/todo-items` (alias)
+- ✅ `GET /v1/todos` (local) or `GET /api/v1/todos` (production)
+- ✅ `GET /tasks` (alias)
+- ✅ `GET /todo-items` (alias)
 
 ### Supported Generators
 
