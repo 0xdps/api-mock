@@ -106,8 +106,8 @@ Look for issues labeled:
 
 1. **Clone your fork:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/api-mock.git
-   cd api-mock
+   git clone https://github.com/YOUR_USERNAME/api-mockly.git
+   cd api-mockly
    ```
 
 2. **Run the API:**

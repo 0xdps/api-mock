@@ -41,8 +41,8 @@ mockly/
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/0xdps/api-mock.git
-cd api-mock
+git clone https://github.com/0xdps/api-mockly.git
+cd api-mockly
 ```
 
 **2. Start the API (locally):**

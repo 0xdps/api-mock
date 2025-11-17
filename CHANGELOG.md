@@ -78,5 +78,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Links
 - [Live Site](https://apimock02.vercel.app)
-- [GitHub Repository](https://github.com/0xdps/api-mock)
-- [Issue Tracker](https://github.com/0xdps/api-mock/issues)
+- [GitHub Repository](https://github.com/0xdps/api-mockly)
+- [Issue Tracker](https://github.com/0xdps/api-mockly/issues)
