@@ -1,20 +1,26 @@
 {
-  "name": "apimock-codes",
+  "name": "mockly",
   "version": "1.0.0",
   "description": "Schema-driven mock API service",
   "private": true,
   "scripts": {
+    "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
+    "api:dev": "cd local && go run main.go",
+    "web:dev": "cd web && npm run dev",
+    "web:install": "cd web && npm install",
     "generate-types": "node scripts/generate-types.js",
-    "api:dev": "cd api && go run main.go",
-    "api:build": "cd api && go build -o bin/apimock main.go",
     "types:watch": "watch 'npm run generate-types' shared/schemas"
   },
   "keywords": [
     "mock",
     "api",
     "fake-data",
-    "json-schema"
+    "json-schema",
+    "mockly"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Devendra Pratap Singh",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

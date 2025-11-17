@@ -110,17 +110,21 @@ Look for issues labeled:
    cd api-mockly
    ```
 
-2. **Run the API:**
+2. **Install dependencies:**
    ```bash
-   cd local
-   go run main.go
+   npm install          # Root dependencies
+   npm run web:install  # Web dependencies
    ```
 
-3. **Run the website:**
+3. **Start development servers:**
    ```bash
-   cd web
-   npm install
-   npm run dev
+   npm run dev  # Starts both API and website
+   ```
+
+   Or run separately:
+   ```bash
+   npm run api:dev  # API only (port 8080)
+   npm run web:dev  # Website only (port 3000)
    ```
 
 ### Project Structure
@@ -182,11 +186,11 @@ api-mock/
 
 3. **Test your changes:**
    ```bash
-   # Test API
-   cd local && go run main.go
+   # Start both servers
+   npm run dev
    
-   # Test website
-   cd web && npm run dev
+   # Test in browser or with curl
+   curl http://localhost:8080/api/users?count=5
    ```
 
 4. **Submit PR:**

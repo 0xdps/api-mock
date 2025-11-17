@@ -45,20 +45,32 @@ git clone https://github.com/0xdps/api-mockly.git
 cd api-mockly
 ```
 
-**2. Start the API (locally):**
+**2. Install dependencies:**
 ```bash
-cd local
-go run main.go
-```
-API runs on http://localhost:8080
-
-**3. Start the website:**
-```bash
-cd web
+# Install root dependencies (concurrently)
 npm install
+
+# Install web dependencies
+npm run web:install
+```
+
+**3. Start both API and website:**
+```bash
 npm run dev
 ```
-Website runs on http://localhost:3000
+
+This starts:
+- API server on http://localhost:8080
+- Website on http://localhost:3000
+
+**Or run separately:**
+```bash
+# API only
+npm run api:dev
+
+# Website only  
+npm run web:dev
+```
 
 ### Using the API
 
