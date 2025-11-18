@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Comment",
+  "type": "object",
+  "description": "Comments on posts",
+  "x-resource": {
+    "name": "comments",
+    "singular": "comment",
+    "description": "User comments on blog posts"
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 10000
+      }
+    },
+    "post_id": {
+      "type": "integer",
+      "description": "Associated post ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 100
+      }
+    },
+    "user_id": {
+      "type": "integer",
+      "description": "Comment author ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 100
+      }
+    },
+    "body": {
+      "type": "string",
+      "description": "Comment text",
+      "x-generator": "paragraph"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp",
+      "x-generator": "past_date"
+    },
+    "likes": {
+      "type": "integer",
+      "description": "Number of likes",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 0,
+        "max": 100
+      }
+    }
+  },
+  "required": ["id", "post_id", "user_id", "body"]
+}

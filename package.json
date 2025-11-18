@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
-    "api:dev": "cd local && go run main.go",
-    "web:dev": "cd web && npm run dev",
-    "web:install": "cd web && npm install",
-    "generate-types": "node scripts/generate-types.js",
+    "api:dev": "cd backend && go run cmd/server/main.go",
+    "api:build": "cd backend && go build -o bin/server ./cmd/server",
+    "web:dev": "cd frontend && npm run dev",
+    "web:install": "cd frontend && npm install",
+    "generate-types": "node shared/scripts/generate-types.js",
     "types:watch": "watch 'npm run generate-types' shared/schemas"
   },
   "keywords": [

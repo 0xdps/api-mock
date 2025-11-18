@@ -16,9 +16,9 @@ The easiest way to contribute is by adding new resource schemas. All endpoints a
 2. **Create a new schema** in `shared/schemas/your-resource.json`
 3. **Test locally:**
    ```bash
-   cd local
-   go run main.go
-   # Test your endpoint: curl http://localhost:8080/api/your-resource?count=5
+   cd backend
+   go run cmd/server/main.go
+   # Test your endpoint: curl 'http://localhost:8080/api/your-resource?count=5'
    ```
 4. **Submit a Pull Request**
 
@@ -130,23 +130,25 @@ Look for issues labeled:
 ### Project Structure
 
 ```
-api-mock/
-├── api/              # Vercel serverless API handler
-│   └── index.go      # Entry point for Vercel deployment
-├── local/            # Local development API server
-│   └── main.go       # Entry point for local testing
-├── lib/              # Shared Go libraries
-│   ├── handlers/     # HTTP handlers
-│   ├── middleware/   # CORS, etc.
-│   ├── schema/       # Schema loader & generator
-│   └── shared/       # Embedded schemas for deployment
+api-mockly/
+├── backend/          # Go API service
+│   ├── cmd/          # Application entry points
+│   │   └── server/   # Main server
+│   ├── internal/     # Private application code
+│   │   ├── handlers/ # HTTP handlers
+│   │   ├── middleware/ # CORS, etc.
+│   │   └── schema/   # Schema loader & generator
+│   ├── Dockerfile    # Container build
+│   └── fly.toml      # Fly.io deployment config
 ├── shared/           # Source of truth
-│   └── schemas/      # JSON schema definitions
-├── web/              # Next.js website
+│   ├── schemas/      # JSON schema definitions
+│   └── scripts/      # Build scripts
+├── frontend/         # Next.js website
 │   ├── app/          # App router pages
 │   ├── components/   # React components
 │   └── lib/          # Utility functions
-└── vercel.json       # Deployment config
+├── package.json      # Root scripts
+└── vercel.json       # Frontend deployment config
 ```
 
 ## Code Style Guidelines
@@ -190,7 +192,7 @@ api-mock/
    npm run dev
    
    # Test in browser or with curl
-   curl http://localhost:8080/api/users?count=5
+   curl 'http://localhost:8080/api/users?count=5'
    ```
 
 4. **Submit PR:**
@@ -254,7 +256,7 @@ Before submitting:
 
 1. **Test the API endpoint:**
    ```bash
-   curl http://localhost:8080/api/your-resource?count=5
+   curl 'http://localhost:8080/api/your-resource?count=5'
    ```
 
 2. **Verify JSON response:**

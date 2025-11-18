@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Todo",
+  "type": "object",
+  "description": "Todo items for task management",
+  "x-resource": {
+    "name": "todos",
+    "singular": "todo",
+    "description": "Simple todo items with completion status",
+    "routes": {
+      "path": "/v1/todos",
+      "methods": ["GET", "POST"],
+      "aliases": ["/tasks", "/todo-items"]
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 10000
+      }
+    },
+    "user_id": {
+      "type": "integer",
+      "description": "Owner user ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 100
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Todo title",
+      "x-generator": "sentence"
+    },
+    "completed": {
+      "type": "boolean",
+      "description": "Completion status",
+      "x-generator": "boolean"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Due date",
+      "x-generator": "future_date"
+    },
+    "priority": {
+      "type": "integer",
+      "description": "Priority level (1-5)",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 5
+      }
+    }
+  },
+  "required": ["id", "title", "completed"]
+}

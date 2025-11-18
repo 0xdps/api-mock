@@ -16,7 +16,7 @@
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
 - 🎯 **RESTful API** - Standard REST endpoints for all resources
 - 💡 **Realistic Data** - Powered by gofakeit with 50+ generators
-- ⚡ **Fast & Reliable** - Go backend with Gin framework
+- ⚡ **Fast & Reliable** - Go backend with chi router
 - 🌐 **CORS Enabled** - Ready for frontend development
 - 🎨 **Modern UI** - Next.js website with interactive playground
 - 📦 **No Database** - Generates data on-the-fly
@@ -26,18 +26,19 @@
 
 ```
 mockly/
-├── api/              # Go API server (Gin + gofakeit)
-│   ├── main.go       # Entry point, dynamic route registration
-│   ├── schema/       # Schema loader and data generator
-│   ├── handlers/     # Generic resource handlers
-│   └── shared/       # JSON schemas (copied for deployment)
-├── web/              # Next.js 14 website (TypeScript + Tailwind)
+├── backend/          # Go API service (chi + gofakeit)
+│   ├── cmd/          # Application entry points
+│   ├── internal/     # Handlers, middleware, schema
+│   ├── Dockerfile    # Docker build config
+│   └── fly.toml      # Fly.io deployment config
+├── frontend/         # Next.js 14 website (TypeScript + Tailwind)
 │   ├── app/          # Pages (landing, docs, playground)
 │   ├── components/   # React components
-│   └── shared/       # JSON schemas (copied for deployment)
-├── shared/           # Source of truth for schemas
-│   └── schemas/      # Resource definitions (user, post, etc.)
-└── vercel.json       # Monorepo deployment config
+│   └── lib/          # Utility functions
+├── shared/           # Source of truth for schemas & scripts
+│   ├── schemas/      # Resource definitions (user, post, etc.)
+│   └── scripts/      # Build scripts (generate-types.js)
+└── package.json      # Root scripts for dev workflow
 ```
 
 ## 🚀 Quick Start
@@ -81,35 +82,33 @@ npm run web:dev
 
 ```bash
 # Get 10 users
-curl http://localhost:8080/users?count=10
+curl 'http://localhost:8080/api/users?count=10'
 
 # Get single user by ID
-curl http://localhost:8080/users/123
+curl http://localhost:8080/api/users/123
 
 # Get resource metadata
-curl http://localhost:8080/users/meta
+curl http://localhost:8080/api/users/meta
 
 # Get products
-curl http://localhost:8080/products?count=50
+curl 'http://localhost:8080/api/products?count=50'
 ```
 
 ## 📚 Available Resources
 
 | Resource | Endpoint | Fields |
 |----------|----------|--------|
-| Users | `/users` | id, username, email, name, avatar, bio, etc. |
-| Posts | `/posts` | id, user_id, title, content, published_at, etc. |
-| Products | `/products` | id, name, description, price, category, etc. |
-| Comments | `/comments` | id, post_id, user_id, content, created_at |
-| Todos | `/todos` | id, user_id, title, completed, due_date |
-| Reviews | `/reviews` | id, product_id, user_id, rating, comment |
+| Users | `/api/users` | id, username, email, name, avatar, bio, etc. |
+| Posts | `/api/posts` | id, user_id, title, content, published_at, etc. |
+| Products | `/api/products` | id, name, description, price, category, etc. |
+| Comments | `/api/comments` | id, post_id, user_id, content, created_at |
+| Todos | `/api/todos` | id, user_id, title, completed, due_date |
+| Reviews | `/api/reviews` | id, product_id, user_id, rating, comment |
 
 All endpoints support:
-- **Collection:** `GET /{resource}?count=N` (max 1000)
-- **Single Item:** `GET /{resource}/:id`
-- **Metadata:** `GET /{resource}/meta`
-
-> **Note:** In production (mockly.codes), all endpoints are prefixed with `/api` (e.g., `/api/users`)
+- **Collection:** `GET /api/{resource}?count=N` (max 100)
+- **Single Item:** `GET /api/{resource}/:id`
+- **Metadata:** `GET /api/{resource}/meta`
 
 ## 🎯 Schema-Driven Development
 
@@ -151,12 +150,13 @@ All endpoints support:
 }
 ```
 
-**2. Restart the server:**
+**2. Restart the API server:**
 ```bash
-cd local && go run main.go
+cd backend && make dev
+# or: go run cmd/server/main.go
 ```
 
-**That's it!** Your new endpoint is live at `/orders` 🎉 (or `/api/orders` in production)
+**That's it!** Your new endpoint is live at `/api/orders` 🎉
 
 ### Custom Routes
 
@@ -176,9 +176,9 @@ Define custom paths, aliases, and methods in schemas:
 ```
 
 This creates:
-- ✅ `GET /v1/todos` (local) or `GET /api/v1/todos` (production)
-- ✅ `GET /tasks` (alias)
-- ✅ `GET /todo-items` (alias)
+- ✅ `GET /api/v1/todos`
+- ✅ `GET /api/tasks` (alias)
+- ✅ `GET /api/todo-items` (alias)
 
 ### Supported Generators
 
@@ -193,62 +193,80 @@ This creates:
 
 ## 🚀 Deployment
 
-### Deploy to Vercel (Monorepo)
+### API: Deploy to Fly.io
+
+**1. Install Fly CLI:**
+```bash
+curl -L https://fly.io/install.sh | sh
+```
+
+**2. Login:**
+```bash
+flyctl auth login
+```
+
+**3. Launch (first time):**
+```bash
+cd backend
+flyctl launch
+```
+
+**4. Deploy updates:**
+```bash
+flyctl deploy
+```
+
+**5. View logs:**
+```bash
+flyctl logs
+```
+
+The API will be available at: `https://mockly-api.fly.dev`
+
+### Website: Deploy to Vercel
 
 **1. Install Vercel CLI:**
 ```bash
 npm install -g vercel
 ```
 
-**2. Link project:**
+**2. Deploy:**
 ```bash
-cd mockly
-vercel link
-```
-
-**3. Deploy:**
-```bash
+cd frontend
 vercel --prod
 ```
 
-The deployment configuration in `vercel.json` automatically:
-- Builds the Next.js website
-- Creates serverless functions for the Go API
-- Routes `/api/*` to the API
-- Routes everything else to the website
-
-### Environment Variables
-
-Set in Vercel dashboard:
-```env
-NEXT_PUBLIC_API_URL=https://your-api-domain.vercel.app
+**3. Set environment variable:**
+```bash
+vercel env add NEXT_PUBLIC_API_URL
+# Enter: https://mockly-api.fly.dev
 ```
 
-### Custom Domains
+### Custom Domain Setup
 
-Configure in Vercel project settings:
-- **Website:** `apimock.codes` → `/`
-- **API:** `api.apimock.codes` → `/api`
+**For API (Fly.io):**
+```bash
+flyctl certs add api.mockly.codes
+```
 
-### Disable Deployment Protection
-
-1. Go to https://vercel.com/[your-team]/mockly/settings/deployment-protection
-2. Select "Disabled" or "Standard" mode
-3. Redeploy if necessary
+**For Website (Vercel):**
+- Add `mockly.codes` in Vercel project settings
+- Configure DNS to point to Vercel
 
 ## 🛠️ Technology Stack
 
 ### Backend (API)
-- **Language:** Go 1.22+
-- **Framework:** Gin v1.11.0
+- **Language:** Go 1.23+
+- **Router:** chi v5 (lightweight, idiomatic)
 - **Data Generation:** gofakeit/v7
-- **CORS:** gin-contrib/cors
+- **CORS:** go-chi/cors
+- **Deployment:** Fly.io
 
 ### Frontend (Website)
 - **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **Deployment:** Vercel Serverless
+- **Deployment:** Vercel
 
 ## 📖 Documentation
 

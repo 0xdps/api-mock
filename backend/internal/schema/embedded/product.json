@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product",
+  "type": "object",
+  "x-resource": {
+    "name": "products",
+    "singular": "product",
+    "description": "E-commerce products"
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 10000
+      }
+    },
+    "name": {
+      "type": "string",
+      "description": "Product name",
+      "x-generator": "word"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description",
+      "x-generator": "sentence"
+    },
+    "price": {
+      "type": "number",
+      "description": "Product price",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 10,
+        "max": 1000
+      }
+    },
+    "currency": {
+      "type": "string",
+      "description": "Price currency",
+      "x-generator": "word"
+    },
+    "category": {
+      "type": "string",
+      "description": "Product category",
+      "x-generator": "word"
+    },
+    "brand": {
+      "type": "string",
+      "description": "Brand name",
+      "x-generator": "company"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Stock keeping unit",
+      "x-generator": "uuid"
+    },
+    "stock": {
+      "type": "integer",
+      "description": "Available quantity",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 0,
+        "max": 500
+      }
+    },
+    "image": {
+      "type": "string",
+      "format": "uri",
+      "description": "Product image URL",
+      "x-generator": "url"
+    }
+  },
+  "required": ["id", "name", "price"]
+}
