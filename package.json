@@ -8,6 +8,7 @@
     "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
     "api:dev": "cd backend && go run cmd/server/main.go",
     "api:build": "cd backend && go build -o bin/server ./cmd/server",
+    "prebuild": "npm run generate-types",
     "build": "npm run api:build && cd frontend && npm run build",
     "web:dev": "cd frontend && npm run dev",
     "web:install": "cd frontend && npm install",
