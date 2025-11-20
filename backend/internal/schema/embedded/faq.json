@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FAQ",
+  "type": "object",
+  "x-resource": {"name": "faqs", "singular": "faq"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "question": {"type": "string", "x-generator": "sentence"},
+    "answer": {"type": "string", "x-generator": "paragraph"},
+    "category": {"type": "string", "x-generator": "faq_category"},
+    "order": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "helpful_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "views": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

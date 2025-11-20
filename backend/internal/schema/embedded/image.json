@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Image",
+  "type": "object",
+  "x-resource": {"name": "images", "singular": "image"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "sentence"},
+    "url": {"type": "string", "format": "uri", "x-generator": "image_url"},
+    "thumbnail_url": {"type": "string", "format": "uri", "x-generator": "image_url"},
+    "width": {"type": "integer", "x-generator": "image_width"},
+    "height": {"type": "integer", "x-generator": "image_height"},
+    "size": {"type": "integer", "description": "Size in bytes", "x-generator": "file_size"},
+    "format": {"type": "string", "x-generator": "image_format"},
+    "tags": {"type": "array", "x-generator": "tags"},
+    "photographer": {"type": "string", "x-generator": "name"},
+    "location": {"type": "string", "x-generator": "city"},
+    "uploaded_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

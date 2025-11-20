@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Movie",
+  "type": "object",
+  "x-resource": {"name": "movies", "singular": "movie"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "movie_title"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "director": {"type": "string", "x-generator": "name"},
+    "genre": {"type": "string", "x-generator": "movie_genre"},
+    "year": {"type": "integer", "x-generator": "movie_year"},
+    "duration": {"type": "integer", "description": "Duration in minutes", "x-generator": "movie_duration"},
+    "rating": {"type": "number", "x-generator": "rating"},
+    "language": {"type": "string", "x-generator": "language"},
+    "country": {"type": "string", "x-generator": "country"},
+    "budget": {"type": "number", "x-generator": "movie_budget"},
+    "revenue": {"type": "number", "x-generator": "movie_revenue"},
+    "poster": {"type": "string", "format": "uri", "x-generator": "image_url"},
+    "released_at": {"type": "string", "format": "date", "x-generator": "past_date"}
+  }
+}
+

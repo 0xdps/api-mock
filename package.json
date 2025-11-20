@@ -8,14 +8,14 @@
     "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
     "api:dev": "cd backend && go run cmd/server/main.go",
     "api:build": "cd backend && go build -o bin/server ./cmd/server",
-    "prebuild": "npm run generate-types",
     "build": "npm run api:build && cd frontend && npm run build",
     "web:dev": "cd frontend && npm run dev",
     "web:install": "cd frontend && npm install",
     "postinstall": "npm run generate-types",
     "generate-types": "node shared/scripts/generate-types.js",
     "types:watch": "watch 'npm run generate-types' shared/schemas",
-    "sync-schemas": "npm run generate-types && cp shared/schemas/*.json backend/internal/schema/embedded/"
+    "sync-schemas": "npm run generate-types && cp shared/schemas/*.json backend/internal/schema/embedded/",
+    "prepare": "husky install"
   },
   "keywords": [
     "mock",
@@ -27,6 +27,7 @@
   "author": "Devendra Pratap Singh",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Meeting",
+  "type": "object",
+  "x-resource": {"name": "meetings", "singular": "meeting"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "organizer": {"type": "string", "x-generator": "name"},
+    "start_time": {"type": "string", "format": "date-time", "x-generator": "future_date"},
+    "end_time": {"type": "string", "format": "date-time", "x-generator": "future_date"},
+    "location": {"type": "string", "x-generator": "address"},
+    "type": {"type": "string", "x-generator": "meeting_type"},
+    "attendees_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 2, "max": 50}},
+    "status": {"type": "string", "x-generator": "meeting_status"},
+    "online_link": {"type": "string", "format": "uri", "x-generator": "url"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

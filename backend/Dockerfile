@@ -1,6 +1,5 @@
 # Build stage
-# This Dockerfile works with build context = backend/ directory
-# Schemas must be synced BEFORE deployment via: make sync-schemas
+# Simple build - schemas are already committed to git via pre-commit hook
 
 FROM golang:1.23-alpine AS builder
 
@@ -10,13 +9,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy all backend source code
+# Copy all source code (including committed schemas in internal/schema/embedded/)
 COPY . .
-
-# Note: Schemas should already be in internal/schema/embedded/
-# They are synced before deployment via: make sync-schemas
-# Verify they exist
-RUN ls -la internal/schema/embedded/*.json || echo "WARNING: No schemas found!"
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/server ./cmd/server

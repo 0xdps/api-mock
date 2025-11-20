@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Video",
+  "type": "object",
+  "x-resource": {"name": "videos", "singular": "video"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "creator": {"type": "string", "x-generator": "name"},
+    "creator_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "duration": {"type": "integer", "description": "Duration in seconds", "x-generator": "video_duration"},
+    "views": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000000}},
+    "likes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50000}},
+    "dislikes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 5000}},
+    "comments_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "category": {"type": "string", "x-generator": "video_category"},
+    "tags": {"type": "array", "x-generator": "tags"},
+    "thumbnail": {"type": "string", "format": "uri", "x-generator": "image_url"},
+    "url": {"type": "string", "format": "uri", "x-generator": "url"},
+    "published_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

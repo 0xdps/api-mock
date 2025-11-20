@@ -7,8 +7,8 @@ app = 'api-mockly'
 primary_region = 'bom'
 
 [build]
-  # Dockerfile in same directory
-  # Schemas must be synced before deployment (make sync-schemas)
+  # Schemas are committed to git via pre-commit hook
+  # Simple build from backend/ directory
 
 [http_service]
   internal_port = 8080

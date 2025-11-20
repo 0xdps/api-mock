@@ -1,8 +1,9 @@
 .vercel
 
-# Auto-generated files (regenerated via npm scripts)
-frontend/types/api.ts
-backend/internal/schema/embedded/*.json
+# Note: We commit generated files for production builds
+# - frontend/types/api.ts (needed for Vercel build)
+# - backend/internal/schema/embedded/*.json (needed for Fly.io build)
+# Pre-commit hook auto-syncs them from shared/schemas/
 
 # Unnecessary schema copies (frontend only needs types)
 frontend/shared/schemas/

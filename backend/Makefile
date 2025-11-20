@@ -20,14 +20,16 @@ build: sync-schemas ## Build production binary with schema sync
 	@go build -o bin/server ./cmd/server
 	@echo "✓ Built binary: bin/server"
 
-docker-build: ## Build Docker image (run from repository root)
-	@echo "Building Docker image with schemas..."
-	@cd .. && docker build -f backend/Dockerfile -t api-mockly:latest .
+docker-build: ## Build Docker image locally
+	@echo "Building Docker image..."
+	@docker build -t api-mockly:latest .
 	@echo "✓ Built Docker image: api-mockly:latest"
 
 docker-run: ## Run Docker container locally
 	@echo "Running Docker container..."
 	@docker run -p 8080:8080 api-mockly:latest
+
+docker-test: docker-build docker-run ## Build and run Docker locally
 
 test: ## Run tests
 	@go test ./...
@@ -40,8 +42,8 @@ deps: ## Download dependencies
 	@go mod download
 	@go mod tidy
 
-deploy: sync-schemas ## Deploy to Fly.io
-	@echo "✓ Schemas synced to backend"
+deploy: ## Deploy to Fly.io
 	@echo "Deploying to Fly.io..."
+	@echo "Note: Schemas are committed to git via pre-commit hook"
 	@flyctl deploy
 	@echo "✓ Deployed to Fly.io"
