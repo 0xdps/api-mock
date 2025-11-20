@@ -27,6 +27,7 @@ type ResourceMetadata struct {
 	Name        string       `json:"name"`
 	Singular    string       `json:"singular"`
 	Description string       `json:"description"`
+	Group       string       `json:"group,omitempty"` // Resource group (e.g., "people", "commerce")
 	Routes      *RouteConfig `json:"routes,omitempty"` // Custom route configuration
 }
 
@@ -1175,4 +1176,53 @@ func (r *Registry) SupportsMethod(resourceName string, method string) bool {
 		}
 	}
 	return false
+}
+
+// GetAllGroups returns all unique groups from loaded schemas
+func (r *Registry) GetAllGroups() map[string][]string {
+	groups := make(map[string][]string)
+	
+	for name, schema := range r.Schemas {
+		group := schema.Resource.Group
+		if group == "" {
+			group = "other" // Default group for schemas without a group
+		}
+		groups[group] = append(groups[group], name)
+	}
+	
+	return groups
+}
+
+// GetSchemasByGroup returns all schemas in a specific group
+func (r *Registry) GetSchemasByGroup(groupName string) map[string]*Schema {
+	schemas := make(map[string]*Schema)
+	
+	for name, schema := range r.Schemas {
+		group := schema.Resource.Group
+		if group == "" {
+			group = "other"
+		}
+		if group == groupName {
+			schemas[name] = schema
+		}
+	}
+	
+	return schemas
+}
+
+// GetResourceNamesByGroup returns all resource names in a specific group
+func (r *Registry) GetResourceNamesByGroup(groupName string) []string {
+	var names []string
+	
+	for name, schema := range r.Schemas {
+		group := schema.Resource.Group
+		if group == "" {
+			group = "other"
+		}
+		if group == groupName {
+			names = append(names, name)
+		}
+	}
+	
+	return names
 }

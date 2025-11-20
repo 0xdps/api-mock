@@ -29,17 +29,30 @@ async function getApiInfo() {
 }
 
 async function getSchemas() {
-  // Schemas are in the parent directory (repository root)
+  // Schemas are in the parent directory (repository root), organized by group
   const schemasDir = path.join(process.cwd(), '../shared/schemas')
-  const files = fs.readdirSync(schemasDir).filter((f: string) => f.endsWith('.json'))
+  const schemas: Array<{ name: string; schema: any; group: string }> = []
   
-  return files.map((file: string) => {
-    const content = fs.readFileSync(path.join(schemasDir, file), 'utf-8')
-    return {
-      name: file.replace('.json', ''),
-      schema: JSON.parse(content)
+  // Read all subdirectories (groups)
+  const entries = fs.readdirSync(schemasDir, { withFileTypes: true })
+  
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const groupDir = path.join(schemasDir, entry.name)
+      const files = fs.readdirSync(groupDir).filter((f: string) => f.endsWith('.json'))
+      
+      for (const file of files) {
+        const content = fs.readFileSync(path.join(groupDir, file), 'utf-8')
+        schemas.push({
+          name: file.replace('.json', ''),
+          schema: JSON.parse(content),
+          group: entry.name
+        })
+      }
     }
-  })
+  }
+  
+  return schemas.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export default async function DocsPage() {
@@ -163,14 +176,38 @@ console.log(response.data);`}
         </section>
         
         {/* Available Resources */}
-        <section className="mb-16">
+        <section className="mb-16" id="resources">
           <h2 className="text-3xl font-bold text-white mb-6">Available Resources</h2>
+          <p className="text-slate-300 mb-8">
+            {schemas.length} resources organized into categories
+          </p>
           
-          <div className="space-y-8">
-            {schemas.map(({ name, schema }) => (
-              <ResourceDoc key={name} name={name} schema={schema} />
-            ))}
-          </div>
+          {/* Group schemas by category */}
+          {(() => {
+            const grouped = schemas.reduce((acc, item) => {
+              const group = item.group || 'other'
+              if (!acc[group]) acc[group] = []
+              acc[group].push(item)
+              return acc
+            }, {} as Record<string, typeof schemas>)
+            
+            return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([groupName, groupSchemas]) => (
+              <div key={groupName} className="mb-12">
+                <h3 className="text-2xl font-bold text-white mb-4 capitalize flex items-center gap-2">
+                  <span>{getGroupIcon(groupName)}</span>
+                  {groupName}
+                  <span className="text-sm text-slate-400 font-normal">
+                    ({groupSchemas.length} resources)
+                  </span>
+                </h3>
+                <div className="space-y-6">
+                  {groupSchemas.map(({ name, schema }) => (
+                    <ResourceDoc key={name} name={name} schema={schema} group={groupName} />
+                  ))}
+                </div>
+              </div>
+            ))
+          })()}
         </section>
         
         {/* Features */}
@@ -245,7 +282,27 @@ function EndpointDoc({ method, path, description, params }: any) {
   )
 }
 
-function ResourceDoc({ name, schema }: any) {
+function getGroupIcon(group: string): string {
+  const icons: Record<string, string> = {
+    people: '👥',
+    business: '💼',
+    commerce: '🛒',
+    content: '📝',
+    social: '💬',
+    media: '🎬',
+    travel: '✈️',
+    location: '🌍',
+    finance: '💰',
+    food: '🍔',
+    education: '🎓',
+    sports: '⚽',
+    productivity: '✅',
+    reference: '📚',
+  }
+  return icons[group] || '📦'
+}
+
+function ResourceDoc({ name, schema, group }: any) {
   const properties = schema.properties || {}
   const resourceName = schema['x-resource']?.name || name
   

@@ -7,7 +7,7 @@ import { getApiUrl } from '@/lib/api'
 
 const API_URL = getApiUrl()
 
-async function getResources() {
+async function getResourcesAndGroups() {
   try {
     const res = await fetch(`${API_URL}/`, { 
       next: { revalidate: 300 } // Revalidate every 5 minutes (ISR)
@@ -18,16 +18,22 @@ async function getResources() {
     }
     
     const data = await res.json()
-    return data.resources || []
+    return {
+      resources: data.resources || [],
+      groups: data.groups || {}
+    }
   } catch (error) {
     console.error('Failed to fetch resources:', error)
-    // Fallback to known resources
-    return ['users', 'posts', 'products', 'comments', 'todos', 'reviews']
+    // Fallback
+    return {
+      resources: ['users', 'posts', 'products', 'comments', 'todos', 'reviews'],
+      groups: {}
+    }
   }
 }
 
 export default async function Home() {
-  const resources = await getResources()
+  const { resources, groups } = await getResourcesAndGroups()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -101,8 +107,14 @@ export default async function Home() {
         </h2>
         <div className="max-w-4xl mx-auto">
           <CodeExample 
-            title="Fetch Users"
-            code={`fetch('${API_URL}/users?count=5')
+            title="Fetch Users (via group path)"
+            code={`// Browse by category
+fetch('${API_URL}/people')
+  .then(res => res.json())
+  .then(data => console.log(data.resources));
+
+// Get users via group path
+fetch('${API_URL}/people/users?count=5')
   .then(res => res.json())
   .then(data => console.log(data));`}
             language="javascript"
@@ -128,22 +140,54 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Available Resources */}
+      {/* Available Resources - Grouped */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-white mb-8 text-center">
           Available Resources
         </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {resources.map((resource: string) => (
-            <ResourceCard key={resource} name={resource} apiUrl={API_URL} />
-          ))}
-        </div>
-        <p className="text-center text-slate-400 mt-8">
-          More resources coming soon! Check the{' '}
+        <p className="text-center text-slate-300 mb-12 max-w-2xl mx-auto">
+          Browse {resources.length} resources organized into {Object.keys(groups).length} categories
+        </p>
+        
+        {Object.keys(groups).length > 0 ? (
+          <div className="space-y-12 max-w-7xl mx-auto">
+            {Object.entries(groups).sort(([a], [b]) => a.localeCompare(b)).map(([groupName, groupData]: [string, any]) => {
+              // Handle both array format (direct) and object format (with resources property)
+              const resourceList = Array.isArray(groupData) ? groupData : (groupData?.resources || []);
+              
+              return (
+                <div key={groupName}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <h3 className="text-2xl font-bold text-white capitalize">
+                      {getGroupIcon(groupName)} {groupName}
+                    </h3>
+                    <span className="text-sm text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
+                      {resourceList.length} resources
+                    </span>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {resourceList.map((resource: string) => (
+                      <ResourceCard key={resource} name={resource} apiUrl={API_URL} group={groupName} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {resources.map((resource: string) => (
+              <ResourceCard key={resource} name={resource} apiUrl={API_URL} />
+            ))}
+          </div>
+        )}
+        
+        <p className="text-center text-slate-400 mt-12">
+          Check the{' '}
           <Link href="/docs" className="text-primary-500 hover:underline">
             documentation
           </Link>
-          {' '}for details.
+          {' '}for detailed API usage and examples.
         </p>
       </section>
 
@@ -194,4 +238,24 @@ function UseCaseCard({ title, description }: { title: string; description: strin
       <p className="text-slate-400">{description}</p>
     </div>
   )
+}
+
+function getGroupIcon(group: string): string {
+  const icons: Record<string, string> = {
+    people: '👥',
+    business: '💼',
+    commerce: '🛒',
+    content: '📝',
+    social: '💬',
+    media: '🎬',
+    travel: '✈️',
+    location: '🌍',
+    finance: '💰',
+    food: '🍔',
+    education: '🎓',
+    sports: '⚽',
+    productivity: '✅',
+    reference: '📚',
+  }
+  return icons[group] || '📦'
 }

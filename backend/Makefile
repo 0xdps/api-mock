@@ -8,7 +8,7 @@ help: ## Show this help message
 
 sync-schemas: ## Sync schemas from shared directory
 	@echo "Syncing schemas from shared/schemas..."
-	@cp ../shared/schemas/*.json internal/schema/embedded/
+	@find ../shared/schemas -name '*.json' -type f -exec cp {} internal/schema/embedded/ \;
 	@echo "✓ Synced schemas to backend"
 
 dev: sync-schemas ## Run development server with schema sync

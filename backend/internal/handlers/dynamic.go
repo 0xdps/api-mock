@@ -89,9 +89,122 @@ func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFu
 			"name":        schema.Resource.Name,
 			"singular":    schema.Resource.Singular,
 			"description": schema.Resource.Description,
+			"group":       schema.Resource.Group,
 			"title":       schema.Title,
 			"properties":  len(schema.Properties),
 		})
+	}
+}
+
+// GetGroupInfo returns metadata about a group (no data)
+func (h *DynamicHandler) GetGroupInfo() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		groupName := chi.URLParam(r, "group")
+		
+		resourceNames := h.registry.GetResourceNamesByGroup(groupName)
+		if len(resourceNames) == 0 {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Group not found",
+			})
+			return
+		}
+
+		respondJSON(w, http.StatusOK, map[string]interface{}{
+			"group":     groupName,
+			"resources": resourceNames,
+			"count":     len(resourceNames),
+		})
+	}
+}
+
+// GetGroupResourceCollection returns collection data for a resource within a group
+func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		groupName := chi.URLParam(r, "group")
+		resourceName := chi.URLParam(r, "resource")
+		
+		// Verify the resource belongs to this group
+		groupResources := h.registry.GetResourceNamesByGroup(groupName)
+		found := false
+		for _, res := range groupResources {
+			if res == resourceName {
+				found = true
+				break
+			}
+		}
+		
+		if !found {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Resource not found in this group",
+			})
+			return
+		}
+
+		// Get count parameter
+		count := getCountParam(r, 10)
+
+		// Generate data using the schema
+		data, err := h.registry.GenerateData(resourceName, count)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, map[string]string{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		respondJSON(w, http.StatusOK, data)
+	}
+}
+
+// GetGroupResourceSingle returns a single item for a resource within a group
+func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		groupName := chi.URLParam(r, "group")
+		resourceName := chi.URLParam(r, "resource")
+		id := chi.URLParam(r, "id")
+		
+		// Verify the resource belongs to this group
+		groupResources := h.registry.GetResourceNamesByGroup(groupName)
+		found := false
+		for _, res := range groupResources {
+			if res == resourceName {
+				found = true
+				break
+			}
+		}
+		
+		if !found {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Resource not found in this group",
+			})
+			return
+		}
+
+		// Generate a single item
+		data, err := h.registry.GenerateData(resourceName, 1)
+		if err != nil {
+			respondJSON(w, http.StatusInternalServerError, map[string]string{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		if len(data) == 0 {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Resource not found",
+			})
+			return
+		}
+
+		// Set the ID to the requested ID
+		item := data[0]
+		if idNum, err := strconv.Atoi(id); err == nil {
+			item["id"] = idNum
+		} else {
+			item["id"] = id
+		}
+
+		respondJSON(w, http.StatusOK, item)
 	}
 }
 

@@ -15,6 +15,7 @@
 
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
 - 🎯 **54 Resources** - From users to weather, stocks to movies
+- 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
 - 💡 **Realistic Data** - Powered by gofakeit with 200+ generators
 - ⚡ **Fast & Reliable** - Go backend with chi router
 - 🌐 **CORS Enabled** - Ready for frontend development
@@ -86,57 +87,79 @@ npm run web:dev
 ### Using the API
 
 ```bash
-# Get 10 users
-curl 'http://localhost:8080/users?count=10'
+# Browse by group (metadata only)
+curl http://localhost:8080/people
 
-# Get single user by ID
+# Get resources via group path
+curl 'http://localhost:8080/people/users?count=10'
+curl http://localhost:8080/people/users/123
+
+# Or access resources directly
+curl 'http://localhost:8080/users?count=10'
 curl http://localhost:8080/users/123
 
 # Get resource metadata
 curl http://localhost:8080/users/meta
 
-# Get products
-curl 'http://localhost:8080/products?count=50'
+# Commerce group examples
+curl http://localhost:8080/commerce
+curl 'http://localhost:8080/commerce/products?count=5'
 
 # Use production API
-curl 'https://api.mockly.codes/users?count=10'
+curl 'https://api.mockly.codes/people/users?count=10'
 ```
 
 ## 📚 Available Resources (54 Endpoints!)
 
-### Core Resources
-| Resource | Endpoint | Description |
-|----------|----------|-------------|
-| Users | `/users` | User profiles with realistic data |
-| Posts | `/posts` | Blog posts and articles |
-| Products | `/products` | E-commerce products |
-| Comments | `/comments` | User comments |
-| Todos | `/todos` | Task lists |
-| Reviews | `/reviews` | Product reviews |
+### 📂 Resource Groups
 
-### Real-World Data
-| Category | Resources |
-|----------|-----------|
-| **Weather** | `/weather` - Temperature, humidity, conditions |
-| **Geography** | `/countries`, `/cities`, `/currencies`, `/languages` |
-| **Finance** | `/stocks`, `/crypto`, `/invoices`, `/orders`, `/payments` |
-| **Business** | `/companies`, `/jobs`, `/meetings`, `/projects`, `/tasks` |
-| **Travel** | `/flights`, `/hotels`, `/restaurants`, `/recipes` |
-| **Entertainment** | `/movies`, `/books`, `/albums`, `/videos`, `/podcasts`, `/news` |
-| **Sports** | `/teams`, `/players`, `/matches` |
-| **Education** | `/courses`, `/students`, `/tickets` |
-| **Real Estate** | `/properties`, `/cars` |
-| **E-commerce** | `/categories`, `/tags`, `/coupons`, `/testimonials` |
-| **Communication** | `/messages`, `/notifications`, `/contacts`, `/notes` |
-| **Organization** | `/organizations`, `/events`, `/faqs`, `/images`, `/quotes` |
-| **Subscriptions** | `/subscriptions` |
+Resources are organized into 14 logical categories:
 
-**See all endpoints:** https://api.mockly.codes/
+| Group | Resources | Description |
+|-------|-----------|-------------|
+| 👥 **People** | users, contacts, students, players | User profiles and people |
+| 💼 **Business** | companies, organizations, jobs, meetings, invoices, subscriptions | Business entities |
+| 🛒 **Commerce** | products, orders, payments, coupons, categories, tags | E-commerce |
+| 📝 **Content** | articles, posts, news, podcasts | Written content |
+| 💬 **Social** | comments, reviews, messages, notifications, testimonials | Social interactions |
+| 🎬 **Media** | movies, books, albums, videos, images | Entertainment media |
+| ✈️ **Travel** | hotels, flights, restaurants, properties, cars | Travel & hospitality |
+| 🌍 **Location** | countries, cities, weather | Geographic data |
+| 💰 **Finance** | currencies, stocks, crypto | Financial data |
+| 🍔 **Food** | recipes | Food & cooking |
+| 🎓 **Education** | courses | Educational content |
+| ⚽ **Sports** | matches, teams | Sports data |
+| ✅ **Productivity** | todos, notes, projects, tasks, tickets, events | Task management |
+| 📚 **Reference** | faqs, quotes, languages | Reference data |
 
-All endpoints support:
-- **Collection:** `GET /{resource}?count=N` (max 100)
-- **Single Item:** `GET /{resource}/:id`
-- **Metadata:** `GET /{resource}/meta`
+### API Endpoints
+
+**Group Endpoints:**
+```bash
+GET /{group}                    # Group info (metadata only)
+GET /{group}/{resource}         # Collection via group path
+GET /{group}/{resource}/:id     # Single item via group path
+```
+
+**Direct Resource Endpoints:**
+```bash
+GET /{resource}?count=N         # Collection (max 100)
+GET /{resource}/:id             # Single item
+GET /{resource}/meta            # Resource metadata
+```
+
+**Examples:**
+```bash
+# Browse by category
+curl https://api.mockly.codes/people
+# Returns: {"group": "people", "resources": ["users", "contacts", ...], "count": 4}
+
+# Get data via category path
+curl 'https://api.mockly.codes/people/users?count=5'
+
+# Or access directly (backwards compatible)
+curl 'https://api.mockly.codes/users?count=5'
+```
 
 **Production API:** https://api.mockly.codes
 
@@ -157,6 +180,7 @@ All endpoints support:
     "name": "orders",
     "singular": "order",
     "description": "E-commerce orders",
+    "group": "commerce",
     "routes": {
       "path": "/orders",
       "methods": ["GET"],

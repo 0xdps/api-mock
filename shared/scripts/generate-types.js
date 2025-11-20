@@ -78,6 +78,33 @@ function generateResourceHelpers(schemas) {
   }
   helpers += '}\n\n';
   
+  // Generate group types
+  const groupMap = {};
+  for (const schema of schemas) {
+    const group = schema['x-resource'].group || 'other';
+    if (!groupMap[group]) {
+      groupMap[group] = [];
+    }
+    groupMap[group].push(schema['x-resource'].name);
+  }
+  
+  helpers += '// Group types\n';
+  helpers += 'export type GroupName = ';
+  helpers += Object.keys(groupMap).map(g => `'${g}'`).join(' | ');
+  helpers += ';\n\n';
+  
+  helpers += 'export interface GroupMap {\n';
+  for (const [group, resources] of Object.entries(groupMap)) {
+    helpers += `  ${group}: ${resources.map(r => `'${r}'`).join(' | ')};\n`;
+  }
+  helpers += '}\n\n';
+  
+  helpers += 'export const RESOURCE_GROUPS: Record<GroupName, ResourceName[]> = {\n';
+  for (const [group, resources] of Object.entries(groupMap)) {
+    helpers += `  ${group}: [${resources.map(r => `'${r}'`).join(', ')}],\n`;
+  }
+  helpers += '};\n\n';
+  
   helpers += '// API response types\n';
   helpers += 'export type CollectionResponse<T extends ResourceName> = ResourceMap[T][];\n';
   helpers += 'export type SingleResponse<T extends ResourceName> = ResourceMap[T];\n';
@@ -85,10 +112,28 @@ function generateResourceHelpers(schemas) {
   return helpers;
 }
 
+function getAllSchemaFiles(dir) {
+  let schemaFiles = [];
+  
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    
+    if (entry.isDirectory()) {
+      // Recursively read subdirectories
+      schemaFiles = schemaFiles.concat(getAllSchemaFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+      schemaFiles.push(fullPath);
+    }
+  }
+  
+  return schemaFiles;
+}
+
 function main() {
-  // Read all schema files
-  const schemaFiles = fs.readdirSync(SCHEMAS_DIR)
-    .filter(f => f.endsWith('.json'));
+  // Read all schema files recursively
+  const schemaFiles = getAllSchemaFiles(SCHEMAS_DIR);
   
   if (schemaFiles.length === 0) {
     console.log('No schema files found in', SCHEMAS_DIR);
@@ -101,8 +146,7 @@ function main() {
   
   // Generate types for each schema
   for (const file of schemaFiles) {
-    const schemaPath = path.join(SCHEMAS_DIR, file);
-    const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+    const schema = JSON.parse(fs.readFileSync(file, 'utf8'));
     schemas.push(schema);
     
     output += `// ${schema.title}\n`;
