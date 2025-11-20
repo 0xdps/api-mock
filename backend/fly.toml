@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for backend-white-haze-5479 on 2025-11-18T22:45:23+05:30
+# fly.toml app configuration file generated for api-mockly on 2025-11-20T13:35:07+05:30
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -17,6 +17,6 @@ primary_region = 'bom'
   processes = ['app']
 
 [[vm]]
-  memory = '256mb'
+  memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1

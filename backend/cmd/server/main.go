@@ -10,6 +10,7 @@ import (
 	"github.com/0xdps/api-mock/go/internal/handlers"
 	"github.com/0xdps/api-mock/go/internal/middleware"
 	"github.com/0xdps/api-mock/go/internal/schema"
+	"github.com/0xdps/api-mock/go/internal/static"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
@@ -42,6 +43,10 @@ func main() {
 		}
 		json.NewEncoder(w).Encode(response)
 	})
+
+	// Favicon routes (serve embedded assets)
+	r.Get("/favicon.svg", static.ServeIconSVG)
+	r.Get("/favicon.ico", static.ServeIconICO)
 
 	// Dynamic handler
 	dynamicHandler := handlers.NewDynamicHandler(registry)
