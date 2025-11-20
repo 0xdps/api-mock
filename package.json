@@ -15,7 +15,7 @@
     "postinstall": "npm run generate-types",
     "generate-types": "node shared/scripts/generate-types.js",
     "types:watch": "watch 'npm run generate-types' shared/schemas",
-    "sync-schemas": "npm run generate-types && cp shared/schemas/*.json backend/internal/schema/embedded/ && cp shared/schemas/*.json frontend/shared/schemas/"
+    "sync-schemas": "npm run generate-types && cp shared/schemas/*.json backend/internal/schema/embedded/"
   },
   "keywords": [
     "mock",

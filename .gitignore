@@ -4,6 +4,9 @@
 frontend/types/api.ts
 backend/internal/schema/embedded/*.json
 
+# Unnecessary schema copies (frontend only needs types)
+frontend/shared/schemas/
+
 # Logs
 logs
 *.log
