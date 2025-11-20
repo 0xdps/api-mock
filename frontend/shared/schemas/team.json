@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Team",
+  "type": "object",
+  "x-resource": {"name": "teams", "singular": "team"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "x-generator": "team_name"},
+    "sport": {"type": "string", "x-generator": "sport"},
+    "league": {"type": "string", "x-generator": "league"},
+    "founded": {"type": "integer", "x-generator": "founded_year"},
+    "city": {"type": "string", "x-generator": "city"},
+    "country": {"type": "string", "x-generator": "country"},
+    "stadium": {"type": "string", "x-generator": "stadium"},
+    "coach": {"type": "string", "x-generator": "name"},
+    "wins": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "losses": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "draws": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
+    "logo": {"type": "string", "format": "uri", "x-generator": "image_url"}
+  }
+}
+

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Note",
+  "type": "object",
+  "x-resource": {"name": "notes", "singular": "note"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "content": {"type": "string", "x-generator": "paragraph"},
+    "author_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "author": {"type": "string", "x-generator": "name"},
+    "color": {"type": "string", "x-generator": "color"},
+    "tags": {"type": "array", "x-generator": "tags"},
+    "pinned": {"type": "boolean", "x-generator": "boolean"},
+    "archived": {"type": "boolean", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

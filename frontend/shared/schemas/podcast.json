@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Podcast",
+  "type": "object",
+  "x-resource": {"name": "podcasts", "singular": "podcast"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "host": {"type": "string", "x-generator": "name"},
+    "category": {"type": "string", "x-generator": "podcast_category"},
+    "episode_number": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 500}},
+    "season": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10}},
+    "duration": {"type": "integer", "description": "Duration in minutes", "x-generator": "podcast_duration"},
+    "release_date": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "plays": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "rating": {"type": "number", "x-generator": "rating"},
+    "language": {"type": "string", "x-generator": "language"},
+    "audio_url": {"type": "string", "format": "uri", "x-generator": "url"},
+    "cover": {"type": "string", "format": "uri", "x-generator": "image_url"}
+  }
+}
+

@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "City",
+  "type": "object",
+  "description": "City information",
+  "x-resource": {
+    "name": "cities",
+    "singular": "city",
+    "description": "Cities with geographic data"
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "City ID",
+      "x-generator": "random_int",
+      "x-generator-params": {
+        "min": 1,
+        "max": 50000
+      }
+    },
+    "name": {
+      "type": "string",
+      "description": "City name",
+      "x-generator": "city"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country name",
+      "x-generator": "country"
+    },
+    "country_code": {
+      "type": "string",
+      "description": "Country ISO code",
+      "x-generator": "country_code"
+    },
+    "state": {
+      "type": "string",
+      "description": "State or province",
+      "x-generator": "state"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude",
+      "x-generator": "latitude"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude",
+      "x-generator": "longitude"
+    },
+    "population": {
+      "type": "integer",
+      "description": "Population",
+      "x-generator": "city_population"
+    },
+    "timezone": {
+      "type": "string",
+      "description": "Timezone",
+      "x-generator": "timezone"
+    },
+    "elevation": {
+      "type": "integer",
+      "description": "Elevation in meters",
+      "x-generator": "elevation"
+    }
+  },
+  "required": ["id", "name", "country"]
+}
+

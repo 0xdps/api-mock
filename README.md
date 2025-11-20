@@ -14,14 +14,15 @@
 ## ✨ Features
 
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
-- 🎯 **RESTful API** - Standard REST endpoints for all resources
-- 💡 **Realistic Data** - Powered by gofakeit with 50+ generators
+- 🎯 **54 Resources** - From users to weather, stocks to movies
+- 💡 **Realistic Data** - Powered by gofakeit with 200+ generators
 - ⚡ **Fast & Reliable** - Go backend with chi router
 - 🌐 **CORS Enabled** - Ready for frontend development
 - 🎨 **Modern UI** - Next.js website with SSR and interactive playground
 - 📦 **No Database** - Generates data on-the-fly
 - 🆓 **Free Forever** - Open source and self-hostable
 - ⚡ **Server-Side Rendering** - Fast page loads with fresh data
+- 🤖 **Automated Build** - TypeScript types auto-generated from schemas
 
 ## 📦 Project Structure
 
@@ -66,9 +67,12 @@ npm run web:install
 npm run dev
 ```
 
-This starts:
-- API server on http://localhost:8080
-- Website on http://localhost:3000
+This automatically:
+- ✅ Generates TypeScript types from schemas
+- ✅ Starts API server on http://localhost:8080
+- ✅ Starts website on http://localhost:3000
+
+**Note:** Types are auto-generated on every build. No manual steps needed!
 
 **Or run separately:**
 ```bash
@@ -98,16 +102,36 @@ curl 'http://localhost:8080/products?count=50'
 curl 'https://api.mockly.codes/users?count=10'
 ```
 
-## 📚 Available Resources
+## 📚 Available Resources (54 Endpoints!)
 
-| Resource | Endpoint | Fields |
-|----------|----------|--------|
-| Users | `/users` | id, username, email, name, avatar, bio, etc. |
-| Posts | `/posts` | id, user_id, title, content, published_at, etc. |
-| Products | `/products` | id, name, description, price, category, etc. |
-| Comments | `/comments` | id, post_id, user_id, content, created_at |
-| Todos | `/todos` | id, user_id, title, completed, due_date |
-| Reviews | `/reviews` | id, product_id, user_id, rating, comment |
+### Core Resources
+| Resource | Endpoint | Description |
+|----------|----------|-------------|
+| Users | `/users` | User profiles with realistic data |
+| Posts | `/posts` | Blog posts and articles |
+| Products | `/products` | E-commerce products |
+| Comments | `/comments` | User comments |
+| Todos | `/todos` | Task lists |
+| Reviews | `/reviews` | Product reviews |
+
+### Real-World Data
+| Category | Resources |
+|----------|-----------|
+| **Weather** | `/weather` - Temperature, humidity, conditions |
+| **Geography** | `/countries`, `/cities`, `/currencies`, `/languages` |
+| **Finance** | `/stocks`, `/crypto`, `/invoices`, `/orders`, `/payments` |
+| **Business** | `/companies`, `/jobs`, `/meetings`, `/projects`, `/tasks` |
+| **Travel** | `/flights`, `/hotels`, `/restaurants`, `/recipes` |
+| **Entertainment** | `/movies`, `/books`, `/albums`, `/videos`, `/podcasts`, `/news` |
+| **Sports** | `/teams`, `/players`, `/matches` |
+| **Education** | `/courses`, `/students`, `/tickets` |
+| **Real Estate** | `/properties`, `/cars` |
+| **E-commerce** | `/categories`, `/tags`, `/coupons`, `/testimonials` |
+| **Communication** | `/messages`, `/notifications`, `/contacts`, `/notes` |
+| **Organization** | `/organizations`, `/events`, `/faqs`, `/images`, `/quotes` |
+| **Subscriptions** | `/subscriptions` |
+
+**See all endpoints:** https://api.mockly.codes/
 
 All endpoints support:
 - **Collection:** `GET /{resource}?count=N` (max 100)
@@ -121,6 +145,8 @@ All endpoints support:
 ### Adding a New Resource (Zero Code!)
 
 **1. Create a schema** in `shared/schemas/`:
+
+> **Note:** TypeScript types are automatically generated from schemas during build. No manual steps required!
 
 ```json
 {
@@ -162,7 +188,14 @@ cd backend && make dev
 # or: go run cmd/server/main.go
 ```
 
-**That's it!** Your new endpoint is live at `/api/orders` 🎉
+**That's it!** Your new endpoint is live at `/orders` 🎉
+
+The build process automatically:
+- ✅ Syncs schemas to backend
+- ✅ Generates TypeScript types for frontend
+- ✅ Loads new routes in API server
+
+See [BUILD_PROCESS.md](./BUILD_PROCESS.md) for details.
 
 ### Custom Routes
 
@@ -186,80 +219,59 @@ This creates:
 - ✅ `GET /tasks` (alias)
 - ✅ `GET /todo-items` (alias)
 
-### Supported Generators
+### Supported Generators (200+)
 
-- **Personal:** `name`, `first_name`, `email`, `username`, `password`
-- **Address:** `address`, `city`, `country`, `zip_code`, `latitude`
-- **Company:** `company`, `job`, `catch_phrase`
-- **Internet:** `url`, `domain_name`, `ipv4`, `uuid`, `mac_address`
-- **Dates:** `date`, `date_time`, `past_date`, `future_date`
-- **Text:** `word`, `sentence`, `paragraph`, `text`
-- **Numbers:** `random_int`, `random_digit`, `random_number`
-- **Other:** `phone_number`, `boolean`, `user_agent`
+We support over 200 generators via gofakeit. Popular ones:
+
+**Personal:** `name`, `first_name`, `email`, `username`, `password`, `avatar`  
+**Address:** `address`, `city`, `country`, `zip_code`, `latitude`, `longitude`  
+**Company:** `company`, `job`, `catch_phrase`, `company_name`, `job_title`  
+**Internet:** `url`, `domain_name`, `ipv4`, `uuid`, `mac_address`, `image_url`  
+**Dates:** `date`, `date_time`, `past_date`, `future_date`, `time_zone`  
+**Text:** `word`, `sentence`, `paragraph`, `text`, `quote_text`  
+**Numbers:** `random_int`, `random_digit`, `random_number`, `float32`  
+**Weather:** `weather_temperature`, `weather_description`, `weather_humidity`  
+**Finance:** `currency_code`, `exchange_rate`, `stock_symbol`, `crypto_name`  
+**Geography:** `country_name`, `city_name`, `language_name`, `capital_city`  
+**Media:** `movie_title`, `book_title`, `album_title`, `video_title`  
+**Travel:** `flight_number`, `hotel_name`, `restaurant_name`, `recipe_name`  
+**Business:** `invoice_number`, `order_id`, `payment_status`, `ticket_id`  
+**Other:** `phone_number`, `boolean`, `user_agent`, `car_model`
+
+See all generators in [`backend/internal/schema/loader.go`](./backend/internal/schema/loader.go)
 
 ## 🚀 Deployment
 
-### API: Deploy to Fly.io
+### Quick Deploy
 
-**1. Install Fly CLI:**
-```bash
-curl -L https://fly.io/install.sh | sh
-```
-
-**2. Login:**
-```bash
-flyctl auth login
-```
-
-**3. Launch (first time):**
+**Backend (Fly.io):**
 ```bash
 cd backend
-flyctl launch
+make deploy  # Auto-syncs schemas and deploys
 ```
 
-**4. Deploy updates:**
-```bash
-flyctl deploy
-```
-
-**5. View logs:**
-```bash
-flyctl logs
-```
-
-The API will be available at: `https://mockly-api.fly.dev`
-
-### Website: Deploy to Vercel
-
-**1. Install Vercel CLI:**
-```bash
-npm install -g vercel
-```
-
-**2. Deploy:**
+**Frontend (Vercel):**
 ```bash
 cd frontend
-vercel --prod
+vercel --prod  # Auto-generates types and deploys
 ```
 
-**3. Set environment variable (optional):**
-```bash
-vercel env add NEXT_PUBLIC_API_URL
-# Enter: https://api.mockly.codes
-```
+### Important: Schema Syncing
 
-**Note:** The frontend automatically uses `https://api.mockly.codes` in production, so environment variables are optional.
+The deployment process **automatically includes** all schemas:
 
-### Custom Domain Setup
+- ✅ Backend: Schemas copied from `shared/` during Docker build
+- ✅ Frontend: Types auto-generated via `prebuild` hook
+- ✅ No manual steps required!
 
-**For API (Fly.io):**
-```bash
-flyctl certs add api.mockly.codes
-```
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.**
 
-**For Website (Vercel):**
-- Add `mockly.codes` in Vercel project settings
-- Configure DNS to point to Vercel
+### Production URLs
+
+- **API:** https://api.mockly.codes
+- **Website:** https://mockly.codes
+- **Docs:** https://mockly.codes/docs
+- **Playground:** https://mockly.codes/playground
 
 ## 🛠️ Technology Stack
 
@@ -300,10 +312,18 @@ Visit the `/playground` page to:
 Contributions welcome! The easiest way to contribute is to add new resource schemas:
 
 1. Create `shared/schemas/your-resource.json`
-2. Test locally with `cd local && go run main.go`
+2. Test locally with `npm run dev` (types auto-generate!)
 3. Submit a PR
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+## 📚 Documentation
+
+- **[QUICK_START.md](./QUICK_START.md)** - Quick start guide
+- **[BUILD_PROCESS.md](./BUILD_PROCESS.md)** - Build automation
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history
 
 ## � License
 

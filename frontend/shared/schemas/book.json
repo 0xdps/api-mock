@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Book",
+  "type": "object",
+  "x-resource": {"name": "books", "singular": "book"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "book_title"},
+    "author": {"type": "string", "x-generator": "name"},
+    "isbn": {"type": "string", "x-generator": "isbn"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "genre": {"type": "string", "x-generator": "book_genre"},
+    "publisher": {"type": "string", "x-generator": "company"},
+    "published_date": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "pages": {"type": "integer", "x-generator": "book_pages"},
+    "language": {"type": "string", "x-generator": "language"},
+    "price": {"type": "number", "x-generator": "price"},
+    "currency": {"type": "string", "x-generator": "currency"},
+    "rating": {"type": "number", "x-generator": "rating"},
+    "cover": {"type": "string", "format": "uri", "x-generator": "image_url"}
+  }
+}
+

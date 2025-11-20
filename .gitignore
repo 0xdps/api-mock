@@ -1,5 +1,9 @@
 .vercel
 
+# Auto-generated files (regenerated via npm scripts)
+frontend/types/api.ts
+backend/internal/schema/embedded/*.json
+
 # Logs
 logs
 *.log

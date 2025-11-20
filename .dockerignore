@@ -1,0 +1,34 @@
+# Ignore frontend files
+frontend/node_modules
+frontend/.next
+frontend/out
+frontend/.env.local
+
+# Ignore git
+.git
+.gitignore
+
+# Ignore documentation
+*.md
+!README.md
+
+# Ignore CI/CD
+.github
+
+# Ignore editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Keep schemas (needed for build)
+!shared/schemas
+
+# Ignore backend build artifacts
+backend/bin
+backend/tmp
+

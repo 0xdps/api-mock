@@ -601,6 +601,523 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		categories := []string{"Electronics", "Clothing", "Books", "Home & Garden", "Sports", "Toys", "Food & Beverage", "Health & Beauty", "Automotive", "Office"}
 		return categories[faker.IntRange(0, len(categories)-1)]
 	
+	// Weather
+	case "temperature":
+		return float64(faker.IntRange(-20, 45)) + faker.Float64Range(0, 0.9)
+	case "humidity":
+		return faker.IntRange(10, 100)
+	case "pressure":
+		return faker.IntRange(950, 1050)
+	case "wind_speed":
+		return float64(faker.IntRange(0, 50)) + faker.Float64Range(0, 0.9)
+	case "wind_direction":
+		directions := []string{"N", "NE", "E", "SE", "S", "SW", "W", "NW"}
+		return directions[faker.IntRange(0, len(directions)-1)]
+	case "weather_condition":
+		conditions := []string{"Sunny", "Partly Cloudy", "Cloudy", "Overcast", "Rainy", "Stormy", "Snowy", "Foggy", "Windy", "Clear"}
+		return conditions[faker.IntRange(0, len(conditions)-1)]
+	case "weather_description":
+		descriptions := []string{
+			"Clear skies with plenty of sunshine",
+			"Partly cloudy with occasional sun",
+			"Overcast skies throughout the day",
+			"Light rain expected in the afternoon",
+			"Heavy rainfall with possible thunderstorms",
+			"Light snow showers",
+			"Dense fog reducing visibility",
+			"Strong winds with gusts",
+		}
+		return descriptions[faker.IntRange(0, len(descriptions)-1)]
+	case "visibility":
+		return faker.IntRange(1000, 50000)
+	case "uv_index":
+		return faker.IntRange(0, 11)
+	
+	// Geographic
+	case "country_code":
+		codes := []string{"US", "GB", "FR", "DE", "JP", "CN", "IN", "BR", "CA", "AU", "MX", "ES", "IT", "KR", "RU"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "country_code3":
+		codes := []string{"USA", "GBR", "FRA", "DEU", "JPN", "CHN", "IND", "BRA", "CAN", "AUS", "MEX", "ESP", "ITA", "KOR", "RUS"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "capital":
+		capitals := []string{"Washington D.C.", "London", "Paris", "Berlin", "Tokyo", "Beijing", "New Delhi", "Brasilia", "Ottawa", "Canberra"}
+		return capitals[faker.IntRange(0, len(capitals)-1)]
+	case "region":
+		regions := []string{"Africa", "Americas", "Asia", "Europe", "Oceania", "Antarctic"}
+		return regions[faker.IntRange(0, len(regions)-1)]
+	case "subregion":
+		subregions := []string{"Eastern Asia", "Western Europe", "Northern America", "Southern Asia", "South America", "Caribbean", "Middle East"}
+		return subregions[faker.IntRange(0, len(subregions)-1)]
+	case "population":
+		return faker.IntRange(100000, 1500000000)
+	case "area":
+		return float64(faker.IntRange(1000, 17000000))
+	case "currency_code":
+		codes := []string{"USD", "EUR", "GBP", "JPY", "CNY", "INR", "BRL", "CAD", "AUD", "CHF", "SEK", "NOK", "DKK", "MXN", "SGD"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "calling_code":
+		codes := []string{"+1", "+44", "+33", "+49", "+81", "+86", "+91", "+55", "+61", "+52", "+34", "+39", "+82", "+7"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "timezone":
+		zones := []string{"UTC", "EST", "PST", "GMT", "CET", "JST", "IST", "AEST", "CST", "MST"}
+		return zones[faker.IntRange(0, len(zones)-1)]
+	case "flag_url":
+		code := faker.IntRange(1, 200)
+		return fmt.Sprintf("https://flagcdn.com/w320/%d.png", code)
+	case "languages_array", "currency_countries", "language_countries":
+		count := faker.IntRange(1, 3)
+		arr := make([]string, count)
+		for i := 0; i < count; i++ {
+			arr[i] = faker.Word()
+		}
+		return arr
+	case "elevation":
+		return faker.IntRange(0, 5000)
+	case "city_population":
+		return faker.IntRange(10000, 20000000)
+	
+	// Financial
+	case "exchange_rate":
+		return faker.Float64Range(0.1, 10.0)
+	case "currency_name":
+		names := []string{"US Dollar", "Euro", "British Pound", "Japanese Yen", "Chinese Yuan", "Indian Rupee", "Brazilian Real", "Canadian Dollar", "Australian Dollar"}
+		return names[faker.IntRange(0, len(names)-1)]
+	case "currency_symbol":
+		symbols := []string{"$", "€", "£", "¥", "₹", "R$", "C$", "A$", "kr", "₽"}
+		return symbols[faker.IntRange(0, len(symbols)-1)]
+	case "stock_symbol":
+		symbols := []string{"AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "META", "NVDA", "NFLX", "AMD", "INTC", "ORCL", "CSCO", "IBM", "UBER", "SNAP"}
+		return symbols[faker.IntRange(0, len(symbols)-1)]
+	case "stock_price":
+		return faker.Float64Range(10.0, 500.0)
+	case "stock_change":
+		return faker.Float64Range(-50.0, 50.0)
+	case "stock_change_percent":
+		return faker.Float64Range(-10.0, 10.0)
+	case "stock_volume":
+		return faker.IntRange(1000000, 100000000)
+	case "market_cap":
+		return float64(faker.IntRange(1000000000, 3000000000000))
+	case "stock_exchange":
+		exchanges := []string{"NYSE", "NASDAQ", "LSE", "TSE", "SSE", "HKEX", "Euronext"}
+		return exchanges[faker.IntRange(0, len(exchanges)-1)]
+	case "crypto_symbol":
+		symbols := []string{"BTC", "ETH", "USDT", "BNB", "XRP", "ADA", "DOGE", "SOL", "DOT", "MATIC", "AVAX", "LINK", "UNI", "ATOM", "LTC"}
+		return symbols[faker.IntRange(0, len(symbols)-1)]
+	case "crypto_name":
+		names := []string{"Bitcoin", "Ethereum", "Tether", "Binance Coin", "Ripple", "Cardano", "Dogecoin", "Solana", "Polkadot", "Polygon", "Avalanche", "Chainlink", "Uniswap", "Cosmos", "Litecoin"}
+		return names[faker.IntRange(0, len(names)-1)]
+	case "crypto_price":
+		return faker.Float64Range(0.01, 50000.0)
+	case "crypto_supply":
+		return float64(faker.IntRange(1000000, 100000000000))
+	
+	// Business
+	case "industry":
+		industries := []string{"Technology", "Finance", "Healthcare", "Education", "Manufacturing", "Retail", "Real Estate", "Entertainment", "Transportation", "Energy"}
+		return industries[faker.IntRange(0, len(industries)-1)]
+	case "company_size":
+		sizes := []string{"Small (1-50)", "Medium (51-200)", "Large (201-1000)", "Enterprise (1000+)"}
+		return sizes[faker.IntRange(0, len(sizes)-1)]
+	case "founded_year":
+		return faker.IntRange(1900, 2024)
+	case "revenue":
+		return float64(faker.IntRange(100000, 1000000000))
+	case "employees":
+		return faker.IntRange(10, 50000)
+	case "salary_min":
+		return faker.IntRange(30000, 80000)
+	case "salary_max":
+		return faker.IntRange(80000, 200000)
+	case "job_type":
+		types := []string{"Full-time", "Part-time", "Contract", "Internship", "Freelance"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "job_level":
+		levels := []string{"Entry Level", "Mid Level", "Senior Level", "Lead", "Manager", "Director", "Executive"}
+		return levels[faker.IntRange(0, len(levels)-1)]
+	case "organization_type":
+		types := []string{"Corporation", "Non-Profit", "Government", "Startup", "SME", "Enterprise"}
+		return types[faker.IntRange(0, len(types)-1)]
+	
+	// Education
+	case "course_title":
+		titles := []string{
+			"Introduction to Programming",
+			"Web Development Bootcamp",
+			"Data Science Fundamentals",
+			"Machine Learning A-Z",
+			"Digital Marketing Mastery",
+			"Business Strategy",
+			"Graphic Design Essentials",
+			"Financial Analysis",
+		}
+		return titles[faker.IntRange(0, len(titles)-1)]
+	case "course_category":
+		categories := []string{"Programming", "Business", "Design", "Marketing", "Data Science", "Photography", "Music", "Languages"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "course_level":
+		levels := []string{"Beginner", "Intermediate", "Advanced", "Expert"}
+		return levels[faker.IntRange(0, len(levels)-1)]
+	case "course_duration":
+		return faker.IntRange(5, 100)
+	case "student_id":
+		return fmt.Sprintf("STU%06d", faker.IntRange(1, 999999))
+	case "grade":
+		grades := []string{"Freshman", "Sophomore", "Junior", "Senior", "Graduate"}
+		return grades[faker.IntRange(0, len(grades)-1)]
+	case "major":
+		majors := []string{"Computer Science", "Business Administration", "Engineering", "Psychology", "Biology", "Mathematics", "English", "History"}
+		return majors[faker.IntRange(0, len(majors)-1)]
+	case "gpa":
+		return faker.Float64Range(2.0, 4.0)
+	
+	// Media & Entertainment
+	case "movie_title":
+		titles := []string{
+			"The Last Adventure", "City of Dreams", "Beyond the Horizon", "Lost in Time",
+			"The Final Chapter", "Midnight Express", "Rising Sun", "Dark Waters",
+		}
+		return titles[faker.IntRange(0, len(titles)-1)]
+	case "movie_genre":
+		genres := []string{"Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", "Thriller", "Documentary", "Animation"}
+		return genres[faker.IntRange(0, len(genres)-1)]
+	case "movie_year":
+		return faker.IntRange(1980, 2024)
+	case "movie_duration":
+		return faker.IntRange(80, 180)
+	case "movie_budget":
+		return float64(faker.IntRange(1000000, 300000000))
+	case "movie_revenue":
+		return float64(faker.IntRange(5000000, 2000000000))
+	case "book_title":
+		titles := []string{
+			"The Art of Programming", "Journey to Success", "Mastering the Mind",
+			"The Hidden Truth", "Beyond Imagination", "Stories of Wonder",
+		}
+		return titles[faker.IntRange(0, len(titles)-1)]
+	case "book_genre":
+		genres := []string{"Fiction", "Non-Fiction", "Mystery", "Sci-Fi", "Biography", "Self-Help", "History", "Fantasy"}
+		return genres[faker.IntRange(0, len(genres)-1)]
+	case "book_pages":
+		return faker.IntRange(100, 1000)
+	case "isbn":
+		return fmt.Sprintf("978-%d-%d-%d-%d", faker.IntRange(0, 9), faker.IntRange(10000, 99999), faker.IntRange(100, 999), faker.IntRange(0, 9))
+	case "music_genre":
+		genres := []string{"Pop", "Rock", "Hip Hop", "Jazz", "Classical", "Electronic", "Country", "R&B", "Blues"}
+		return genres[faker.IntRange(0, len(genres)-1)]
+	case "album_title":
+		return faker.Sentence(3)
+	case "album_duration":
+		return faker.IntRange(1800, 4800)
+	case "video_duration":
+		return faker.IntRange(60, 3600)
+	case "video_category":
+		categories := []string{"Education", "Entertainment", "Music", "Gaming", "News", "Sports", "Technology", "Travel", "Food"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "podcast_category":
+		categories := []string{"Technology", "Business", "Comedy", "News", "Education", "True Crime", "Health", "Sports"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "podcast_duration":
+		return faker.IntRange(15, 180)
+	case "news_category":
+		categories := []string{"Politics", "Business", "Technology", "Science", "Health", "Entertainment", "Sports", "World"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	
+	// Food & Travel
+	case "cuisine":
+		cuisines := []string{"Italian", "Chinese", "Japanese", "Mexican", "Indian", "French", "Thai", "Mediterranean", "American", "Korean"}
+		return cuisines[faker.IntRange(0, len(cuisines)-1)]
+	case "restaurant_name":
+		return faker.Company() + " " + []string{"Restaurant", "Bistro", "Cafe", "Grill", "Kitchen", "Diner"}[faker.IntRange(0, 5)]
+	case "price_range":
+		ranges := []string{"$", "$$", "$$$", "$$$$"}
+		return ranges[faker.IntRange(0, len(ranges)-1)]
+	case "opening_hours":
+		return "Mon-Sat: 11:00 AM - 10:00 PM"
+	case "hotel_name":
+		return faker.Company() + " " + []string{"Hotel", "Resort", "Inn", "Lodge", "Suites"}[faker.IntRange(0, 4)]
+	case "hotel_stars":
+		return faker.IntRange(1, 5)
+	case "hotel_price":
+		return faker.Float64Range(50.0, 500.0)
+	case "hotel_rooms":
+		return faker.IntRange(20, 500)
+	case "amenities":
+		amenities := []string{"WiFi", "Pool", "Gym", "Restaurant", "Bar", "Spa", "Parking", "Room Service"}
+		count := faker.IntRange(3, 6)
+		selected := make([]string, count)
+		for i := 0; i < count; i++ {
+			selected[i] = amenities[faker.IntRange(0, len(amenities)-1)]
+		}
+		return selected
+	case "recipe_title":
+		return faker.Sentence(4)
+	case "recipe_category":
+		categories := []string{"Breakfast", "Lunch", "Dinner", "Dessert", "Snacks", "Appetizers", "Beverages"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "difficulty":
+		levels := []string{"Easy", "Medium", "Hard"}
+		return levels[faker.IntRange(0, len(levels)-1)]
+	case "prep_time":
+		return faker.IntRange(5, 60)
+	case "cook_time":
+		return faker.IntRange(10, 120)
+	case "servings":
+		return faker.IntRange(1, 8)
+	case "calories":
+		return faker.IntRange(100, 1000)
+	case "venue":
+		return faker.Company() + " Convention Center"
+	case "event_title":
+		return faker.Sentence(5)
+	case "event_category":
+		categories := []string{"Conference", "Workshop", "Seminar", "Meetup", "Concert", "Festival", "Networking"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	
+	// Transportation
+	case "flight_number":
+		airlines := []string{"AA", "UA", "DL", "BA", "LH", "AF", "EK"}
+		return airlines[faker.IntRange(0, len(airlines)-1)] + fmt.Sprintf("%d", faker.IntRange(100, 9999))
+	case "airline":
+		airlines := []string{"American Airlines", "United Airlines", "Delta", "British Airways", "Lufthansa", "Air France", "Emirates"}
+		return airlines[faker.IntRange(0, len(airlines)-1)]
+	case "airport_code":
+		codes := []string{"JFK", "LAX", "ORD", "LHR", "CDG", "NRT", "DXB", "SIN", "HND", "SYD"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "flight_duration":
+		return faker.IntRange(60, 900)
+	case "aircraft":
+		aircraft := []string{"Boeing 737", "Boeing 777", "Boeing 787", "Airbus A320", "Airbus A380", "Airbus A350"}
+		return aircraft[faker.IntRange(0, len(aircraft)-1)]
+	case "flight_price":
+		return faker.Float64Range(100.0, 2000.0)
+	case "flight_class":
+		classes := []string{"Economy", "Premium Economy", "Business", "First Class"}
+		return classes[faker.IntRange(0, len(classes)-1)]
+	case "flight_status":
+		statuses := []string{"Scheduled", "Boarding", "Departed", "In Air", "Landed", "Delayed", "Cancelled"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	
+	// Automotive
+	case "car_make":
+		makes := []string{"Toyota", "Honda", "Ford", "BMW", "Mercedes", "Audi", "Tesla", "Chevrolet", "Nissan", "Volkswagen"}
+		return makes[faker.IntRange(0, len(makes)-1)]
+	case "car_model":
+		models := []string{"Sedan", "SUV", "Coupe", "Hatchback", "Truck", "Van", "Convertible"}
+		return models[faker.IntRange(0, len(models)-1)]
+	case "car_year":
+		return faker.IntRange(2010, 2024)
+	case "color":
+		colors := []string{"Black", "White", "Silver", "Gray", "Red", "Blue", "Green", "Yellow", "Orange", "Brown"}
+		return colors[faker.IntRange(0, len(colors)-1)]
+	case "vin":
+		return faker.UUID()[0:17]
+	case "car_type":
+		types := []string{"Sedan", "SUV", "Truck", "Coupe", "Convertible", "Hatchback", "Van", "Wagon"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "fuel_type":
+		types := []string{"Gasoline", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "transmission":
+		types := []string{"Automatic", "Manual", "CVT", "Semi-Automatic"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "mileage":
+		return faker.IntRange(0, 200000)
+	case "car_price":
+		return faker.Float64Range(5000.0, 100000.0)
+	case "condition":
+		conditions := []string{"New", "Like New", "Good", "Fair", "Poor"}
+		return conditions[faker.IntRange(0, len(conditions)-1)]
+	case "car_features":
+		features := []string{"Cruise Control", "Backup Camera", "Navigation", "Leather Seats", "Sunroof", "Heated Seats", "Bluetooth", "Parking Sensors"}
+		count := faker.IntRange(3, 6)
+		selected := make([]string, count)
+		for i := 0; i < count; i++ {
+			selected[i] = features[faker.IntRange(0, len(features)-1)]
+		}
+		return selected
+	
+	// Real Estate
+	case "property_title":
+		return faker.Sentence(5)
+	case "property_type":
+		types := []string{"House", "Apartment", "Condo", "Townhouse", "Villa", "Land", "Commercial"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "property_status":
+		statuses := []string{"For Sale", "For Rent", "Sold", "Rented", "Pending"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "property_price":
+		return faker.Float64Range(50000.0, 5000000.0)
+	case "bedrooms":
+		return faker.IntRange(1, 6)
+	case "bathrooms":
+		return faker.IntRange(1, 5)
+	case "property_area":
+		return float64(faker.IntRange(500, 5000))
+	case "year_built":
+		return faker.IntRange(1950, 2024)
+	case "property_features":
+		features := []string{"Garden", "Pool", "Garage", "Balcony", "Fireplace", "Basement", "Attic", "Security System"}
+		count := faker.IntRange(2, 5)
+		selected := make([]string, count)
+		for i := 0; i < count; i++ {
+			selected[i] = features[faker.IntRange(0, len(features)-1)]
+		}
+		return selected
+	
+	// Business Operations
+	case "invoice_number":
+		return fmt.Sprintf("INV-%06d", faker.IntRange(1, 999999))
+	case "order_number":
+		return fmt.Sprintf("ORD-%08d", faker.IntRange(1, 99999999))
+	case "transaction_id":
+		return faker.UUID()
+	case "tax":
+		return faker.Float64Range(5.0, 100.0)
+	case "shipping_cost":
+		return faker.Float64Range(5.0, 50.0)
+	case "invoice_status":
+		statuses := []string{"Draft", "Sent", "Paid", "Overdue", "Cancelled"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "order_status":
+		statuses := []string{"Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "payment_method":
+		methods := []string{"Credit Card", "Debit Card", "PayPal", "Bank Transfer", "Cash", "Cryptocurrency"}
+		return methods[faker.IntRange(0, len(methods)-1)]
+	case "payment_status":
+		statuses := []string{"Pending", "Processing", "Completed", "Failed", "Refunded"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "card_last4":
+		return fmt.Sprintf("%04d", faker.IntRange(0, 9999))
+	case "card_brand":
+		brands := []string{"Visa", "Mastercard", "American Express", "Discover"}
+		return brands[faker.IntRange(0, len(brands)-1)]
+	case "subscription_plan":
+		plans := []string{"Free", "Basic", "Pro", "Premium", "Enterprise"}
+		return plans[faker.IntRange(0, len(plans)-1)]
+	case "subscription_status":
+		statuses := []string{"Active", "Cancelled", "Expired", "Trial", "Suspended"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "billing_cycle":
+		cycles := []string{"Monthly", "Quarterly", "Annually"}
+		return cycles[faker.IntRange(0, len(cycles)-1)]
+	
+	// Project Management
+	case "project_status":
+		statuses := []string{"Planning", "In Progress", "On Hold", "Completed", "Cancelled"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "task_status":
+		statuses := []string{"To Do", "In Progress", "In Review", "Done", "Blocked"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "priority":
+		priorities := []string{"Low", "Medium", "High", "Urgent"}
+		return priorities[faker.IntRange(0, len(priorities)-1)]
+	case "percentage":
+		return faker.IntRange(0, 100)
+	case "meeting_type":
+		types := []string{"Standup", "Planning", "Review", "Retrospective", "One-on-One", "All-Hands"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "meeting_status":
+		statuses := []string{"Scheduled", "In Progress", "Completed", "Cancelled"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	
+	// Support & Communication
+	case "ticket_number":
+		return fmt.Sprintf("TKT-%06d", faker.IntRange(1, 999999))
+	case "ticket_status":
+		statuses := []string{"Open", "In Progress", "Pending", "Resolved", "Closed"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "ticket_category":
+		categories := []string{"Technical", "Billing", "General", "Feature Request", "Bug Report"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "message_type":
+		types := []string{"Text", "Image", "Video", "File", "Link"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "notification_type":
+		types := []string{"Info", "Success", "Warning", "Error", "Message", "System"}
+		return types[faker.IntRange(0, len(types)-1)]
+	
+	// Sports
+	case "sport":
+		sports := []string{"Football", "Basketball", "Baseball", "Soccer", "Hockey", "Tennis", "Golf", "Cricket"}
+		return sports[faker.IntRange(0, len(sports)-1)]
+	case "league":
+		leagues := []string{"Premier League", "La Liga", "Serie A", "Bundesliga", "MLS", "NBA", "NFL", "MLB"}
+		return leagues[faker.IntRange(0, len(leagues)-1)]
+	case "team_name":
+		return faker.City() + " " + []string{"United", "City", "Athletic", "Rangers", "Warriors", "Tigers"}[faker.IntRange(0, 5)]
+	case "stadium":
+		return faker.City() + " " + []string{"Stadium", "Arena", "Field", "Dome"}[faker.IntRange(0, 3)]
+	case "position":
+		positions := []string{"Forward", "Midfielder", "Defender", "Goalkeeper", "Guard", "Center", "Pitcher"}
+		return positions[faker.IntRange(0, len(positions)-1)]
+	case "height":
+		return float64(faker.IntRange(160, 210))
+	case "weight":
+		return float64(faker.IntRange(60, 120))
+	case "match_status":
+		statuses := []string{"Scheduled", "Live", "Halftime", "Finished", "Postponed", "Cancelled"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	
+	// Misc
+	case "status":
+		statuses := []string{"Active", "Inactive", "Pending", "Draft", "Published"}
+		return statuses[faker.IntRange(0, len(statuses)-1)]
+	case "slug":
+		return strings.ToLower(strings.ReplaceAll(faker.Sentence(3), " ", "-"))
+	case "tags":
+		tags := []string{"technology", "business", "lifestyle", "travel", "food", "health", "education", "entertainment"}
+		count := faker.IntRange(1, 4)
+		selected := make([]string, count)
+		for i := 0; i < count; i++ {
+			selected[i] = tags[faker.IntRange(0, len(tags)-1)]
+		}
+		return selected
+	case "article_category", "faq_category", "quote_category":
+		categories := []string{"Technology", "Business", "Lifestyle", "Health", "Education", "Entertainment"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	case "coupon_code":
+		return fmt.Sprintf("SAVE%d", faker.IntRange(10, 50))
+	case "discount_type":
+		types := []string{"Percentage", "Fixed Amount", "Free Shipping"}
+		return types[faker.IntRange(0, len(types)-1)]
+	case "image_width":
+		return faker.IntRange(800, 4000)
+	case "image_height":
+		return faker.IntRange(600, 3000)
+	case "image_format":
+		formats := []string{"JPEG", "PNG", "WebP", "GIF", "SVG"}
+		return formats[faker.IntRange(0, len(formats)-1)]
+	case "file_size":
+		return faker.IntRange(10000, 10000000)
+	case "quote":
+		quotes := []string{
+			"The only way to do great work is to love what you do.",
+			"Innovation distinguishes between a leader and a follower.",
+			"Your time is limited, don't waste it living someone else's life.",
+			"Stay hungry, stay foolish.",
+			"The future belongs to those who believe in the beauty of their dreams.",
+		}
+		return quotes[faker.IntRange(0, len(quotes)-1)]
+	case "language":
+		languages := []string{"English", "Spanish", "French", "German", "Chinese", "Japanese", "Arabic", "Russian", "Portuguese", "Hindi"}
+		return languages[faker.IntRange(0, len(languages)-1)]
+	case "language_native":
+		return faker.Language()
+	case "language_code":
+		codes := []string{"en", "es", "fr", "de", "zh", "ja", "ar", "ru", "pt", "hi"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "language_code3":
+		codes := []string{"eng", "spa", "fra", "deu", "zho", "jpn", "ara", "rus", "por", "hin"}
+		return codes[faker.IntRange(0, len(codes)-1)]
+	case "language_family":
+		families := []string{"Indo-European", "Sino-Tibetan", "Afro-Asiatic", "Austronesian", "Niger-Congo"}
+		return families[faker.IntRange(0, len(families)-1)]
+	case "speakers":
+		return faker.IntRange(1000000, 1500000000)
+	
 	// Other
 	case "bool", "boolean":
 		return faker.Bool()

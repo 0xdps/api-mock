@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order",
+  "type": "object",
+  "x-resource": {"name": "orders", "singular": "order"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "order_number": {"type": "string", "x-generator": "order_number"},
+    "customer_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "customer_name": {"type": "string", "x-generator": "name"},
+    "customer_email": {"type": "string", "format": "email", "x-generator": "email"},
+    "items_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10}},
+    "subtotal": {"type": "number", "x-generator": "price"},
+    "tax": {"type": "number", "x-generator": "tax"},
+    "shipping": {"type": "number", "x-generator": "shipping_cost"},
+    "total": {"type": "number", "x-generator": "price"},
+    "currency": {"type": "string", "x-generator": "currency"},
+    "status": {"type": "string", "x-generator": "order_status"},
+    "payment_method": {"type": "string", "x-generator": "payment_method"},
+    "shipping_address": {"type": "string", "x-generator": "address"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

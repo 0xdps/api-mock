@@ -1,4 +1,4 @@
-.PHONY: help build run dev test clean deploy
+.PHONY: help dev build test clean sync-schemas docker-build deploy
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -6,42 +6,41 @@ help: ## Show this help message
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-build: ## Build the server binary
-	go build -o bin/server ./cmd/server
+sync-schemas: ## Sync schemas from shared directory
+	@echo "Syncing schemas from shared/schemas..."
+	@cp ../shared/schemas/*.json internal/schema/embedded/
+	@echo "✓ Synced schemas to backend"
 
-run: build ## Build and run the server
-	./bin/server
+dev: sync-schemas ## Run development server with schema sync
+	@echo "Starting development server..."
+	@go run cmd/server/main.go
 
-dev: ## Run the server in development mode
-	go run cmd/server/main.go
+build: sync-schemas ## Build production binary with schema sync
+	@echo "Building production binary..."
+	@go build -o bin/server ./cmd/server
+	@echo "✓ Built binary: bin/server"
+
+docker-build: ## Build Docker image (run from repository root)
+	@echo "Building Docker image with schemas..."
+	@cd .. && docker build -f backend/Dockerfile -t api-mockly:latest .
+	@echo "✓ Built Docker image: api-mockly:latest"
+
+docker-run: ## Run Docker container locally
+	@echo "Running Docker container..."
+	@docker run -p 8080:8080 api-mockly:latest
 
 test: ## Run tests
-	go test -v ./...
+	@go test ./...
 
-clean: ## Remove build artifacts
-	rm -rf bin/
-	go clean
+clean: ## Clean build artifacts
+	@rm -rf bin/
+	@echo "✓ Cleaned build artifacts"
 
-deploy: ## Deploy to Fly.io
-	flyctl deploy
+deps: ## Download dependencies
+	@go mod download
+	@go mod tidy
 
-logs: ## View Fly.io logs
-	flyctl logs
-
-status: ## Check Fly.io app status
-	flyctl status
-
-docker-build: ## Build Docker image locally
-	docker build -t mockly-api .
-
-docker-run: docker-build ## Build and run Docker image locally
-	docker run -p 8080:8080 mockly-api
-
-fmt: ## Format Go code
-	go fmt ./...
-
-lint: ## Run linter
-	golangci-lint run
-
-tidy: ## Tidy Go modules
-	go mod tidy
+deploy: sync-schemas ## Deploy to Fly.io
+	@echo "Deploying to Fly.io..."
+	@cd .. && flyctl deploy --config backend/fly.toml
+	@echo "✓ Deployed to Fly.io"

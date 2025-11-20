@@ -1,0 +1,75 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, trunk ]
+  pull_request:
+    branches: [ main, trunk ]
+
+jobs:
+  generate-types:
+    name: Generate TypeScript Types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Generate Types
+        run: npm run generate-types
+      
+      - name: Check for changes
+        run: |
+          if [ -n "$(git status --porcelain frontend/types/api.ts)" ]; then
+            echo "::error::TypeScript types are out of date. Run 'npm run generate-types'"
+            exit 1
+          fi
+
+  backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    needs: generate-types
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+      
+      - name: Sync Schemas
+        run: cd backend && make sync-schemas
+      
+      - name: Build
+        run: cd backend && make build
+      
+      - name: Test
+        run: cd backend && go test ./...
+
+  frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: generate-types
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Generate Types
+        run: npm run generate-types
+      
+      - name: Install Dependencies
+        run: cd frontend && npm ci
+      
+      - name: Type Check
+        run: cd frontend && npm run type-check
+      
+      - name: Build
+        run: cd frontend && npm run build
+

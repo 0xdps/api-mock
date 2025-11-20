@@ -1,5 +1,9 @@
-.git
-.gitignore
+# Backend-specific ignore
+bin/
+tmp/
+*.test
+*.out
 .env
-*.md
-fly.toml
+
+# Keep embedded schemas
+!internal/schema/embedded/*.json

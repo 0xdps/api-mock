@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quote",
+  "type": "object",
+  "x-resource": {"name": "quotes", "singular": "quote"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "text": {"type": "string", "x-generator": "quote"},
+    "author": {"type": "string", "x-generator": "name"},
+    "category": {"type": "string", "x-generator": "quote_category"},
+    "tags": {"type": "array", "x-generator": "tags"},
+    "language": {"type": "string", "x-generator": "language"},
+    "likes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

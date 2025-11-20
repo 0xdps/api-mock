@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "cd .. && npm run generate-types",
     "dev": "next dev",
+    "prebuild": "cd .. && npm run generate-types",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

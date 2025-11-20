@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Payment",
+  "type": "object",
+  "x-resource": {"name": "payments", "singular": "payment"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "transaction_id": {"type": "string", "x-generator": "transaction_id"},
+    "order_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "customer_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "amount": {"type": "number", "x-generator": "price"},
+    "currency": {"type": "string", "x-generator": "currency"},
+    "method": {"type": "string", "x-generator": "payment_method"},
+    "status": {"type": "string", "x-generator": "payment_status"},
+    "card_last4": {"type": "string", "x-generator": "card_last4"},
+    "card_brand": {"type": "string", "x-generator": "card_brand"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "processed_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}
+

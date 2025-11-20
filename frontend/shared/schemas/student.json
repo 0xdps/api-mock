@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Student",
+  "type": "object",
+  "x-resource": {"name": "students", "singular": "student"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "student_id": {"type": "string", "x-generator": "student_id"},
+    "first_name": {"type": "string", "x-generator": "first_name"},
+    "last_name": {"type": "string", "x-generator": "last_name"},
+    "email": {"type": "string", "format": "email", "x-generator": "email"},
+    "phone": {"type": "string", "x-generator": "phone"},
+    "date_of_birth": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "gender": {"type": "string", "x-generator": "gender"},
+    "grade": {"type": "string", "x-generator": "grade"},
+    "major": {"type": "string", "x-generator": "major"},
+    "gpa": {"type": "number", "x-generator": "gpa"},
+    "address": {"type": "string", "x-generator": "address"},
+    "city": {"type": "string", "x-generator": "city"},
+    "country": {"type": "string", "x-generator": "country"},
+    "enrolled_date": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "avatar": {"type": "string", "format": "uri", "x-generator": "avatar"}
+  }
+}
+
