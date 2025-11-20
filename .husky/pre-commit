@@ -1,14 +1,11 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Auto-sync schemas and types before commit
 echo "🔄 Pre-commit: Syncing schemas and generating types..."
 
 # Generate TypeScript types from schemas
 npm run generate-types
 
-# Sync schemas to backend
-cp shared/schemas/*.json backend/internal/schema/embedded/
+# Sync schemas to backend (recursively from subdirectories)
+find shared/schemas -name '*.json' -type f -exec cp {} backend/internal/schema/embedded/ \;
 
 # Stage the generated files
 git add frontend/types/api.ts
