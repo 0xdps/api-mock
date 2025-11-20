@@ -1,13 +1,11 @@
 import Link from 'next/link'
-import { getApiUrl } from '@/lib/api'
 
 interface ResourceCardProps {
   name: string
+  apiUrl: string
 }
 
-export function ResourceCard({ name }: ResourceCardProps) {
-  const apiUrl = getApiUrl()
-  
+export function ResourceCard({ name, apiUrl }: ResourceCardProps) {
   return (
     <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700 hover:border-primary-500 transition">
       <h3 className="text-xl font-semibold text-white mb-3 capitalize">

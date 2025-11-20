@@ -1,45 +1,76 @@
-# Mockly API - Go Service
+# Mockly API - Go Backend
 
 Modern, schema-driven mock API service built with Go and chi router.
+
+**Production API:** https://api.mockly.codes
 
 ## Tech Stack
 
 - **Go 1.23+**
 - **chi router** - Lightweight, idiomatic HTTP router
-- **gofakeit v7** - Realistic fake data generation
+- **gofakeit v7** - Realistic fake data generation (50+ generators)
+- **Embedded schemas** - No external files needed
 - **Fly.io** - Production deployment
 
 ## Project Structure
 
 ```
-go/
+backend/
 ├── cmd/
-│   └── server/          # Main application entry point
+│   └── server/              # Main application entry point
 │       └── main.go
-├── internal/            # Private application code
-│   ├── handlers/        # HTTP handlers
-│   ├── middleware/      # HTTP middleware (CORS, etc.)
-│   └── schema/          # Schema loading and data generation
-│       └── embedded/    # Embedded JSON schemas
-├── Dockerfile           # Multi-stage Docker build
-├── fly.toml             # Fly.io configuration
-└── go.mod               # Go module dependencies
+├── internal/                # Private application code
+│   ├── handlers/
+│   │   └── dynamic.go       # Dynamic route handlers
+│   ├── middleware/
+│   │   └── cors.go          # CORS middleware
+│   ├── schema/
+│   │   ├── loader.go        # Schema registry
+│   │   └── embedded/        # Embedded JSON schemas
+│   │       ├── user.json
+│   │       ├── post.json
+│   │       ├── product.json
+│   │       └── ...
+│   └── static/
+│       ├── assets.go        # Embedded static assets
+│       └── favicon.go       # Favicon handlers
+├── Dockerfile               # Multi-stage Docker build
+├── fly.toml                 # Fly.io deployment config
+├── Makefile                 # Build commands
+├── go.mod                   # Go dependencies
+└── README.md                # This file
 ```
 
-## Development
+## Quick Start
 
 ### Run Locally
 
 ```bash
-cd go
+cd backend
 go run cmd/server/main.go
 ```
 
-Server runs on `http://localhost:8080`
+Server runs on **http://localhost:8080**
 
-### Build
+### Using Makefile
 
 ```bash
+cd backend
+
+# Run in development mode
+make dev
+
+# Build binary
+make build
+
+# Run tests
+make test
+```
+
+### Build Binary
+
+```bash
+cd backend
 go build -o bin/server ./cmd/server
 ./bin/server
 ```
@@ -47,17 +78,20 @@ go build -o bin/server ./cmd/server
 ### Test Endpoints
 
 ```bash
-# Health check
+# Health check / API info
 curl http://localhost:8080/
 
 # Get users
-curl http://localhost:8080/api/users?count=5
+curl http://localhost:8080/users?count=5
 
 # Get single user
-curl http://localhost:8080/api/users/123
+curl http://localhost:8080/users/123
 
 # Get resource metadata
-curl http://localhost:8080/api/users/meta
+curl http://localhost:8080/users/meta
+
+# Production API
+curl https://api.mockly.codes/users?count=5
 ```
 
 ## Deployment
@@ -122,12 +156,70 @@ chi.URLParam(r, "id")
 json.NewEncoder(w).Encode(data)
 ```
 
+## Features
+
+### Schema-Driven Architecture
+- Add JSON schemas to auto-generate endpoints
+- No code changes needed for new resources
+- Custom routes and aliases support
+- Meta endpoint for each resource
+
+### Data Generation
+- 50+ realistic data generators via gofakeit
+- Personal: name, email, username, password
+- Location: address, city, country, coordinates
+- Internet: URL, domain, IP, UUID
+- Dates: past, future, date-time
+- Text: word, sentence, paragraph
+- And much more!
+
+### CORS Support
+- Enabled by default for all origins
+- Perfect for frontend development
+- Configurable headers and methods
+
+## API Endpoints
+
+All resources support these endpoints:
+
+- `GET /{resource}?count=N` - Get collection (max 100)
+- `GET /{resource}/{id}` - Get single item by ID
+- `GET /{resource}/meta` - Get schema metadata
+
+### Available Resources
+
+| Resource | Endpoint |
+|----------|----------|
+| Users | `/users` |
+| Posts | `/posts` |
+| Products | `/products` |
+| Comments | `/comments` |
+| Todos | `/todos` |
+| Reviews | `/reviews` |
+
 ## Adding New Resources
 
-1. Add JSON schema to `internal/schema/embedded/`
-2. Restart server - routes are auto-generated!
+1. Create JSON schema in `internal/schema/embedded/`
+2. Restart server - routes auto-generated!
+3. No code changes required
 
-No code changes needed.
+**Example schema:**
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order",
+  "x-resource": {
+    "name": "orders",
+    "singular": "order"
+  },
+  "properties": {
+    "id": {
+      "type": "integer",
+      "x-generator": "random_int"
+    }
+  }
+}
+```
 
 ## License
 

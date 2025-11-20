@@ -8,20 +8,22 @@ import { getApiUrl } from '@/lib/api'
 const API_URL = getApiUrl()
 
 async function getResources() {
-  // For now, return static list since API might not be deployed yet
-  // In production, this will be fetched from the API
-  return ['users', 'posts', 'products', 'comments', 'todos', 'reviews']
-  
-  /* Uncomment when API is deployed:
   try {
-    const res = await fetch(`${API_URL}/`, { cache: 'no-store' })
+    const res = await fetch(`${API_URL}/`, { 
+      next: { revalidate: 300 } // Revalidate every 5 minutes (ISR)
+    })
+    
+    if (!res.ok) {
+      throw new Error(`API returned ${res.status}`)
+    }
+    
     const data = await res.json()
     return data.resources || []
   } catch (error) {
     console.error('Failed to fetch resources:', error)
-    return []
+    // Fallback to known resources
+    return ['users', 'posts', 'products', 'comments', 'todos', 'reviews']
   }
-  */
 }
 
 export default async function Home() {
@@ -133,7 +135,7 @@ export default async function Home() {
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {resources.map((resource: string) => (
-            <ResourceCard key={resource} name={resource} />
+            <ResourceCard key={resource} name={resource} apiUrl={API_URL} />
           ))}
         </div>
         <p className="text-center text-slate-400 mt-8">

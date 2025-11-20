@@ -88,9 +88,31 @@ export interface User {
   created_at?: string;
 }
 
+// Review
+export interface Review {
+  /** Unique identifier */
+  id: number;
+  /** Associated product ID */
+  product_id: number;
+  /** Reviewer user ID */
+  user_id: number;
+  /** Star rating (1-5) */
+  rating: number;
+  /** Review title */
+  title?: string;
+  /** Review text */
+  body?: string;
+  /** Creation timestamp */
+  created_at?: string;
+  /** Is verified purchase */
+  verified_purchase?: boolean;
+  /** Helpful count */
+  helpful_count?: number;
+}
+
 
 // Resource helpers
-export type ResourceName = 'comments' | 'posts' | 'products' | 'todos' | 'users';
+export type ResourceName = 'comments' | 'posts' | 'products' | 'todos' | 'users' | 'reviews';
 
 export interface ResourceMap {
   comments: Comment;
@@ -98,8 +120,28 @@ export interface ResourceMap {
   products: Product;
   todos: Todo;
   users: User;
+  reviews: Review;
 }
 
 // API response types
 export type CollectionResponse<T extends ResourceName> = ResourceMap[T][];
 export type SingleResponse<T extends ResourceName> = ResourceMap[T];
+
+// API Root Response
+export interface ApiRootResponse {
+  message: string;
+  version: string;
+  resources: string[];
+  docs: string;
+}
+
+// Meta Response
+export interface MetaResponse {
+  resource: string;
+  schema: Record<string, any>;
+  endpoints: {
+    collection: string;
+    single: string;
+    meta: string;
+  };
+}

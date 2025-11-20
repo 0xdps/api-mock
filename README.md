@@ -18,9 +18,10 @@
 - 💡 **Realistic Data** - Powered by gofakeit with 50+ generators
 - ⚡ **Fast & Reliable** - Go backend with chi router
 - 🌐 **CORS Enabled** - Ready for frontend development
-- 🎨 **Modern UI** - Next.js website with interactive playground
+- 🎨 **Modern UI** - Next.js website with SSR and interactive playground
 - 📦 **No Database** - Generates data on-the-fly
 - 🆓 **Free Forever** - Open source and self-hostable
+- ⚡ **Server-Side Rendering** - Fast page loads with fresh data
 
 ## 📦 Project Structure
 
@@ -82,33 +83,38 @@ npm run web:dev
 
 ```bash
 # Get 10 users
-curl 'http://localhost:8080/api/users?count=10'
+curl 'http://localhost:8080/users?count=10'
 
 # Get single user by ID
-curl http://localhost:8080/api/users/123
+curl http://localhost:8080/users/123
 
 # Get resource metadata
-curl http://localhost:8080/api/users/meta
+curl http://localhost:8080/users/meta
 
 # Get products
-curl 'http://localhost:8080/api/products?count=50'
+curl 'http://localhost:8080/products?count=50'
+
+# Use production API
+curl 'https://api.mockly.codes/users?count=10'
 ```
 
 ## 📚 Available Resources
 
 | Resource | Endpoint | Fields |
 |----------|----------|--------|
-| Users | `/api/users` | id, username, email, name, avatar, bio, etc. |
-| Posts | `/api/posts` | id, user_id, title, content, published_at, etc. |
-| Products | `/api/products` | id, name, description, price, category, etc. |
-| Comments | `/api/comments` | id, post_id, user_id, content, created_at |
-| Todos | `/api/todos` | id, user_id, title, completed, due_date |
-| Reviews | `/api/reviews` | id, product_id, user_id, rating, comment |
+| Users | `/users` | id, username, email, name, avatar, bio, etc. |
+| Posts | `/posts` | id, user_id, title, content, published_at, etc. |
+| Products | `/products` | id, name, description, price, category, etc. |
+| Comments | `/comments` | id, post_id, user_id, content, created_at |
+| Todos | `/todos` | id, user_id, title, completed, due_date |
+| Reviews | `/reviews` | id, product_id, user_id, rating, comment |
 
 All endpoints support:
-- **Collection:** `GET /api/{resource}?count=N` (max 100)
-- **Single Item:** `GET /api/{resource}/:id`
-- **Metadata:** `GET /api/{resource}/meta`
+- **Collection:** `GET /{resource}?count=N` (max 100)
+- **Single Item:** `GET /{resource}/:id`
+- **Metadata:** `GET /{resource}/meta`
+
+**Production API:** https://api.mockly.codes
 
 ## 🎯 Schema-Driven Development
 
@@ -176,9 +182,9 @@ Define custom paths, aliases, and methods in schemas:
 ```
 
 This creates:
-- ✅ `GET /api/v1/todos`
-- ✅ `GET /api/tasks` (alias)
-- ✅ `GET /api/todo-items` (alias)
+- ✅ `GET /v1/todos`
+- ✅ `GET /tasks` (alias)
+- ✅ `GET /todo-items` (alias)
 
 ### Supported Generators
 
@@ -236,11 +242,13 @@ cd frontend
 vercel --prod
 ```
 
-**3. Set environment variable:**
+**3. Set environment variable (optional):**
 ```bash
 vercel env add NEXT_PUBLIC_API_URL
-# Enter: https://mockly-api.fly.dev
+# Enter: https://api.mockly.codes
 ```
+
+**Note:** The frontend automatically uses `https://api.mockly.codes` in production, so environment variables are optional.
 
 ### Custom Domain Setup
 
@@ -263,10 +271,12 @@ flyctl certs add api.mockly.codes
 - **Deployment:** Fly.io
 
 ### Frontend (Website)
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 14 (App Router with SSR)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
+- **Rendering:** Server-Side with ISR (5-minute cache)
 - **Deployment:** Vercel
+- **API Integration:** https://api.mockly.codes
 
 ## 📖 Documentation
 
@@ -303,8 +313,8 @@ MIT License - see [LICENSE](./LICENSE)
 
 Built with:
 - [gofakeit](https://github.com/brianvoe/gofakeit) - Fake data generation
-- [Gin](https://github.com/gin-gonic/gin) - Web framework
-- [Next.js](https://nextjs.org/) - React framework
+- [chi](https://github.com/go-chi/chi) - Lightweight Go router
+- [Next.js](https://nextjs.org/) - React framework with SSR
 
 ---
 

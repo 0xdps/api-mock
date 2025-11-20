@@ -7,6 +7,27 @@ import path from 'path'
 
 const API_URL = getApiUrl()
 
+async function getApiInfo() {
+  try {
+    const res = await fetch(`${API_URL}/`, { 
+      next: { revalidate: 300 } // Revalidate every 5 minutes (ISR)
+    })
+    
+    if (res.ok) {
+      const data = await res.json()
+      return {
+        resources: data.resources || [],
+        version: data.version,
+        message: data.message
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch API info:', error)
+  }
+  
+  return { resources: [], version: '1.0.0', message: 'Mockly API' }
+}
+
 async function getSchemas() {
   const schemasDir = path.join(process.cwd(), 'shared/schemas')
   const files = fs.readdirSync(schemasDir).filter((f: string) => f.endsWith('.json'))
@@ -21,7 +42,10 @@ async function getSchemas() {
 }
 
 export default async function DocsPage() {
-  const schemas = await getSchemas()
+  const [schemas, apiInfo] = await Promise.all([
+    getSchemas(),
+    getApiInfo()
+  ])
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -29,9 +53,27 @@ export default async function DocsPage() {
       
       <main className="container mx-auto px-4 py-12 max-w-6xl">
         <h1 className="text-5xl font-bold text-white mb-6">Documentation</h1>
-        <p className="text-xl text-slate-300 mb-12">
+        <p className="text-xl text-slate-300 mb-8">
           Complete API reference and usage examples
         </p>
+        
+        {/* API Info */}
+        <div className="bg-slate-800/50 backdrop-blur p-4 rounded-lg border border-slate-700 mb-12">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-slate-400">API Status:</span>{' '}
+              <span className="text-green-400 font-semibold">● Online</span>
+            </div>
+            <div>
+              <span className="text-slate-400">Version:</span>{' '}
+              <span className="text-white font-semibold">{apiInfo.version}</span>
+            </div>
+            <div>
+              <span className="text-slate-400">Resources:</span>{' '}
+              <span className="text-white font-semibold">{apiInfo.resources.length}</span>
+            </div>
+          </div>
+        </div>
         
         {/* Quick Start */}
         <section className="mb-16">

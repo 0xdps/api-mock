@@ -1,11 +1,11 @@
 export const getApiUrl = () => {
   // In browser
   if (typeof window !== 'undefined') {
-    // Production: use current domain
+    // Production: use the deployed backend
     if (window.location.hostname !== 'localhost') {
-      return `${window.location.origin}/api`;
+      return 'https://api.mockly.codes';
     }
-    // Local dev: use separate API server (without /api prefix)
+    // Local dev: use separate API server
     return 'http://localhost:8080';
   }
   
@@ -15,6 +15,6 @@ export const getApiUrl = () => {
   }
   
   return process.env.NODE_ENV === 'production' 
-    ? '/api' // Relative URL for SSR in production
-    : 'http://localhost:8080'; // Local dev API server (without /api prefix)
+    ? 'https://api.mockly.codes' // Production backend
+    : 'http://localhost:8080'; // Local dev API server
 };

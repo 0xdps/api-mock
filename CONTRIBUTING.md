@@ -18,7 +18,7 @@ The easiest way to contribute is by adding new resource schemas. All endpoints a
    ```bash
    cd backend
    go run cmd/server/main.go
-   # Test your endpoint: curl 'http://localhost:8080/api/your-resource?count=5'
+   # Test your endpoint: curl 'http://localhost:8080/your-resource?count=5'
    ```
 4. **Submit a Pull Request**
 
@@ -192,7 +192,10 @@ api-mockly/
    npm run dev
    
    # Test in browser or with curl
-   curl 'http://localhost:8080/api/users?count=5'
+   curl 'http://localhost:8080/users?count=5'
+   
+   # Or test production API
+   curl 'https://api.mockly.codes/users?count=5'
    ```
 
 4. **Submit PR:**
@@ -256,7 +259,7 @@ Before submitting:
 
 1. **Test the API endpoint:**
    ```bash
-   curl 'http://localhost:8080/api/your-resource?count=5'
+   curl 'http://localhost:8080/your-resource?count=5'
    ```
 
 2. **Verify JSON response:**
@@ -266,8 +269,13 @@ Before submitting:
 
 3. **Test metadata endpoint:**
    ```bash
-   curl http://localhost:8080/api/your-resource/meta
+   curl http://localhost:8080/your-resource/meta
    ```
+
+4. **Test frontend integration:**
+   - Visit http://localhost:3000
+   - Check if resource appears on home page
+   - Test in the playground
 
 ## Questions?
 
