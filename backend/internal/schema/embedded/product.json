@@ -20,31 +20,27 @@
     "name": {
       "type": "string",
       "description": "Product name",
-      "x-generator": "word"
+      "x-generator": "sentence"
     },
     "description": {
       "type": "string",
       "description": "Product description",
-      "x-generator": "sentence"
+      "x-generator": "paragraph"
     },
     "price": {
       "type": "number",
       "description": "Product price",
-      "x-generator": "random_int",
-      "x-generator-params": {
-        "min": 10,
-        "max": 1000
-      }
+      "x-generator": "price"
     },
     "currency": {
       "type": "string",
       "description": "Price currency",
-      "x-generator": "word"
+      "x-generator": "currency"
     },
     "category": {
       "type": "string",
       "description": "Product category",
-      "x-generator": "word"
+      "x-generator": "category"
     },
     "brand": {
       "type": "string",
@@ -69,7 +65,7 @@
       "type": "string",
       "format": "uri",
       "description": "Product image URL",
-      "x-generator": "url"
+      "x-generator": "image_url"
     }
   },
   "required": ["id", "name", "price"]

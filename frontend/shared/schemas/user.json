@@ -40,7 +40,7 @@
     "avatar": {
       "type": "string",
       "format": "uri",
-      "x-generator": "url"
+      "x-generator": "avatar"
     },
     "gender": {
       "type": "string",

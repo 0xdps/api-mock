@@ -267,6 +267,7 @@ func (r *Registry) generateValue(field Field) interface{} {
 	faker := gofakeit.New(0)
 	
 	switch field.Generator {
+	// Numbers
 	case "autoincrement", "random_int", "number":
 		min := 1
 		max := 10000
@@ -279,38 +280,112 @@ func (r *Registry) generateValue(field Field) interface{} {
 			}
 		}
 		return faker.IntRange(min, max)
-	case "email":
-		return faker.Email()
+	case "float":
+		return faker.Float64Range(0, 1000)
+	case "price":
+		return faker.Price(10, 1000)
+	
+	// Personal Info
+	case "name":
+		return faker.Name()
 	case "first_name":
 		return faker.FirstName()
 	case "last_name":
 		return faker.LastName()
+	case "email":
+		return faker.Email()
 	case "username":
 		return faker.Username()
-	case "word", "sentence":
-		return faker.Sentence(5)
-	case "text", "paragraph":
-		return faker.Paragraph(1, 3, 10, " ")
-	case "bool", "boolean":
-		return faker.Bool()
-	case "past", "date_time":
-		return faker.PastDate()
-	case "url":
-		return faker.URL()
-	case "uuid":
-		return faker.UUID()
+	case "password":
+		return faker.Password(true, true, true, false, false, 12)
+	case "gender":
+		return faker.Gender()
+	
+	// Address & Location
+	case "address":
+		return faker.Address().Address
+	case "street":
+		return faker.Address().Street
 	case "city":
 		return faker.City()
+	case "state":
+		return faker.State()
 	case "country":
 		return faker.Country()
+	case "zip", "zip_code":
+		return faker.Zip()
+	case "latitude":
+		return faker.Latitude()
+	case "longitude":
+		return faker.Longitude()
+	
+	// Contact
+	case "phone", "phone_number":
+		return faker.Phone()
+	
+	// Internet
+	case "url":
+		return faker.URL()
+	case "domain", "domain_name":
+		return faker.DomainName()
+	case "ipv4":
+		return faker.IPv4Address()
+	case "ipv6":
+		return faker.IPv6Address()
+	case "uuid":
+		return faker.UUID()
+	case "mac_address":
+		return faker.MacAddress()
+	case "user_agent":
+		return faker.UserAgent()
+	
+	// Dates & Time
+	case "date":
+		return faker.Date().Format("2006-01-02")
+	case "past_date", "past":
+		return faker.PastDate().Format("2006-01-02T15:04:05Z07:00")
+	case "future_date", "future":
+		return faker.FutureDate().Format("2006-01-02T15:04:05Z07:00")
+	case "date_time":
+		return faker.Date().Format("2006-01-02T15:04:05Z07:00")
+	
+	// Text
+	case "word":
+		return faker.Word()
+	case "sentence":
+		return faker.Sentence(8)
+	case "paragraph":
+		return faker.Paragraph(2, 4, 12, " ")
+	case "text":
+		return faker.Paragraph(3, 5, 15, " ")
+	
+	// Company
+	case "company":
+		return faker.Company()
+	case "job", "job_title":
+		return faker.JobTitle()
+	case "catch_phrase":
+		return faker.BuzzWord()
+	
+	// E-commerce
+	case "currency":
+		currencies := []string{"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "INR"}
+		return currencies[faker.IntRange(0, len(currencies)-1)]
+	case "category":
+		categories := []string{"Electronics", "Clothing", "Books", "Home & Garden", "Sports", "Toys", "Food & Beverage", "Health & Beauty", "Automotive", "Office"}
+		return categories[faker.IntRange(0, len(categories)-1)]
+	
+	// Other
+	case "bool", "boolean":
+		return faker.Bool()
 	case "image_url":
 		return fmt.Sprintf("https://picsum.photos/400/300?random=%d", faker.IntRange(1, 10000))
-	case "price":
-		return faker.Price(10, 1000)
-	case "float":
-		return faker.Float64Range(0, 1000)
+	case "avatar":
+		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", faker.IntRange(1, 70))
+	
 	default:
-		return faker.Word()
+		// Fallback to sentence for better-looking data
+		return faker.Sentence(5)
 	}
 }
 

@@ -180,7 +180,8 @@ go.work.sum
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[]
+Icon[
+]
 
 # Thumbnails
 ._*
@@ -236,3 +237,14 @@ $RECYCLE.BIN/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+*.md
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!DOCS.md
+!LICENSE.md
+!SECURITY.md
+!CODE_OF_CONDUCT.md
+!SUPPORT.md
+!DOCUMENTATION.md
