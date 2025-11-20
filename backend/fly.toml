@@ -7,8 +7,8 @@ app = 'api-mockly'
 primary_region = 'bom'
 
 [build]
-  # Dockerfile is in the same directory as fly.toml
-  dockerfile = "Dockerfile"
+  # Dockerfile in same directory
+  # Schemas must be synced before deployment (make sync-schemas)
 
 [http_service]
   internal_port = 8080

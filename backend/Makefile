@@ -41,7 +41,7 @@ deps: ## Download dependencies
 	@go mod tidy
 
 deploy: sync-schemas ## Deploy to Fly.io
+	@echo "✓ Schemas synced to backend"
 	@echo "Deploying to Fly.io..."
-	@echo "Note: Deploying from repository root with backend/fly.toml config"
-	@cd .. && flyctl deploy --config backend/fly.toml --dockerfile backend/Dockerfile
+	@flyctl deploy
 	@echo "✓ Deployed to Fly.io"

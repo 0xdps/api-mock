@@ -1,23 +1,22 @@
 # Build stage
-# IMPORTANT: This Dockerfile must be built from the repository root:
-#   From repo root: docker build -f backend/Dockerfile .
-#   OR: flyctl deploy --config backend/fly.toml --dockerfile backend/Dockerfile
-#
-# This allows access to shared/schemas/ directory
+# This Dockerfile works with build context = backend/ directory
+# Schemas must be synced BEFORE deployment via: make sync-schemas
 
 FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod files from backend/
-COPY backend/go.mod backend/go.sum ./
+# Copy go mod files
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy backend source code
-COPY backend/ .
+# Copy all backend source code
+COPY . .
 
-# Copy shared schemas to backend (from repository root)
-COPY shared/schemas/*.json internal/schema/embedded/
+# Note: Schemas should already be in internal/schema/embedded/
+# They are synced before deployment via: make sync-schemas
+# Verify they exist
+RUN ls -la internal/schema/embedded/*.json || echo "WARNING: No schemas found!"
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/server ./cmd/server
