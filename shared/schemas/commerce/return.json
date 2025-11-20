@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Return",
+  "type": "object",
+  "x-resource": {"name": "returns", "singular": "return", "group": "commerce"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "order_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "reason": {"type": "string", "x-generator": "sentence"},
+    "status": {"type": "string", "x-generator": "status"},
+    "refund_amount": {"type": "number", "x-generator": "price"},
+    "requested_date": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "processed_date": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Audio",
+  "type": "object",
+  "x-resource": {"name": "audios", "singular": "audio", "group": "media"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "duration": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 30, "max": 3600}},
+    "url": {"type": "string", "format": "uri", "x-generator": "url"},
+    "format": {"type": "string", "x-generator": "word"},
+    "plays": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50000}},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}

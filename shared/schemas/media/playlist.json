@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Playlist",
+  "type": "object",
+  "x-resource": {"name": "playlists", "singular": "playlist", "group": "media"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "creator": {"type": "string", "x-generator": "name"},
+    "tracks_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 200}},
+    "followers": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "is_public": {"type": "boolean", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}

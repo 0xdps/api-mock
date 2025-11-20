@@ -14,12 +14,12 @@
 ## ✨ Features
 
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
-- 🎯 **54 Resources** - From users to weather, stocks to movies
+- 🎯 **100 Resources** - From users to weather, stocks to movies
 - 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
 - 💡 **Realistic Data** - Powered by gofakeit with 200+ generators
 - ⚡ **Fast & Reliable** - Go backend with chi router
 - 🌐 **CORS Enabled** - Ready for frontend development
-- 🎨 **Modern UI** - Next.js website with SSR and interactive playground
+- 🎨 **Modern UI** - Next.js 16 + React 19 website with SSR and interactive playground
 - 📦 **No Database** - Generates data on-the-fly
 - 🆓 **Free Forever** - Open source and self-hostable
 - ⚡ **Server-Side Rendering** - Fast page loads with fresh data
@@ -34,7 +34,7 @@ mockly/
 │   ├── internal/     # Handlers, middleware, schema
 │   ├── Dockerfile    # Docker build config
 │   └── fly.toml      # Fly.io deployment config
-├── frontend/         # Next.js 14 website (TypeScript + Tailwind)
+├── frontend/         # Next.js 16 website (React 19 + TypeScript + Tailwind)
 │   ├── app/          # Pages (landing, docs, playground)
 │   ├── components/   # React components
 │   └── lib/          # Utility functions
@@ -109,28 +109,28 @@ curl 'http://localhost:8080/commerce/products?count=5'
 curl 'https://api.mockly.codes/people/users?count=10'
 ```
 
-## 📚 Available Resources (54 Endpoints!)
+## 📚 Available Resources (100 Endpoints!)
 
 ### 📂 Resource Groups
 
 Resources are organized into 14 logical categories:
 
-| Group | Resources | Description |
-|-------|-----------|-------------|
-| 👥 **People** | users, contacts, students, players | User profiles and people |
-| 💼 **Business** | companies, organizations, jobs, meetings, invoices, subscriptions | Business entities |
-| 🛒 **Commerce** | products, orders, payments, coupons, categories, tags | E-commerce |
-| 📝 **Content** | articles, posts, news, podcasts | Written content |
-| 💬 **Social** | comments, reviews, messages, notifications, testimonials | Social interactions |
-| 🎬 **Media** | movies, books, albums, videos, images | Entertainment media |
-| ✈️ **Travel** | hotels, flights, restaurants, properties, cars | Travel & hospitality |
-| 🌍 **Location** | countries, cities, weather | Geographic data |
-| 💰 **Finance** | currencies, stocks, crypto | Financial data |
-| 🍔 **Food** | recipes | Food & cooking |
-| 🎓 **Education** | courses | Educational content |
-| ⚽ **Sports** | matches, teams | Sports data |
-| ✅ **Productivity** | todos, notes, projects, tasks, tickets, events | Task management |
-| 📚 **Reference** | faqs, quotes, languages | Reference data |
+| Group | Count | Resources | Description |
+|-------|-------|-----------|-------------|
+| 🛒 **Commerce** | 14 | products, orders, payments, coupons, categories, tags, carts, wishlists, promotions, discounts, returns, refunds, shipping, inventory | E-commerce |
+| 💼 **Business** | 12 | companies, organizations, jobs, meetings, invoices, subscriptions, clients, contracts, proposals, departments, vendors, reports | Business entities |
+| ✈️ **Travel** | 10 | hotels, flights, restaurants, properties, cars, tours, attractions, bookings, destinations, travelguides | Travel & hospitality |
+| 👥 **People** | 10 | users, contacts, students, players, employees, customers, profiles, authors, instructors, mentors | User profiles and people |
+| 🎬 **Media** | 10 | movies, books, albums, videos, images, songs, playlists, photos, audios, streams | Entertainment media |
+| 💬 **Social** | 9 | comments, reviews, messages, notifications, testimonials, likes, shares, followers, mentions | Social interactions |
+| 📝 **Content** | 8 | articles, posts, news, podcasts, blogs, tutorials, guides, documents | Written content |
+| ✅ **Productivity** | 6 | todos, notes, projects, tasks, tickets, events | Task management |
+| 🌍 **Location** | 6 | countries, cities, weather, states, regions, coordinates | Geographic data |
+| 💰 **Finance** | 6 | currencies, stocks, crypto, transactions, accounts, budgets | Financial data |
+| 📚 **Reference** | 3 | faqs, quotes, languages | Reference data |
+| 🍔 **Food** | 3 | recipes, ingredients, dishes | Food & cooking |
+| ⚽ **Sports** | 2 | matches, teams | Sports data |
+| 🎓 **Education** | 1 | courses | Educational content |
 
 ### API Endpoints
 
@@ -307,8 +307,9 @@ The deployment process **automatically includes** all schemas:
 - **Deployment:** Fly.io
 
 ### Frontend (Website)
-- **Framework:** Next.js 14 (App Router with SSR)
+- **Framework:** Next.js 16 (App Router with SSR)
 - **Language:** TypeScript
+- **UI Library:** React 19
 - **Styling:** Tailwind CSS
 - **Rendering:** Server-Side with ISR (5-minute cache)
 - **Deployment:** Vercel
@@ -358,7 +359,8 @@ MIT License - see [LICENSE](./LICENSE)
 Built with:
 - [gofakeit](https://github.com/brianvoe/gofakeit) - Fake data generation
 - [chi](https://github.com/go-chi/chi) - Lightweight Go router
-- [Next.js](https://nextjs.org/) - React framework with SSR
+- [Next.js 16](https://nextjs.org/) - React framework with SSR
+- [React 19](https://react.dev/) - UI library
 
 ---
 

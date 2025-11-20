@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Customer",
+  "type": "object",
+  "x-resource": {"name": "customers", "singular": "customer", "group": "people"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "first_name": {"type": "string", "x-generator": "first_name"},
+    "last_name": {"type": "string", "x-generator": "last_name"},
+    "email": {"type": "string", "format": "email", "x-generator": "email"},
+    "phone": {"type": "string", "x-generator": "phone"},
+    "address": {"type": "string", "x-generator": "address"},
+    "city": {"type": "string", "x-generator": "city"},
+    "country": {"type": "string", "x-generator": "country"},
+    "company": {"type": "string", "x-generator": "company"},
+    "joined_date": {"type": "string", "format": "date-time", "x-generator": "past_date"},
+    "lifetime_value": {"type": "number", "x-generator": "price"},
+    "segment": {"type": "string", "x-generator": "word"}
+  }
+}
+

@@ -1,7 +1,7 @@
 {
   "name": "mockly",
   "version": "1.0.0",
-  "description": "Schema-driven mock API service",
+  "description": "Schema-driven mock API service with 100+ resources across 14 categories",
   "private": true,
   "scripts": {
     "predev": "npm run generate-types",
@@ -28,7 +28,7 @@
   "author": "Devendra Pratap Singh",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "husky": "^8.0.3"
+    "concurrently": "^9.1.0",
+    "husky": "^9.1.6"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Profile",
+  "type": "object",
+  "x-resource": {"name": "profiles", "singular": "profile", "group": "people"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "bio": {"type": "string", "x-generator": "paragraph"},
+    "avatar": {"type": "string", "format": "uri", "x-generator": "avatar"},
+    "website": {"type": "string", "format": "uri", "x-generator": "url"},
+    "location": {"type": "string", "x-generator": "city"},
+    "occupation": {"type": "string", "x-generator": "job"},
+    "interests": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
+    "social_links": {"type": "object", "x-generator": "object"},
+    "is_verified": {"type": "boolean", "x-generator": "boolean"},
+    "followers_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "following_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 5000}}
+  }
+}
+

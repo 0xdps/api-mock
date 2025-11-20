@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Author",
+  "type": "object",
+  "x-resource": {"name": "authors", "singular": "author", "group": "people"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "x-generator": "email"},
+    "bio": {"type": "string", "x-generator": "paragraph"},
+    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"},
+    "website": {"type": "string", "format": "uri", "x-generator": "url"},
+    "books_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 50}},
+    "articles_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "genres": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
+    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "verified": {"type": "boolean", "x-generator": "boolean"}
+  }
+}
+

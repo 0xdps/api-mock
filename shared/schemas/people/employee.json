@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Employee",
+  "type": "object",
+  "x-resource": {"name": "employees", "singular": "employee", "group": "people"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "employee_id": {"type": "string", "x-generator": "uuid"},
+    "first_name": {"type": "string", "x-generator": "first_name"},
+    "last_name": {"type": "string", "x-generator": "last_name"},
+    "email": {"type": "string", "format": "email", "x-generator": "email"},
+    "phone": {"type": "string", "x-generator": "phone"},
+    "department": {"type": "string", "x-generator": "department"},
+    "position": {"type": "string", "x-generator": "job"},
+    "hire_date": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "salary": {"type": "number", "x-generator": "random_int", "x-generator-params": {"min": 30000, "max": 150000}},
+    "manager_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "status": {"type": "string", "x-generator": "status"}
+  }
+}
+

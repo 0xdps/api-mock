@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Contract",
+  "type": "object",
+  "x-resource": {"name": "contracts", "singular": "contract", "group": "business"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "contract_number": {"type": "string", "x-generator": "uuid"},
+    "client_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "title": {"type": "string", "x-generator": "sentence"},
+    "description": {"type": "string", "x-generator": "paragraph"},
+    "value": {"type": "number", "x-generator": "price"},
+    "currency": {"type": "string", "x-generator": "currency"},
+    "start_date": {"type": "string", "format": "date", "x-generator": "past_date"},
+    "end_date": {"type": "string", "format": "date", "x-generator": "future_date"},
+    "status": {"type": "string", "x-generator": "status"},
+    "terms": {"type": "string", "x-generator": "paragraph"}
+  }
+}
+

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Wishlist",
+  "type": "object",
+  "x-resource": {"name": "wishlists", "singular": "wishlist", "group": "commerce"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "x-generator": "sentence"},
+    "items": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
+    "is_public": {"type": "boolean", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+  }
+}

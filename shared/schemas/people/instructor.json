@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Instructor",
+  "type": "object",
+  "x-resource": {"name": "instructors", "singular": "instructor", "group": "people"},
+  "properties": {
+    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "x-generator": "email"},
+    "bio": {"type": "string", "x-generator": "paragraph"},
+    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"},
+    "expertise": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
+    "courses_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 20}},
+    "students_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "years_experience": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 30}},
+    "certifications": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"}
+  }
+}
+
