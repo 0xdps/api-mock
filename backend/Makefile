@@ -42,5 +42,6 @@ deps: ## Download dependencies
 
 deploy: sync-schemas ## Deploy to Fly.io
 	@echo "Deploying to Fly.io..."
-	@cd .. && flyctl deploy --config backend/fly.toml
+	@echo "Note: Deploying from repository root with backend/fly.toml config"
+	@cd .. && flyctl deploy --config backend/fly.toml --dockerfile backend/Dockerfile
 	@echo "✓ Deployed to Fly.io"

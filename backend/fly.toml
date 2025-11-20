@@ -7,10 +7,7 @@ app = 'api-mockly'
 primary_region = 'bom'
 
 [build]
-  # Build from repository root to access shared schemas
-  dockerfile = "backend/Dockerfile"
-  ignorefile = ".dockerignore"
-
+  
 [http_service]
   internal_port = 8080
   force_https = true

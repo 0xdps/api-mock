@@ -1,9 +1,2 @@
-# Backend-specific ignore
-bin/
-tmp/
-*.test
-*.out
-.env
-
-# Keep embedded schemas
-!internal/schema/embedded/*.json
+# This file is not used when building from repository root
+# See root .dockerignore instead
