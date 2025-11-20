@@ -28,7 +28,7 @@ export interface Article {
   content?: string;
   excerpt?: string;
   category?: string;
-  tags?: Array;
+  tags?: string[];
   status?: string;
   views?: number;
   likes?: number;
@@ -71,7 +71,7 @@ export interface Car {
   price?: number;
   currency?: string;
   condition?: string;
-  features?: Array;
+  features?: string[];
   image?: string;
 }
 
@@ -161,7 +161,7 @@ export interface Contact {
   city?: string;
   country?: string;
   notes?: string;
-  tags?: Array;
+  tags?: string[];
   created_at?: string;
 }
 
@@ -186,7 +186,7 @@ export interface Country {
   /** Area in km² */
   area?: number;
   /** Official languages */
-  languages?: Array;
+  languages?: string[];
   /** Currency code */
   currency?: string;
   /** Phone calling code */
@@ -268,7 +268,7 @@ export interface Currency {
   /** Exchange rate to USD */
   exchange_rate?: number;
   /** Countries using this currency */
-  countries?: Array;
+  countries?: string[];
   /** Last update time */
   updated_at?: string;
 }
@@ -345,7 +345,7 @@ export interface Hotel {
   price_per_night?: number;
   currency?: string;
   rooms?: number;
-  amenities?: Array;
+  amenities?: string[];
   image?: string;
 }
 
@@ -361,7 +361,7 @@ export interface Image {
   /** Size in bytes */
   size?: number;
   format?: string;
-  tags?: Array;
+  tags?: string[];
   photographer?: string;
   location?: string;
   uploaded_at?: string;
@@ -420,7 +420,7 @@ export interface Language {
   /** Number of speakers */
   speakers?: number;
   /** Countries where spoken */
-  countries?: Array;
+  countries?: string[];
 }
 
 // Match
@@ -500,7 +500,7 @@ export interface News {
   category?: string;
   country?: string;
   language?: string;
-  tags?: Array;
+  tags?: string[];
   image?: string;
   url?: string;
   published_at?: string;
@@ -514,7 +514,7 @@ export interface Note {
   author_id?: number;
   author?: string;
   color?: string;
-  tags?: Array;
+  tags?: string[];
   pinned?: boolean;
   archived?: boolean;
   created_at?: string;
@@ -702,7 +702,7 @@ export interface Property {
   /** Square meters */
   area?: number;
   year_built?: number;
-  features?: Array;
+  features?: string[];
   image?: string;
 }
 
@@ -712,7 +712,7 @@ export interface Quote {
   text?: string;
   author?: string;
   category?: string;
-  tags?: Array;
+  tags?: string[];
   language?: string;
   likes?: number;
   created_at?: string;
@@ -961,7 +961,7 @@ export interface Video {
   dislikes?: number;
   comments_count?: number;
   category?: string;
-  tags?: Array;
+  tags?: string[];
   thumbnail?: string;
   url?: string;
   published_at?: string;

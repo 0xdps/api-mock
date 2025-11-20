@@ -17,7 +17,7 @@
     "price": {"type": "number", "x-generator": "car_price"},
     "currency": {"type": "string", "x-generator": "currency"},
     "condition": {"type": "string", "x-generator": "condition"},
-    "features": {"type": "array", "x-generator": "car_features"},
+    "features": {"type": "array", "items": {"type": "string"}, "x-generator": "car_features"},
     "image": {"type": "string", "format": "uri", "x-generator": "image_url"}
   }
 }

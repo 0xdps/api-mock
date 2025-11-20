@@ -50,6 +50,7 @@
     },
     "countries": {
       "type": "array",
+      "items": {"type": "string"},
       "description": "Countries where spoken",
       "x-generator": "language_countries"
     }

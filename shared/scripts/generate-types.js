@@ -40,9 +40,13 @@ function jsonSchemaToTS(schema) {
 }
 
 function getTSType(prop) {
-  if (prop.type === 'array' && prop.items) {
-    const itemType = getTSType(prop.items);
-    return `${itemType}[]`;
+  if (prop.type === 'array') {
+    if (prop.items) {
+      const itemType = getTSType(prop.items);
+      return `${itemType}[]`;
+    }
+    // Default to any[] if items is not specified
+    return 'any[]';
   }
   
   if (prop.type === 'object' && prop.properties) {

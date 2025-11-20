@@ -12,7 +12,7 @@
     "content": {"type": "string", "x-generator": "paragraph"},
     "excerpt": {"type": "string", "x-generator": "sentence"},
     "category": {"type": "string", "x-generator": "article_category"},
-    "tags": {"type": "array", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
     "status": {"type": "string", "x-generator": "status"},
     "views": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
     "likes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 5000}},

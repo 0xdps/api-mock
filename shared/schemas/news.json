@@ -13,7 +13,7 @@
     "category": {"type": "string", "x-generator": "news_category"},
     "country": {"type": "string", "x-generator": "country"},
     "language": {"type": "string", "x-generator": "language"},
-    "tags": {"type": "array", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
     "image": {"type": "string", "format": "uri", "x-generator": "image_url"},
     "url": {"type": "string", "format": "uri", "x-generator": "url"},
     "published_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}

@@ -10,7 +10,7 @@
     "author_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
     "author": {"type": "string", "x-generator": "name"},
     "color": {"type": "string", "x-generator": "color"},
-    "tags": {"type": "array", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
     "pinned": {"type": "boolean", "x-generator": "boolean"},
     "archived": {"type": "boolean", "x-generator": "boolean"},
     "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},

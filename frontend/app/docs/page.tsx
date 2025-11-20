@@ -29,7 +29,8 @@ async function getApiInfo() {
 }
 
 async function getSchemas() {
-  const schemasDir = path.join(process.cwd(), 'shared/schemas')
+  // Schemas are in the parent directory (repository root)
+  const schemasDir = path.join(process.cwd(), '../shared/schemas')
   const files = fs.readdirSync(schemasDir).filter((f: string) => f.endsWith('.json'))
   
   return files.map((file: string) => {

@@ -15,7 +15,7 @@
     "dislikes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 5000}},
     "comments_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
     "category": {"type": "string", "x-generator": "video_category"},
-    "tags": {"type": "array", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
     "thumbnail": {"type": "string", "format": "uri", "x-generator": "image_url"},
     "url": {"type": "string", "format": "uri", "x-generator": "url"},
     "published_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}

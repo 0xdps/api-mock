@@ -20,7 +20,7 @@
     "price_per_night": {"type": "number", "x-generator": "hotel_price"},
     "currency": {"type": "string", "x-generator": "currency"},
     "rooms": {"type": "integer", "x-generator": "hotel_rooms"},
-    "amenities": {"type": "array", "x-generator": "amenities"},
+    "amenities": {"type": "array", "items": {"type": "string"}, "x-generator": "amenities"},
     "image": {"type": "string", "format": "uri", "x-generator": "image_url"}
   }
 }

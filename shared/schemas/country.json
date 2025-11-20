@@ -60,6 +60,7 @@
     },
     "languages": {
       "type": "array",
+      "items": {"type": "string"},
       "description": "Official languages",
       "x-generator": "languages_array"
     },

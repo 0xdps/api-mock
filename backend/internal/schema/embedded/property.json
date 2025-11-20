@@ -22,7 +22,7 @@
     "bathrooms": {"type": "integer", "x-generator": "bathrooms"},
     "area": {"type": "number", "description": "Square meters", "x-generator": "property_area"},
     "year_built": {"type": "integer", "x-generator": "year_built"},
-    "features": {"type": "array", "x-generator": "property_features"},
+    "features": {"type": "array", "items": {"type": "string"}, "x-generator": "property_features"},
     "image": {"type": "string", "format": "uri", "x-generator": "image_url"}
   }
 }

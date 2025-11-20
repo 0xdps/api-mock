@@ -13,7 +13,7 @@
     "height": {"type": "integer", "x-generator": "image_height"},
     "size": {"type": "integer", "description": "Size in bytes", "x-generator": "file_size"},
     "format": {"type": "string", "x-generator": "image_format"},
-    "tags": {"type": "array", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
     "photographer": {"type": "string", "x-generator": "name"},
     "location": {"type": "string", "x-generator": "city"},
     "uploaded_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
