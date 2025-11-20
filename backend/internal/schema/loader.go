@@ -173,7 +173,51 @@ func (r *Registry) SchemaToFields(schema *Schema) []Field {
 		}
 	}
 
-	return fields
+	// Sort fields to ensure dependent fields come after their dependencies
+	return r.sortFieldsByDependency(fields)
+}
+
+// sortFieldsByDependency orders fields so dependencies are generated first
+func (r *Registry) sortFieldsByDependency(fields []Field) []Field {
+	// Define field priority (lower number = generated first)
+	priority := map[string]int{
+		"id":          1,
+		"first_name":  2,
+		"last_name":   2,
+		"name":        2, // Can be product name or person name
+		"email":       3, // Depends on first_name, last_name
+		"username":    3, // Depends on first_name, last_name
+		"avatar":      4, // Depends on id or first_name
+		"title":       5, // Post/article title
+		"body":        6, // Depends on title
+		"description": 6, // Depends on title/name
+	}
+	
+	// Sort fields by priority, keeping relative order for same priority
+	sorted := make([]Field, len(fields))
+	copy(sorted, fields)
+	
+	// Simple bubble sort by priority
+	for i := 0; i < len(sorted); i++ {
+		for j := i + 1; j < len(sorted); j++ {
+			priI := priority[sorted[i].Name]
+			priJ := priority[sorted[j].Name]
+			
+			// Default priority is 10 if not specified
+			if priI == 0 {
+				priI = 10
+			}
+			if priJ == 0 {
+				priJ = 10
+			}
+			
+			if priI > priJ {
+				sorted[i], sorted[j] = sorted[j], sorted[i]
+			}
+		}
+	}
+	
+	return sorted
 }
 
 // propertyToField converts a property schema to a field definition
@@ -252,8 +296,10 @@ func (r *Registry) generateRecords(fields []Field, count int) ([]map[string]inte
 	
 	for i := 0; i < count; i++ {
 		record := make(map[string]interface{})
+		
+		// Generate fields, allowing later fields to reference earlier ones
 		for _, field := range fields {
-			value := r.generateValue(field)
+			value := r.generateValueWithContext(field, record)
 			record[field.Name] = value
 		}
 		records[i] = record
@@ -262,9 +308,189 @@ func (r *Registry) generateRecords(fields []Field, count int) ([]map[string]inte
 	return records, nil
 }
 
-// generateValue generates a single value based on field type
-func (r *Registry) generateValue(field Field) interface{} {
+// generateValueWithContext generates a value based on field type and previously generated fields
+func (r *Registry) generateValueWithContext(field Field, record map[string]interface{}) interface{} {
 	faker := gofakeit.New(0)
+	
+	// Handle derived fields that depend on other fields
+	switch field.Generator {
+	case "email":
+		return r.generateSmartEmail(record, faker)
+	case "username":
+		return r.generateSmartUsername(record, faker)
+	case "avatar":
+		return r.generateSmartAvatar(record, faker)
+	case "sentence":
+		// For title fields, generate more realistic titles
+		if field.Name == "title" {
+			return r.generateSmartTitle(faker)
+		}
+	case "paragraph":
+		// For body/description, generate context-aware content
+		if field.Name == "body" || field.Name == "description" {
+			if title, ok := record["title"].(string); ok && title != "" {
+				return r.generateSmartBody(title, faker)
+			}
+		}
+	}
+	
+	return r.generateValue(field, faker)
+}
+
+// generateSmartTitle creates realistic titles for posts/articles
+func (r *Registry) generateSmartTitle(faker *gofakeit.Faker) string {
+	templates := []string{
+		"How to %s in %d Easy Steps",
+		"The Ultimate Guide to %s",
+		"Understanding %s: A Complete Tutorial",
+		"%d Tips for Better %s",
+		"Why %s Matters in %d",
+		"Getting Started with %s",
+		"Advanced %s Techniques",
+		"The Future of %s",
+		"Common %s Mistakes to Avoid",
+		"Best Practices for %s",
+	}
+	
+	topics := []string{
+		"Web Development", "Mobile Apps", "Cloud Computing", "Data Science",
+		"Machine Learning", "API Design", "User Experience", "Cybersecurity",
+		"DevOps", "Microservices", "React Development", "Node.js",
+		"Python Programming", "JavaScript", "System Design", "Database Optimization",
+		"Testing Strategies", "Performance Tuning", "Code Review", "Agile Methods",
+	}
+	
+	template := templates[faker.IntRange(0, len(templates)-1)]
+	topic := topics[faker.IntRange(0, len(topics)-1)]
+	
+	if strings.Contains(template, "%d") {
+		year := faker.IntRange(2020, 2025)
+		return fmt.Sprintf(template, topic, year)
+	}
+	
+	return fmt.Sprintf(template, topic)
+}
+
+// generateSmartBody creates contextual body text based on title
+func (r *Registry) generateSmartBody(title string, faker *gofakeit.Faker) string {
+	// Extract key topic from title if possible
+	intro := fmt.Sprintf("In this article, we'll explore %s. ", title)
+	
+	paragraphs := []string{intro}
+	
+	// Add 2-3 paragraphs
+	numParagraphs := faker.IntRange(2, 4)
+	for i := 0; i < numParagraphs; i++ {
+		paragraphs = append(paragraphs, faker.Paragraph(3, 5, 12, " "))
+	}
+	
+	return strings.Join(paragraphs, "\n\n")
+}
+
+// generateSmartEmail creates an email based on first_name and last_name if available
+func (r *Registry) generateSmartEmail(record map[string]interface{}, faker *gofakeit.Faker) string {
+	firstName, hasFirst := record["first_name"].(string)
+	lastName, hasLast := record["last_name"].(string)
+	
+	if hasFirst && hasLast && firstName != "" && lastName != "" {
+		// Clean names (remove spaces, lowercase)
+		firstName = strings.ToLower(strings.ReplaceAll(firstName, " ", ""))
+		lastName = strings.ToLower(strings.ReplaceAll(lastName, " ", ""))
+		
+		// Choose email format randomly
+		formats := []string{
+			"%s.%s@example.com",           // john.doe@example.com
+			"%s%s@example.com",             // johndoe@example.com
+			"%s_%s@example.com",            // john_doe@example.com
+			"%s.%s@company.com",            // john.doe@company.com
+			"%s%d@example.com",             // john123@example.com
+		}
+		
+		format := formats[faker.IntRange(0, len(formats)-1)]
+		
+		if strings.Contains(format, "%d") {
+			// Format with number (first name only)
+			return fmt.Sprintf(format, firstName, faker.IntRange(1, 9999))
+		}
+		
+		return fmt.Sprintf(format, firstName, lastName)
+	}
+	
+	// Fallback to random email
+	return faker.Email()
+}
+
+// generateSmartUsername creates a username based on first_name and last_name if available
+func (r *Registry) generateSmartUsername(record map[string]interface{}, faker *gofakeit.Faker) string {
+	firstName, hasFirst := record["first_name"].(string)
+	lastName, hasLast := record["last_name"].(string)
+	
+	if hasFirst && hasLast && firstName != "" && lastName != "" {
+		// Clean names
+		firstName = strings.ToLower(strings.ReplaceAll(firstName, " ", ""))
+		lastName = strings.ToLower(strings.ReplaceAll(lastName, " ", ""))
+		
+		// Choose username format randomly
+		formats := []string{
+			"%s%s",              // johndoe
+			"%s_%s",             // john_doe
+			"%s.%s",             // john.doe
+			"%s%s%d",            // johndoe123
+			"%s_%d",             // john_123
+			"%c%s",              // jdoe (first initial + last name)
+		}
+		
+		format := formats[faker.IntRange(0, len(formats)-1)]
+		
+		switch format {
+		case "%s%s":
+			return firstName + lastName
+		case "%s_%s":
+			return firstName + "_" + lastName
+		case "%s.%s":
+			return firstName + "." + lastName
+		case "%s%s%d":
+			return firstName + lastName + fmt.Sprintf("%d", faker.IntRange(1, 9999))
+		case "%s_%d":
+			return firstName + "_" + fmt.Sprintf("%d", faker.IntRange(1, 9999))
+		case "%c%s":
+			if len(firstName) > 0 {
+				return string(firstName[0]) + lastName
+			}
+			return firstName + lastName
+		}
+	}
+	
+	// Fallback to random username
+	return faker.Username()
+}
+
+// generateSmartAvatar creates a consistent avatar based on user data
+func (r *Registry) generateSmartAvatar(record map[string]interface{}, faker *gofakeit.Faker) string {
+	// Use ID if available for consistency
+	if id, ok := record["id"].(int); ok && id > 0 {
+		// Use ID modulo 70 (pravatar.cc has 70 avatars)
+		avatarNum := (id % 70) + 1
+		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", avatarNum)
+	}
+	
+	// Use first_name for seeding if available
+	if firstName, ok := record["first_name"].(string); ok && firstName != "" {
+		// Generate a consistent number from the name
+		sum := 0
+		for _, char := range firstName {
+			sum += int(char)
+		}
+		avatarNum := (sum % 70) + 1
+		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", avatarNum)
+	}
+	
+	// Fallback to random avatar
+	return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", faker.IntRange(1, 70))
+}
+
+// generateValue generates a single value based on field type
+func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{} {
 	
 	switch field.Generator {
 	// Numbers
