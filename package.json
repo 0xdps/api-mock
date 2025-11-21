@@ -10,6 +10,7 @@
     "api:dev": "cd backend && go run cmd/server/main.go",
     "api:build": "cd backend && go build -o bin/server ./cmd/server",
     "prebuild": "npm run generate-types",
+    "build": "npm run generate-types && cd frontend && npm run build",
     "build:local": "npm run api:build && cd frontend && npm run build",
     "web:dev": "cd frontend && npm run dev",
     "web:install": "cd frontend && npm install",
