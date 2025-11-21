@@ -17,10 +17,11 @@
 - 🎯 **100 Resources** - From users to weather, stocks to movies
 - 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
 - 💡 **Realistic Data** - Powered by gofakeit with 200+ generators
-- ⚡ **Fast & Reliable** - Go backend with chi router
+- ⚡ **Blazing Fast** - In-memory cache with warmup on startup (<1ms responses)
+- 🔄 **Consistent Data** - Fixed seed ensures reproducible results
 - 🌐 **CORS Enabled** - Ready for frontend development
 - 🎨 **Modern UI** - Next.js 16 + React 19 website with SSR and interactive playground
-- 📦 **No Database** - Generates data on-the-fly
+- 📊 **Cache Management** - Admin endpoints for stats and refresh
 - 🆓 **Free Forever** - Open source and self-hostable
 - ⚡ **Server-Side Rendering** - Fast page loads with fresh data
 - 🤖 **Automated Build** - TypeScript types auto-generated from schemas
@@ -263,6 +264,47 @@ We support over 200 generators via gofakeit. Popular ones:
 **Other:** `phone_number`, `boolean`, `user_agent`, `car_model`
 
 See all generators in [`backend/internal/schema/loader.go`](./backend/internal/schema/loader.go)
+
+## ⚡ Cache & Performance
+
+The backend uses an **in-memory cache with warmup on startup** for blazing fast responses:
+
+```bash
+🔥 Starting cache warmup (seed: 42, items per resource: 100)...
+✅ Cache warmup completed in 2.5s
+   📊 Resources: 100, Total items: 10,000
+```
+
+### Benefits
+
+- **<1ms response times** - Pre-generated data served from memory
+- **Consistent data** - Same ID always returns same object (perfect for testing)
+- **Reproducible** - Fixed seed (42) ensures same data across restarts
+- **Low CPU usage** - Generate once, serve thousands of times
+
+### Configuration
+
+Configure via environment variables:
+
+```bash
+# Number of items to cache per resource (default: 100)
+CACHE_ITEMS_PER_RESOURCE=100
+
+# Random seed for reproducible data (default: 42)
+CACHE_SEED=42
+```
+
+### Admin Endpoints
+
+```bash
+# View cache statistics
+GET /admin/cache/stats
+
+# Refresh cache (regenerate all data)
+POST /admin/cache/refresh
+```
+
+📖 **Full cache documentation:** [backend/CACHE.md](./backend/CACHE.md)
 
 ## 🚀 Deployment
 

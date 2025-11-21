@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/0xdps/api-mock/go/internal/cache"
 	"github.com/0xdps/api-mock/go/internal/handlers"
 	"github.com/0xdps/api-mock/go/internal/middleware"
 	"github.com/0xdps/api-mock/go/internal/schema"
@@ -24,6 +25,19 @@ func main() {
 	}
 
 	log.Printf("Loaded %d schemas: %v", len(registry.Schemas), registry.GetAllResourceNames())
+
+	// Initialize cache with configuration from environment
+	cacheConfig := cache.Config{
+		ItemsPerResource: getEnvInt("CACHE_ITEMS_PER_RESOURCE", 100),
+		Seed:             getEnvInt64("CACHE_SEED", 42), // Fixed seed for reproducibility
+	}
+
+	apiCache := cache.NewCache(registry, cacheConfig)
+
+	// Warmup cache on startup
+	if err := apiCache.Warmup(); err != nil {
+		log.Fatalf("Failed to warmup cache: %v", err)
+	}
 
 	r := chi.NewRouter()
 	resourceNames := registry.GetAllResourceNames()
@@ -51,8 +65,8 @@ func main() {
 	r.Get("/favicon.svg", static.ServeIconSVG)
 	r.Get("/favicon.ico", static.ServeIconICO)
 
-	// Dynamic handler
-	dynamicHandler := handlers.NewDynamicHandler(registry)
+	// Dynamic handler with cache
+	dynamicHandler := handlers.NewDynamicHandler(registry, apiCache)
 
 	// Group routes (must come before dynamic resource routes to avoid conflicts)
 	groups := registry.GetAllGroups()
@@ -60,12 +74,12 @@ func main() {
 	for groupName := range groups {
 		groupNames = append(groupNames, groupName)
 	}
-	
+
 	// Register group-specific routes first (more specific paths)
 	for _, groupName := range groupNames {
 		// Capture groupName in closure for handlers
 		gn := groupName // Capture for closure
-		
+
 		// Group info endpoint: /{group} - returns metadata only
 		r.Get("/"+gn, func(w http.ResponseWriter, req *http.Request) {
 			resourceNames := registry.GetResourceNamesByGroup(gn)
@@ -76,11 +90,11 @@ func main() {
 				"count":     len(resourceNames),
 			})
 		})
-		
+
 		// Group resource endpoints: /{group}/{resource}
 		r.Get("/"+gn+"/{resource}", func(w http.ResponseWriter, req *http.Request) {
 			resourceName := chi.URLParam(req, "resource")
-			
+
 			// Verify the resource belongs to this group
 			groupResources := registry.GetResourceNamesByGroup(gn)
 			found := false
@@ -90,7 +104,7 @@ func main() {
 					break
 				}
 			}
-			
+
 			if !found {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(404)
@@ -126,11 +140,11 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(data)
 		})
-		
+
 		r.Get("/"+gn+"/{resource}/{id}", func(w http.ResponseWriter, req *http.Request) {
 			resourceName := chi.URLParam(req, "resource")
 			id := chi.URLParam(req, "id")
-			
+
 			// Verify the resource belongs to this group
 			groupResources := registry.GetResourceNamesByGroup(gn)
 			found := false
@@ -140,7 +154,7 @@ func main() {
 					break
 				}
 			}
-			
+
 			if !found {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(404)
@@ -181,7 +195,7 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(item)
 		})
-		
+
 		log.Printf("Registered group routes: /%s, /%s/{resource}, /%s/{resource}/{id}", gn, gn, gn)
 	}
 
@@ -191,7 +205,7 @@ func main() {
 		// This prevents router conflicts
 		nestedResources := []string{}
 		regularResources := []string{}
-		
+
 		// Create a map of group names for quick lookup
 		groupNameMap := make(map[string]bool)
 		for groupName := range groups {
@@ -206,7 +220,7 @@ func main() {
 				log.Printf("Skipping direct route for %s (conflicts with group name, use /{group}/%s instead)", name, name)
 				continue
 			}
-			
+
 			if strings.Contains(routePath, ":") {
 				nestedResources = append(nestedResources, name)
 			} else {
@@ -251,6 +265,41 @@ func main() {
 		}
 	})
 
+	// Admin routes for cache management
+	r.Route("/admin", func(r chi.Router) {
+		// Cache stats
+		r.Get("/cache/stats", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"message": "Cache statistics",
+				"cache":   apiCache.GetStats(),
+			})
+		})
+
+		// Cache refresh
+		r.Post("/cache/refresh", func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("🔄 Cache refresh requested")
+			if err := apiCache.Refresh(); err != nil {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(500)
+				json.NewEncoder(w).Encode(map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"message": "Cache refreshed successfully",
+				"cache":   apiCache.GetStats(),
+			})
+		})
+	})
+
+	log.Printf("📊 Admin routes:")
+	log.Printf("   GET  /admin/cache/stats   - View cache statistics")
+	log.Printf("   POST /admin/cache/refresh - Refresh cache")
+
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -261,4 +310,32 @@ func main() {
 	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// getEnvInt reads an integer from environment variable with default
+func getEnvInt(key string, defaultValue int) int {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Warning: Invalid %s value '%s', using default %d", key, value, defaultValue)
+		return defaultValue
+	}
+	return intValue
+}
+
+// getEnvInt64 reads an int64 from environment variable with default
+func getEnvInt64(key string, defaultValue int64) int64 {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		log.Printf("Warning: Invalid %s value '%s', using default %d", key, value, defaultValue)
+		return defaultValue
+	}
+	return intValue
 }

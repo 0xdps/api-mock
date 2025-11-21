@@ -20,6 +20,7 @@ generate-types: ## Generate TypeScript types from schemas
 # Backend
 api-dev: sync-schemas ## Run backend development server
 	@echo "Starting backend development server..."
+	@echo "Cache config: ITEMS_PER_RESOURCE=$${CACHE_ITEMS_PER_RESOURCE:-100}, SEED=$${CACHE_SEED:-42}"
 	@cd backend && go run cmd/server/main.go
 
 api-build: sync-schemas ## Build backend binary

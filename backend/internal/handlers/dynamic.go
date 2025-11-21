@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/0xdps/api-mock/go/internal/cache"
 	"github.com/0xdps/api-mock/go/internal/schema"
 	"github.com/go-chi/chi/v5"
 )
@@ -12,12 +13,14 @@ import (
 // DynamicHandler handles requests for schema-driven resources
 type DynamicHandler struct {
 	registry *schema.Registry
+	cache    *cache.Cache
 }
 
 // NewDynamicHandler creates a new dynamic handler
-func NewDynamicHandler(registry *schema.Registry) *DynamicHandler {
+func NewDynamicHandler(registry *schema.Registry, c *cache.Cache) *DynamicHandler {
 	return &DynamicHandler{
 		registry: registry,
+		cache:    c,
 	}
 }
 
@@ -27,13 +30,18 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		// Get count parameter
 		count := getCountParam(r, 10)
 
-		// Generate data using the schema
-		data, err := h.registry.GenerateData(resourceName, count)
-		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, map[string]string{
-				"error": err.Error(),
-			})
-			return
+		// Try to get data from cache
+		data, found := h.cache.Get(resourceName, count)
+		if !found {
+			// Fallback: generate data on the fly (shouldn't happen after warmup)
+			var err error
+			data, err = h.registry.GenerateData(resourceName, count)
+			if err != nil {
+				respondJSON(w, http.StatusInternalServerError, map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
 		}
 
 		respondJSON(w, http.StatusOK, data)
@@ -46,13 +54,25 @@ func (h *DynamicHandler) GetSingle(resourceName string) http.HandlerFunc {
 		// Get the ID from URL
 		id := chi.URLParam(r, "id")
 
-		// Generate a single item
-		data, err := h.registry.GenerateData(resourceName, 1)
-		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, map[string]string{
-				"error": err.Error(),
-			})
+		// Try to get item by ID from cache
+		item, found := h.cache.GetByID(resourceName, id)
+		if found {
+			respondJSON(w, http.StatusOK, item)
 			return
+		}
+
+		// If not found in cache, get first item and set the requested ID
+		data, found := h.cache.Get(resourceName, 1)
+		if !found || len(data) == 0 {
+			// Fallback: generate on the fly
+			var err error
+			data, err = h.registry.GenerateData(resourceName, 1)
+			if err != nil {
+				respondJSON(w, http.StatusInternalServerError, map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
 		}
 
 		if len(data) == 0 {
@@ -63,7 +83,7 @@ func (h *DynamicHandler) GetSingle(resourceName string) http.HandlerFunc {
 		}
 
 		// Set the ID to the requested ID
-		item := data[0]
+		item = data[0]
 		if idNum, err := strconv.Atoi(id); err == nil {
 			item["id"] = idNum
 		} else {
@@ -100,7 +120,7 @@ func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFu
 func (h *DynamicHandler) GetGroupInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		groupName := chi.URLParam(r, "group")
-		
+
 		resourceNames := h.registry.GetResourceNamesByGroup(groupName)
 		if len(resourceNames) == 0 {
 			respondJSON(w, http.StatusNotFound, map[string]string{
@@ -122,7 +142,7 @@ func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		groupName := chi.URLParam(r, "group")
 		resourceName := chi.URLParam(r, "resource")
-		
+
 		// Verify the resource belongs to this group
 		groupResources := h.registry.GetResourceNamesByGroup(groupName)
 		found := false
@@ -132,7 +152,7 @@ func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
 				break
 			}
 		}
-		
+
 		if !found {
 			respondJSON(w, http.StatusNotFound, map[string]string{
 				"error": "Resource not found in this group",
@@ -143,13 +163,18 @@ func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
 		// Get count parameter
 		count := getCountParam(r, 10)
 
-		// Generate data using the schema
-		data, err := h.registry.GenerateData(resourceName, count)
-		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, map[string]string{
-				"error": err.Error(),
-			})
-			return
+		// Get data from cache
+		data, found := h.cache.Get(resourceName, count)
+		if !found {
+			// Fallback: generate data on the fly
+			var err error
+			data, err = h.registry.GenerateData(resourceName, count)
+			if err != nil {
+				respondJSON(w, http.StatusInternalServerError, map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
 		}
 
 		respondJSON(w, http.StatusOK, data)
@@ -162,7 +187,7 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 		groupName := chi.URLParam(r, "group")
 		resourceName := chi.URLParam(r, "resource")
 		id := chi.URLParam(r, "id")
-		
+
 		// Verify the resource belongs to this group
 		groupResources := h.registry.GetResourceNamesByGroup(groupName)
 		found := false
@@ -172,7 +197,7 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 				break
 			}
 		}
-		
+
 		if !found {
 			respondJSON(w, http.StatusNotFound, map[string]string{
 				"error": "Resource not found in this group",
@@ -180,13 +205,25 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 			return
 		}
 
-		// Generate a single item
-		data, err := h.registry.GenerateData(resourceName, 1)
-		if err != nil {
-			respondJSON(w, http.StatusInternalServerError, map[string]string{
-				"error": err.Error(),
-			})
+		// Try to get item by ID from cache
+		item, found := h.cache.GetByID(resourceName, id)
+		if found {
+			respondJSON(w, http.StatusOK, item)
 			return
+		}
+
+		// If not found in cache, get first item and set the requested ID
+		data, found := h.cache.Get(resourceName, 1)
+		if !found || len(data) == 0 {
+			// Fallback: generate on the fly
+			var err error
+			data, err = h.registry.GenerateData(resourceName, 1)
+			if err != nil {
+				respondJSON(w, http.StatusInternalServerError, map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
 		}
 
 		if len(data) == 0 {
@@ -197,7 +234,7 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 		}
 
 		// Set the ID to the requested ID
-		item := data[0]
+		item = data[0]
 		if idNum, err := strconv.Atoi(id); err == nil {
 			item["id"] = idNum
 		} else {

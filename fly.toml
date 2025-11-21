@@ -9,6 +9,10 @@ primary_region = 'bom'
 [build]
   dockerfile = "Dockerfile"
 
+[env]
+  CACHE_ITEMS_PER_RESOURCE = "100"
+  CACHE_SEED = "42"
+
 [http_service]
   internal_port = 8080
   force_https = true
