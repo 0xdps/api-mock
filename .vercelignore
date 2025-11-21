@@ -31,8 +31,6 @@ yarn-error.log*
 # Build artifacts
 bin/
 
-# Shared schemas (copied to web during build)
-shared/
-
-# Root dependencies
+# Root dependencies (but allow workspace packages)
 node_modules/
+!node_modules/.bin
