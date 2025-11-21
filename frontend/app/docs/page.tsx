@@ -130,13 +130,13 @@ print(users)`}
             </div>
             
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4">Node.js/Axios</h3>
+              <h3 className="text-xl font-semibold text-white mb-4">Fresh Data (No Cache)</h3>
               <CodeExample 
-                title="Fetch Users"
-                code={`const axios = require('axios');
-
-const response = await axios.get('${API_URL}/users?count=10');
-console.log(response.data);`}
+                title="Bypass Cache"
+                code={`// Get fresh data every time
+fetch('${API_URL}/users?count=10&nocache=true')
+  .then(res => res.json())
+  .then(data => console.log(data));`}
               />
             </div>
           </div>
@@ -153,7 +153,8 @@ console.log(response.data);`}
               description="Get a collection of items"
               params={[
                 { name: 'count', type: 'integer', description: 'Number of items to return (default: 10, max: 100)' },
-                { name: 'seed', type: 'integer', description: 'Seed for reproducible data' }
+                { name: 'seed', type: 'integer', description: 'Seed for reproducible data' },
+                { name: 'nocache', type: 'boolean', description: 'Bypass cache and generate fresh data (aliases: fresh, _nocache)' }
               ]}
             />
             
@@ -162,7 +163,8 @@ console.log(response.data);`}
               path="/{resource}/:id"
               description="Get a single item by ID"
               params={[
-                { name: 'id', type: 'integer', description: 'Item ID' }
+                { name: 'id', type: 'integer', description: 'Item ID' },
+                { name: 'nocache', type: 'boolean', description: 'Bypass cache and generate fresh data (aliases: fresh, _nocache)' }
               ]}
             />
             
@@ -223,6 +225,11 @@ console.log(response.data);`}
             <FeatureDoc 
               title="No Authentication"
               description="No API keys or authentication required. Start using immediately."
+            />
+            
+            <FeatureDoc 
+              title="In-Memory Caching"
+              description="Fast, consistent responses via pre-warmed cache. Use ?nocache=true to bypass and get fresh data. Check X-Cache header for cache status (HIT/MISS/BYPASS)."
             />
             
             <FeatureDoc 
