@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Schema-driven mock API service with 100+ resources across 14 categories",
   "private": true,
-  "workspaces": ["frontend", "backend", "shared"],
+  "workspaces": ["frontend", "shared"],
   "scripts": {
     "predev": "npm run generate-types",
     "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
