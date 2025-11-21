@@ -1,26 +1,14 @@
 {
-  "name": "mockly",
+  "name": "api-mockly",
   "version": "1.0.0",
   "description": "Schema-driven mock API service with 100+ resources across 14 categories",
   "private": true,
-  "workspaces": ["frontend", "shared"],
   "scripts": {
-    "predev": "npm run generate-types",
     "dev": "concurrently \"make api-dev\" \"make web-dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
-    "api:dev": "make api-dev",
-    "api:build": "make api-build",
-    "prebuild": "npm run generate-types",
-    "build": "npm run generate-types && cd frontend && npm run build",
-    "build:local": "make build",
-    "web:dev": "make web-dev",
-    "web:install": "make web-install",
-    "postinstall": "npm run generate-types",
     "generate-types": "node shared/scripts/generate-types.js",
-    "types:watch": "watch 'npm run generate-types' shared/schemas",
     "sync-schemas": "npm run generate-types && find shared/schemas -name '*.json' -type f -exec cp {} backend/internal/schema/embedded/ \\;",
     "deploy": "make deploy",
-    "deploy:api": "make deploy-api",
-    "deploy:web": "make deploy-web"
+    "deploy:api": "make deploy-api"
   },
   "keywords": [
     "mock",

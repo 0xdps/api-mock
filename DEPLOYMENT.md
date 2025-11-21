@@ -230,27 +230,44 @@ npm install -g vercel
 vercel login
 ```
 
+### Important: Monorepo Configuration
+
+This project is a **monorepo** with both backend and frontend. The frontend Next.js app is in the `frontend/` subdirectory.
+
+**Critical:** You MUST configure Vercel's **Root Directory** setting to `frontend` for the deployment to work correctly.
+
 ### Deployment Process
 
-#### Method 1: Using Vercel CLI
+#### Method 1: Using Vercel Dashboard (Recommended for First Deploy)
+
+1. Connect your GitHub repo to Vercel
+2. **IMPORTANT:** In Settings → General:
+   - **Root Directory:** Set to `frontend` ⚠️
+   - **Framework Preset:** Next.js (auto-detected)
+   - **Build Command:** `npm run build` (auto-detected)
+   - **Install Command:** `npm install` (auto-detected)
+   - **Output Directory:** `.next` (auto-detected)
+
+3. Every push to `main`/`trunk` auto-deploys!
+
+**Why Root Directory = frontend?**
+- Your git repo structure stays at the project root
+- Vercel treats `frontend/` as the deployment root
+- This is standard for monorepos - one repo, multiple deployable apps
+- Backend deploys separately (Fly.io), frontend deploys to Vercel
+
+#### Method 2: Using Vercel CLI
 
 ```bash
-cd frontend
+# From project root (not frontend/)
 vercel --prod
+
+# When prompted:
+# - Set Root Directory to: frontend
+# - Accept other defaults
 ```
 
 **Note:** Types are auto-generated during build via `prebuild` hook!
-
-#### Method 2: GitHub Integration (Recommended)
-
-1. Connect your GitHub repo to Vercel
-2. Set build settings:
-   - **Framework:** Next.js
-   - **Root Directory:** `frontend`
-   - **Build Command:** `npm run build` (auto-generates types)
-   - **Install Command:** `npm install`
-
-3. Every push to `main`/`trunk` auto-deploys!
 
 ### Environment Variables
 
@@ -335,11 +352,14 @@ Automatic via Vercel GitHub integration - no config needed!
 
 | Aspect | Backend (Fly.io) | Frontend (Vercel) |
 |--------|------------------|-------------------|
+| **Git Root** | Repository root | Repository root |
+| **Deploy Root** | Repository root | `frontend/` (via Root Directory setting) |
 | **Build From** | Repository root | `frontend/` directory |
 | **Schemas** | Auto-copied during build | N/A |
 | **Types** | N/A | Auto-generated via `prebuild` |
-| **Command** | `flyctl deploy --config backend/fly.toml` | `vercel --prod` |
+| **Command** | `flyctl deploy --config backend/fly.toml` | `vercel --prod` (from project root) |
 | **Auto-Deploy** | Via GitHub Actions | Via GitHub integration |
+| **Key Setting** | `fly.toml` dockerfile path | Vercel Root Directory = `frontend` ⚠️ |
 
 ---
 
@@ -385,10 +405,12 @@ open https://mockly.codes/playground
 
 ### For Frontend Deployment:
 
-1. ✅ **Types auto-generate** via `prebuild` hook
-2. ✅ **No manual steps** needed
-3. ✅ **Vercel GitHub integration** is easiest
-4. ✅ **API URL auto-detected** in production
+1. ⚠️ **MUST set Root Directory** to `frontend` in Vercel settings
+2. ✅ **Types auto-generate** via `prebuild` hook
+3. ✅ **No manual steps** needed after initial setup
+4. ✅ **Vercel GitHub integration** is easiest
+5. ✅ **API URL auto-detected** in production
+6. ✅ **Git repo structure** stays at project root (monorepo)
 
 ### For Both:
 

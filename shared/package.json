@@ -1,6 +1,0 @@
-{
-  "name": "shared",
-  "version": "1.0.0",
-  "description": "Shared schemas and scripts for Mockly",
-  "private": true
-}

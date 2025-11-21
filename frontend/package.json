@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "predev": "cd .. && npm run generate-types",
+    "prebuild": "cd .. && npm run generate-types",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

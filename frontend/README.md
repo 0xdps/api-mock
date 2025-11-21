@@ -215,16 +215,38 @@ export interface ApiRootResponse {
 
 ## 🚀 Deployment
 
-### Deploy to Vercel
+### Deploy to Vercel (Monorepo Setup)
+
+This project is a monorepo with backend and frontend. The frontend is deployed separately to Vercel.
+
+**Important:** Since the Next.js app is in the `frontend/` subdirectory, you must configure Vercel's Root Directory.
+
+#### Vercel Dashboard Configuration:
+
+1. Go to your project Settings → **General**
+2. Under **Root Directory**, click **Edit**
+3. Set to: `frontend`
+4. Under **Build & Development Settings**:
+   - **Build Command**: Auto-detect (Next.js) or `npm run build`
+   - **Install Command**: Auto-detect or `npm install`  
+   - **Output Directory**: `.next` (auto-detected)
+5. Redeploy
+
+#### Or use Vercel CLI:
 
 ```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy
-cd frontend
+# From project root
 vercel --prod
+
+# When prompted, set Root Directory to: frontend
 ```
+
+#### Why Root Directory = frontend?
+
+- Your git repo stays at the project root (✅ backend/, frontend/, shared/)
+- Vercel treats `frontend/` as the deployment root
+- This is standard for monorepos - one repo, multiple deployable apps
+- Backend deploys separately (fly.io), frontend deploys to Vercel
 
 ### Environment Variables (Vercel)
 
