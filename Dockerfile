@@ -1,16 +1,16 @@
 # Build stage
-# Simple build - schemas are already committed to git via pre-commit hook
+# Schemas are committed to git via pre-commit hook
 
 FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod files
-COPY go.mod go.sum ./
+# Copy go mod files from backend directory
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-# Copy all source code (including committed schemas in internal/schema/embedded/)
-COPY . .
+# Copy backend source code
+COPY backend/ ./
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/server ./cmd/server
@@ -28,3 +28,4 @@ COPY --from=builder /bin/server .
 EXPOSE 8080
 
 CMD ["./server"]
+

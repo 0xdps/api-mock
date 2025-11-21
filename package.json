@@ -6,18 +6,21 @@
   "workspaces": ["frontend", "shared"],
   "scripts": {
     "predev": "npm run generate-types",
-    "dev": "concurrently \"npm run api:dev\" \"npm run web:dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
-    "api:dev": "cd backend && go run cmd/server/main.go",
-    "api:build": "cd backend && go build -o bin/server ./cmd/server",
+    "dev": "concurrently \"make api-dev\" \"make web-dev\" --names \"API,WEB\" --prefix-colors \"cyan,magenta\"",
+    "api:dev": "make api-dev",
+    "api:build": "make api-build",
     "prebuild": "npm run generate-types",
     "build": "npm run generate-types && cd frontend && npm run build",
-    "build:local": "npm run api:build && cd frontend && npm run build",
-    "web:dev": "cd frontend && npm run dev",
-    "web:install": "cd frontend && npm install",
+    "build:local": "make build",
+    "web:dev": "make web-dev",
+    "web:install": "make web-install",
     "postinstall": "npm run generate-types",
     "generate-types": "node shared/scripts/generate-types.js",
     "types:watch": "watch 'npm run generate-types' shared/schemas",
-    "sync-schemas": "npm run generate-types && find shared/schemas -name '*.json' -type f -exec cp {} backend/internal/schema/embedded/ \\;"
+    "sync-schemas": "npm run generate-types && find shared/schemas -name '*.json' -type f -exec cp {} backend/internal/schema/embedded/ \\;",
+    "deploy": "make deploy",
+    "deploy:api": "make deploy-api",
+    "deploy:web": "make deploy-web"
   },
   "keywords": [
     "mock",

@@ -7,8 +7,7 @@ app = 'api-mockly'
 primary_region = 'bom'
 
 [build]
-  # Schemas are committed to git via pre-commit hook
-  # Simple build from backend/ directory
+  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 8080
@@ -22,3 +21,4 @@ primary_region = 'bom'
   memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1
+
