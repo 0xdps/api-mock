@@ -30,17 +30,38 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		// Get count parameter
 		count := getCountParam(r, 10)
 
-		// Try to get data from cache
-		data, found := h.cache.Get(resourceName, count)
-		if !found {
-			// Fallback: generate data on the fly (shouldn't happen after warmup)
-			var err error
+		// Check if cache should be bypassed
+		skipCache := shouldSkipCache(r)
+		
+		var data []map[string]interface{}
+		var err error
+
+		if skipCache {
+			// Generate fresh data (bypass cache)
 			data, err = h.registry.GenerateData(resourceName, count)
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),
 				})
 				return
+			}
+			w.Header().Set("X-Cache", "BYPASS")
+		} else {
+			// Try to get data from cache
+			var found bool
+			data, found = h.cache.Get(resourceName, count)
+			if !found {
+				// Fallback: generate data on the fly (shouldn't happen after warmup)
+				data, err = h.registry.GenerateData(resourceName, count)
+				if err != nil {
+					respondJSON(w, http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+					return
+				}
+				w.Header().Set("X-Cache", "MISS")
+			} else {
+				w.Header().Set("X-Cache", "HIT")
 			}
 		}
 
@@ -54,36 +75,72 @@ func (h *DynamicHandler) GetSingle(resourceName string) http.HandlerFunc {
 		// Get the ID from URL
 		id := chi.URLParam(r, "id")
 
-		// Try to get item by ID from cache
-		item, found := h.cache.GetByID(resourceName, id)
-		if found {
-			respondJSON(w, http.StatusOK, item)
-			return
-		}
+		// Check if cache should be bypassed
+		skipCache := shouldSkipCache(r)
+		
+		var item map[string]interface{}
 
-		// If not found in cache, get first item and set the requested ID
-		data, found := h.cache.Get(resourceName, 1)
-		if !found || len(data) == 0 {
-			// Fallback: generate on the fly
-			var err error
-			data, err = h.registry.GenerateData(resourceName, 1)
+		if skipCache {
+			// Generate fresh data (bypass cache)
+			data, err := h.registry.GenerateData(resourceName, 1)
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),
 				})
 				return
 			}
-		}
+			if len(data) == 0 {
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": "Resource not found",
+				})
+				return
+			}
+			item = data[0]
+			w.Header().Set("X-Cache", "BYPASS")
+		} else {
+			// Try to get item by ID from cache
+			var found bool
+			item, found = h.cache.GetByID(resourceName, id)
+			if found {
+				w.Header().Set("X-Cache", "HIT")
+				// Set the ID to the requested ID before returning
+				if idNum, err := strconv.Atoi(id); err == nil {
+					item["id"] = idNum
+				} else {
+					item["id"] = id
+				}
+				respondJSON(w, http.StatusOK, item)
+				return
+			}
 
-		if len(data) == 0 {
-			respondJSON(w, http.StatusNotFound, map[string]string{
-				"error": "Resource not found",
-			})
-			return
+			// If not found in cache, get first item and set the requested ID
+			data, found := h.cache.Get(resourceName, 1)
+			if !found || len(data) == 0 {
+				// Fallback: generate on the fly
+				var err error
+				data, err = h.registry.GenerateData(resourceName, 1)
+				if err != nil {
+					respondJSON(w, http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+					return
+				}
+				w.Header().Set("X-Cache", "MISS")
+			} else {
+				w.Header().Set("X-Cache", "PARTIAL")
+			}
+
+			if len(data) == 0 {
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": "Resource not found",
+				})
+				return
+			}
+
+			item = data[0]
 		}
 
 		// Set the ID to the requested ID
-		item = data[0]
 		if idNum, err := strconv.Atoi(id); err == nil {
 			item["id"] = idNum
 		} else {
@@ -163,17 +220,38 @@ func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
 		// Get count parameter
 		count := getCountParam(r, 10)
 
-		// Get data from cache
-		data, found := h.cache.Get(resourceName, count)
-		if !found {
-			// Fallback: generate data on the fly
-			var err error
+		// Check if cache should be bypassed
+		skipCache := shouldSkipCache(r)
+		
+		var data []map[string]interface{}
+		var err error
+
+		if skipCache {
+			// Generate fresh data (bypass cache)
 			data, err = h.registry.GenerateData(resourceName, count)
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),
 				})
 				return
+			}
+			w.Header().Set("X-Cache", "BYPASS")
+		} else {
+			// Get data from cache
+			var found bool
+			data, found = h.cache.Get(resourceName, count)
+			if !found {
+				// Fallback: generate data on the fly
+				data, err = h.registry.GenerateData(resourceName, count)
+				if err != nil {
+					respondJSON(w, http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+					return
+				}
+				w.Header().Set("X-Cache", "MISS")
+			} else {
+				w.Header().Set("X-Cache", "HIT")
 			}
 		}
 
@@ -205,36 +283,72 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 			return
 		}
 
-		// Try to get item by ID from cache
-		item, found := h.cache.GetByID(resourceName, id)
-		if found {
-			respondJSON(w, http.StatusOK, item)
-			return
-		}
+		// Check if cache should be bypassed
+		skipCache := shouldSkipCache(r)
+		
+		var item map[string]interface{}
 
-		// If not found in cache, get first item and set the requested ID
-		data, found := h.cache.Get(resourceName, 1)
-		if !found || len(data) == 0 {
-			// Fallback: generate on the fly
-			var err error
-			data, err = h.registry.GenerateData(resourceName, 1)
+		if skipCache {
+			// Generate fresh data (bypass cache)
+			data, err := h.registry.GenerateData(resourceName, 1)
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),
 				})
 				return
 			}
-		}
+			if len(data) == 0 {
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": "Resource not found",
+				})
+				return
+			}
+			item = data[0]
+			w.Header().Set("X-Cache", "BYPASS")
+		} else {
+			// Try to get item by ID from cache
+			var found bool
+			item, found = h.cache.GetByID(resourceName, id)
+			if found {
+				w.Header().Set("X-Cache", "HIT")
+				// Set the ID to the requested ID before returning
+				if idNum, err := strconv.Atoi(id); err == nil {
+					item["id"] = idNum
+				} else {
+					item["id"] = id
+				}
+				respondJSON(w, http.StatusOK, item)
+				return
+			}
 
-		if len(data) == 0 {
-			respondJSON(w, http.StatusNotFound, map[string]string{
-				"error": "Resource not found",
-			})
-			return
+			// If not found in cache, get first item and set the requested ID
+			data, found := h.cache.Get(resourceName, 1)
+			if !found || len(data) == 0 {
+				// Fallback: generate on the fly
+				var err error
+				data, err = h.registry.GenerateData(resourceName, 1)
+				if err != nil {
+					respondJSON(w, http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+					return
+				}
+				w.Header().Set("X-Cache", "MISS")
+			} else {
+				w.Header().Set("X-Cache", "PARTIAL")
+			}
+
+			if len(data) == 0 {
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": "Resource not found",
+				})
+				return
+			}
+
+			item = data[0]
 		}
 
 		// Set the ID to the requested ID
-		item = data[0]
 		if idNum, err := strconv.Atoi(id); err == nil {
 			item["id"] = idNum
 		} else {
@@ -263,6 +377,26 @@ func getCountParam(r *http.Request, defaultCount int) int {
 	}
 
 	return count
+}
+
+// shouldSkipCache checks if cache should be bypassed for this request
+func shouldSkipCache(r *http.Request) bool {
+	// Check query parameter: ?nocache=true or ?fresh=true
+	if r.URL.Query().Get("nocache") == "true" || r.URL.Query().Get("fresh") == "true" {
+		return true
+	}
+
+	// Check headers: X-No-Cache: true or Cache-Control: no-cache
+	if r.Header.Get("X-No-Cache") == "true" {
+		return true
+	}
+
+	cacheControl := r.Header.Get("Cache-Control")
+	if cacheControl == "no-cache" || cacheControl == "no-store" {
+		return true
+	}
+
+	return false
 }
 
 // respondJSON writes JSON response

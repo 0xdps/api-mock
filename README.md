@@ -304,7 +304,27 @@ GET /admin/cache/stats
 POST /admin/cache/refresh
 ```
 
-📖 **Full cache documentation:** [backend/CACHE.md](./backend/CACHE.md)
+### Cache Bypass
+
+Get fresh data without using cache (useful for testing/demos):
+
+```bash
+# Via query parameter
+GET /users?nocache=true
+GET /products?fresh=true
+
+# Via header
+curl -H "X-No-Cache: true" http://localhost:8080/users
+curl -H "Cache-Control: no-cache" http://localhost:8080/products
+```
+
+All responses include `X-Cache` header:
+- `X-Cache: HIT` - Served from cache
+- `X-Cache: BYPASS` - Cache bypassed
+- `X-Cache: MISS` - Cache miss
+
+📖 **Full cache documentation:** [backend/CACHE.md](./backend/CACHE.md)  
+📖 **Cache bypass guide:** [backend/CACHE_BYPASS.md](./backend/CACHE_BYPASS.md)
 
 ## 🚀 Deployment
 
