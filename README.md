@@ -230,7 +230,7 @@ Define custom paths, aliases, and methods in schemas:
   "x-resource": {
     "name": "todos",
     "routes": {
-      "path": "/v1/todos",
+      "path": "/todos",
       "aliases": ["/tasks", "/todo-items"],
       "methods": ["GET", "POST"]
     }
@@ -239,7 +239,7 @@ Define custom paths, aliases, and methods in schemas:
 ```
 
 This creates:
-- ✅ `GET /v1/todos`
+- ✅ `GET /todos`
 - ✅ `GET /tasks` (alias)
 - ✅ `GET /todo-items` (alias)
 

@@ -1,5 +1,5 @@
 # Build stage
-# Schemas are committed to git via pre-commit hook
+# Schemas are copied from shared/schemas/ during build (single source of truth)
 
 FROM golang:1.23-alpine AS builder
 
@@ -11,6 +11,9 @@ RUN go mod download
 
 # Copy backend source code
 COPY backend/ ./
+
+# Copy schemas from shared/ (source of truth) to embedded directory (flattened)
+COPY shared/schemas/*/*.json ./internal/schema/embedded/
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/server ./cmd/server

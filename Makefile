@@ -33,7 +33,7 @@ api-test: ## Run backend tests
 # Frontend
 web-dev: generate-types ## Run frontend development server
 	@echo "Starting frontend development server..."
-	@cd frontend && npm run dev
+	@cd frontend && NODE_OPTIONS='--no-warnings' npm run dev
 
 web-build: generate-types ## Build frontend
 	@echo "Building frontend..."

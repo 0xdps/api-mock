@@ -4,8 +4,8 @@
   "description": "Mockly frontend - Modern UI for 100+ mock API resources across 14 categories",
   "private": true,
   "scripts": {
-    "predev": "cd .. && npm run generate-types",
-    "prebuild": "cd .. && npm run generate-types",
+    "predev": "node ../shared/scripts/generate-types.js",
+    "prebuild": "node ../shared/scripts/generate-types.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -17,7 +17,7 @@ var embeddedSchemas embed.FS
 
 // RouteConfig defines custom route configuration
 type RouteConfig struct {
-	Path    string   `json:"path,omitempty"`    // Custom path (e.g., "/v1/users")
+	Path    string   `json:"path,omitempty"`    // Custom path (e.g., "/users")
 	Methods []string `json:"methods,omitempty"` // Allowed methods ["GET", "POST", etc.]
 	Aliases []string `json:"aliases,omitempty"` // Additional paths for this resource
 }
@@ -27,7 +27,7 @@ type ResourceMetadata struct {
 	Name        string       `json:"name"`
 	Singular    string       `json:"singular"`
 	Description string       `json:"description"`
-	Group       string       `json:"group,omitempty"` // Resource group (e.g., "people", "commerce")
+	Group       string       `json:"group,omitempty"`  // Resource group (e.g., "people", "commerce")
 	Routes      *RouteConfig `json:"routes,omitempty"` // Custom route configuration
 }
 
@@ -193,17 +193,17 @@ func (r *Registry) sortFieldsByDependency(fields []Field) []Field {
 		"body":        6, // Depends on title
 		"description": 6, // Depends on title/name
 	}
-	
+
 	// Sort fields by priority, keeping relative order for same priority
 	sorted := make([]Field, len(fields))
 	copy(sorted, fields)
-	
+
 	// Simple bubble sort by priority
 	for i := 0; i < len(sorted); i++ {
 		for j := i + 1; j < len(sorted); j++ {
 			priI := priority[sorted[i].Name]
 			priJ := priority[sorted[j].Name]
-			
+
 			// Default priority is 10 if not specified
 			if priI == 0 {
 				priI = 10
@@ -211,13 +211,13 @@ func (r *Registry) sortFieldsByDependency(fields []Field) []Field {
 			if priJ == 0 {
 				priJ = 10
 			}
-			
+
 			if priI > priJ {
 				sorted[i], sorted[j] = sorted[j], sorted[i]
 			}
 		}
 	}
-	
+
 	return sorted
 }
 
@@ -294,10 +294,10 @@ func (r *Registry) GenerateData(resourceName string, count int) ([]map[string]in
 // generateRecords generates multiple records using gofakeit
 func (r *Registry) generateRecords(fields []Field, count int) ([]map[string]interface{}, error) {
 	records := make([]map[string]interface{}, count)
-	
+
 	for i := 0; i < count; i++ {
 		record := make(map[string]interface{})
-		
+
 		// Generate fields, allowing later fields to reference earlier ones
 		for _, field := range fields {
 			value := r.generateValueWithContext(field, record)
@@ -305,14 +305,14 @@ func (r *Registry) generateRecords(fields []Field, count int) ([]map[string]inte
 		}
 		records[i] = record
 	}
-	
+
 	return records, nil
 }
 
 // generateValueWithContext generates a value based on field type and previously generated fields
 func (r *Registry) generateValueWithContext(field Field, record map[string]interface{}) interface{} {
 	faker := gofakeit.New(0)
-	
+
 	// Handle derived fields that depend on other fields
 	switch field.Generator {
 	case "email":
@@ -334,7 +334,7 @@ func (r *Registry) generateValueWithContext(field Field, record map[string]inter
 			}
 		}
 	}
-	
+
 	return r.generateValue(field, faker)
 }
 
@@ -352,7 +352,7 @@ func (r *Registry) generateSmartTitle(faker *gofakeit.Faker) string {
 		"Common %s Mistakes to Avoid",
 		"Best Practices for %s",
 	}
-	
+
 	topics := []string{
 		"Web Development", "Mobile Apps", "Cloud Computing", "Data Science",
 		"Machine Learning", "API Design", "User Experience", "Cybersecurity",
@@ -360,15 +360,15 @@ func (r *Registry) generateSmartTitle(faker *gofakeit.Faker) string {
 		"Python Programming", "JavaScript", "System Design", "Database Optimization",
 		"Testing Strategies", "Performance Tuning", "Code Review", "Agile Methods",
 	}
-	
+
 	template := templates[faker.IntRange(0, len(templates)-1)]
 	topic := topics[faker.IntRange(0, len(topics)-1)]
-	
+
 	if strings.Contains(template, "%d") {
 		year := faker.IntRange(2020, 2025)
 		return fmt.Sprintf(template, topic, year)
 	}
-	
+
 	return fmt.Sprintf(template, topic)
 }
 
@@ -376,15 +376,15 @@ func (r *Registry) generateSmartTitle(faker *gofakeit.Faker) string {
 func (r *Registry) generateSmartBody(title string, faker *gofakeit.Faker) string {
 	// Extract key topic from title if possible
 	intro := fmt.Sprintf("In this article, we'll explore %s. ", title)
-	
+
 	paragraphs := []string{intro}
-	
+
 	// Add 2-3 paragraphs
 	numParagraphs := faker.IntRange(2, 4)
 	for i := 0; i < numParagraphs; i++ {
 		paragraphs = append(paragraphs, faker.Paragraph(3, 5, 12, " "))
 	}
-	
+
 	return strings.Join(paragraphs, "\n\n")
 }
 
@@ -392,31 +392,31 @@ func (r *Registry) generateSmartBody(title string, faker *gofakeit.Faker) string
 func (r *Registry) generateSmartEmail(record map[string]interface{}, faker *gofakeit.Faker) string {
 	firstName, hasFirst := record["first_name"].(string)
 	lastName, hasLast := record["last_name"].(string)
-	
+
 	if hasFirst && hasLast && firstName != "" && lastName != "" {
 		// Clean names (remove spaces, lowercase)
 		firstName = strings.ToLower(strings.ReplaceAll(firstName, " ", ""))
 		lastName = strings.ToLower(strings.ReplaceAll(lastName, " ", ""))
-		
+
 		// Choose email format randomly
 		formats := []string{
-			"%s.%s@example.com",           // john.doe@example.com
-			"%s%s@example.com",             // johndoe@example.com
-			"%s_%s@example.com",            // john_doe@example.com
-			"%s.%s@company.com",            // john.doe@company.com
-			"%s%d@example.com",             // john123@example.com
+			"%s.%s@example.com", // john.doe@example.com
+			"%s%s@example.com",  // johndoe@example.com
+			"%s_%s@example.com", // john_doe@example.com
+			"%s.%s@company.com", // john.doe@company.com
+			"%s%d@example.com",  // john123@example.com
 		}
-		
+
 		format := formats[faker.IntRange(0, len(formats)-1)]
-		
+
 		if strings.Contains(format, "%d") {
 			// Format with number (first name only)
 			return fmt.Sprintf(format, firstName, faker.IntRange(1, 9999))
 		}
-		
+
 		return fmt.Sprintf(format, firstName, lastName)
 	}
-	
+
 	// Fallback to random email
 	return faker.Email()
 }
@@ -425,24 +425,24 @@ func (r *Registry) generateSmartEmail(record map[string]interface{}, faker *gofa
 func (r *Registry) generateSmartUsername(record map[string]interface{}, faker *gofakeit.Faker) string {
 	firstName, hasFirst := record["first_name"].(string)
 	lastName, hasLast := record["last_name"].(string)
-	
+
 	if hasFirst && hasLast && firstName != "" && lastName != "" {
 		// Clean names
 		firstName = strings.ToLower(strings.ReplaceAll(firstName, " ", ""))
 		lastName = strings.ToLower(strings.ReplaceAll(lastName, " ", ""))
-		
+
 		// Choose username format randomly
 		formats := []string{
-			"%s%s",              // johndoe
-			"%s_%s",             // john_doe
-			"%s.%s",             // john.doe
-			"%s%s%d",            // johndoe123
-			"%s_%d",             // john_123
-			"%c%s",              // jdoe (first initial + last name)
+			"%s%s",   // johndoe
+			"%s_%s",  // john_doe
+			"%s.%s",  // john.doe
+			"%s%s%d", // johndoe123
+			"%s_%d",  // john_123
+			"%c%s",   // jdoe (first initial + last name)
 		}
-		
+
 		format := formats[faker.IntRange(0, len(formats)-1)]
-		
+
 		switch format {
 		case "%s%s":
 			return firstName + lastName
@@ -461,7 +461,7 @@ func (r *Registry) generateSmartUsername(record map[string]interface{}, faker *g
 			return firstName + lastName
 		}
 	}
-	
+
 	// Fallback to random username
 	return faker.Username()
 }
@@ -474,7 +474,7 @@ func (r *Registry) generateSmartAvatar(record map[string]interface{}, faker *gof
 		avatarNum := (id % 70) + 1
 		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", avatarNum)
 	}
-	
+
 	// Use first_name for seeding if available
 	if firstName, ok := record["first_name"].(string); ok && firstName != "" {
 		// Generate a consistent number from the name
@@ -485,14 +485,14 @@ func (r *Registry) generateSmartAvatar(record map[string]interface{}, faker *gof
 		avatarNum := (sum % 70) + 1
 		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", avatarNum)
 	}
-	
+
 	// Fallback to random avatar
 	return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", faker.IntRange(1, 70))
 }
 
 // generateValue generates a single value based on field type
 func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{} {
-	
+
 	switch field.Generator {
 	// Numbers
 	case "autoincrement", "random_int", "number":
@@ -511,7 +511,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Float64Range(0, 1000)
 	case "price":
 		return faker.Price(10, 1000)
-	
+
 	// Personal Info
 	case "name":
 		return faker.Name()
@@ -527,7 +527,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Password(true, true, true, false, false, 12)
 	case "gender":
 		return faker.Gender()
-	
+
 	// Address & Location
 	case "address":
 		return faker.Address().Address
@@ -545,11 +545,11 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Latitude()
 	case "longitude":
 		return faker.Longitude()
-	
+
 	// Contact
 	case "phone", "phone_number":
 		return faker.Phone()
-	
+
 	// Internet
 	case "url":
 		return faker.URL()
@@ -565,7 +565,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.MacAddress()
 	case "user_agent":
 		return faker.UserAgent()
-	
+
 	// Dates & Time
 	case "date":
 		return faker.Date().Format("2006-01-02")
@@ -575,7 +575,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.FutureDate().Format("2006-01-02T15:04:05Z07:00")
 	case "date_time":
 		return faker.Date().Format("2006-01-02T15:04:05Z07:00")
-	
+
 	// Text
 	case "word":
 		return faker.Word()
@@ -585,7 +585,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Paragraph(2, 4, 12, " ")
 	case "text":
 		return faker.Paragraph(3, 5, 15, " ")
-	
+
 	// Company
 	case "company":
 		return faker.Company()
@@ -593,7 +593,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.JobTitle()
 	case "catch_phrase":
 		return faker.BuzzWord()
-	
+
 	// E-commerce
 	case "currency":
 		currencies := []string{"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "INR"}
@@ -601,7 +601,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "category":
 		categories := []string{"Electronics", "Clothing", "Books", "Home & Garden", "Sports", "Toys", "Food & Beverage", "Health & Beauty", "Automotive", "Office"}
 		return categories[faker.IntRange(0, len(categories)-1)]
-	
+
 	// Weather
 	case "temperature":
 		return float64(faker.IntRange(-20, 45)) + faker.Float64Range(0, 0.9)
@@ -633,7 +633,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.IntRange(1000, 50000)
 	case "uv_index":
 		return faker.IntRange(0, 11)
-	
+
 	// Geographic
 	case "country_code":
 		codes := []string{"US", "GB", "FR", "DE", "JP", "CN", "IN", "BR", "CA", "AU", "MX", "ES", "IT", "KR", "RU"}
@@ -677,7 +677,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.IntRange(0, 5000)
 	case "city_population":
 		return faker.IntRange(10000, 20000000)
-	
+
 	// Financial
 	case "exchange_rate":
 		return faker.Float64Range(0.1, 10.0)
@@ -713,7 +713,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Float64Range(0.01, 50000.0)
 	case "crypto_supply":
 		return float64(faker.IntRange(1000000, 100000000000))
-	
+
 	// Business
 	case "industry":
 		industries := []string{"Technology", "Finance", "Healthcare", "Education", "Manufacturing", "Retail", "Real Estate", "Entertainment", "Transportation", "Energy"}
@@ -740,7 +740,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "organization_type":
 		types := []string{"Corporation", "Non-Profit", "Government", "Startup", "SME", "Enterprise"}
 		return types[faker.IntRange(0, len(types)-1)]
-	
+
 	// Education
 	case "course_title":
 		titles := []string{
@@ -772,7 +772,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return majors[faker.IntRange(0, len(majors)-1)]
 	case "gpa":
 		return faker.Float64Range(2.0, 4.0)
-	
+
 	// Media & Entertainment
 	case "movie_title":
 		titles := []string{
@@ -824,7 +824,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "news_category":
 		categories := []string{"Politics", "Business", "Technology", "Science", "Health", "Entertainment", "Sports", "World"}
 		return categories[faker.IntRange(0, len(categories)-1)]
-	
+
 	// Food & Travel
 	case "cuisine":
 		cuisines := []string{"Italian", "Chinese", "Japanese", "Mexican", "Indian", "French", "Thai", "Mediterranean", "American", "Korean"}
@@ -875,7 +875,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "event_category":
 		categories := []string{"Conference", "Workshop", "Seminar", "Meetup", "Concert", "Festival", "Networking"}
 		return categories[faker.IntRange(0, len(categories)-1)]
-	
+
 	// Transportation
 	case "flight_number":
 		airlines := []string{"AA", "UA", "DL", "BA", "LH", "AF", "EK"}
@@ -899,7 +899,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "flight_status":
 		statuses := []string{"Scheduled", "Boarding", "Departed", "In Air", "Landed", "Delayed", "Cancelled"}
 		return statuses[faker.IntRange(0, len(statuses)-1)]
-	
+
 	// Automotive
 	case "car_make":
 		makes := []string{"Toyota", "Honda", "Ford", "BMW", "Mercedes", "Audi", "Tesla", "Chevrolet", "Nissan", "Volkswagen"}
@@ -938,7 +938,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 			selected[i] = features[faker.IntRange(0, len(features)-1)]
 		}
 		return selected
-	
+
 	// Real Estate
 	case "property_title":
 		return faker.Sentence(5)
@@ -966,7 +966,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 			selected[i] = features[faker.IntRange(0, len(features)-1)]
 		}
 		return selected
-	
+
 	// Business Operations
 	case "invoice_number":
 		return fmt.Sprintf("INV-%06d", faker.IntRange(1, 999999))
@@ -1004,7 +1004,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "billing_cycle":
 		cycles := []string{"Monthly", "Quarterly", "Annually"}
 		return cycles[faker.IntRange(0, len(cycles)-1)]
-	
+
 	// Project Management
 	case "project_status":
 		statuses := []string{"Planning", "In Progress", "On Hold", "Completed", "Cancelled"}
@@ -1023,7 +1023,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "meeting_status":
 		statuses := []string{"Scheduled", "In Progress", "Completed", "Cancelled"}
 		return statuses[faker.IntRange(0, len(statuses)-1)]
-	
+
 	// Support & Communication
 	case "ticket_number":
 		return fmt.Sprintf("TKT-%06d", faker.IntRange(1, 999999))
@@ -1039,7 +1039,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "notification_type":
 		types := []string{"Info", "Success", "Warning", "Error", "Message", "System"}
 		return types[faker.IntRange(0, len(types)-1)]
-	
+
 	// Sports
 	case "sport":
 		sports := []string{"Football", "Basketball", "Baseball", "Soccer", "Hockey", "Tennis", "Golf", "Cricket"}
@@ -1061,7 +1061,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 	case "match_status":
 		statuses := []string{"Scheduled", "Live", "Halftime", "Finished", "Postponed", "Cancelled"}
 		return statuses[faker.IntRange(0, len(statuses)-1)]
-	
+
 	// Misc
 	case "status":
 		statuses := []string{"Active", "Inactive", "Pending", "Draft", "Published"}
@@ -1118,7 +1118,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return families[faker.IntRange(0, len(families)-1)]
 	case "speakers":
 		return faker.IntRange(1000000, 1500000000)
-	
+
 	// Other
 	case "bool", "boolean":
 		return faker.Bool()
@@ -1126,7 +1126,7 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return fmt.Sprintf("https://picsum.photos/400/300?random=%d", faker.IntRange(1, 10000))
 	case "avatar":
 		return fmt.Sprintf("https://i.pravatar.cc/300?img=%d", faker.IntRange(1, 70))
-	
+
 	default:
 		// Fallback to sentence for better-looking data
 		return faker.Sentence(5)
@@ -1181,7 +1181,7 @@ func (r *Registry) SupportsMethod(resourceName string, method string) bool {
 // GetAllGroups returns all unique groups from loaded schemas
 func (r *Registry) GetAllGroups() map[string][]string {
 	groups := make(map[string][]string)
-	
+
 	for name, schema := range r.Schemas {
 		group := schema.Resource.Group
 		if group == "" {
@@ -1189,14 +1189,14 @@ func (r *Registry) GetAllGroups() map[string][]string {
 		}
 		groups[group] = append(groups[group], name)
 	}
-	
+
 	return groups
 }
 
 // GetSchemasByGroup returns all schemas in a specific group
 func (r *Registry) GetSchemasByGroup(groupName string) map[string]*Schema {
 	schemas := make(map[string]*Schema)
-	
+
 	for name, schema := range r.Schemas {
 		group := schema.Resource.Group
 		if group == "" {
@@ -1206,14 +1206,14 @@ func (r *Registry) GetSchemasByGroup(groupName string) map[string]*Schema {
 			schemas[name] = schema
 		}
 	}
-	
+
 	return schemas
 }
 
 // GetResourceNamesByGroup returns all resource names in a specific group
 func (r *Registry) GetResourceNamesByGroup(groupName string) []string {
 	var names []string
-	
+
 	for name, schema := range r.Schemas {
 		group := schema.Resource.Group
 		if group == "" {
@@ -1223,6 +1223,6 @@ func (r *Registry) GetResourceNamesByGroup(groupName string) []string {
 			names = append(names, name)
 		}
 	}
-	
+
 	return names
 }

@@ -9,7 +9,7 @@
     "description": "Simple todo items with completion status",
     "group": "productivity",
     "routes": {
-      "path": "/v1/todos",
+      "path": "/todos",
       "methods": ["GET", "POST"],
       "aliases": ["/tasks", "/todo-items"]
     }
