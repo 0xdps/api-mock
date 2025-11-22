@@ -24,7 +24,10 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
   const [requestTime, setRequestTime] = useState<number | null>(null)
   const [resourceSearch, setResourceSearch] = useState('')
   const [isResourceDropdownOpen, setIsResourceDropdownOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const resourceDropdownRef = useRef<HTMLDivElement>(null)
+  const [groupSearch, setGroupSearch] = useState('')
+  const [isGroupDropdownOpen, setIsGroupDropdownOpen] = useState(false)
+  const groupDropdownRef = useRef<HTMLDivElement>(null)
   
   // Filter resources based on selected group
   const availableResources = selectedGroup 
@@ -36,16 +39,25 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
     resource.toLowerCase().includes(resourceSearch.toLowerCase())
   )
   
+  // Filter groups based on search
+  const groupNames = Object.keys(groups).sort()
+  const filteredGroups = groupNames.filter(group =>
+    group.toLowerCase().includes(groupSearch.toLowerCase())
+  )
+  
   // Get the group for the selected resource
   const resourceGroup = Object.entries(groups).find(([_, resources]) => 
     resources.includes(selectedResource)
   )?.[0] || ''
   
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (resourceDropdownRef.current && !resourceDropdownRef.current.contains(event.target as Node)) {
         setIsResourceDropdownOpen(false)
+      }
+      if (groupDropdownRef.current && !groupDropdownRef.current.contains(event.target as Node)) {
+        setIsGroupDropdownOpen(false)
       }
     }
     
@@ -127,6 +139,13 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
     }
   }
   
+  // Handle group selection
+  const handleGroupSelect = (group: string) => {
+    handleGroupChange(group)
+    setGroupSearch('')
+    setIsGroupDropdownOpen(false)
+  }
+  
   // Handle resource selection
   const handleResourceSelect = (resource: string) => {
     setSelectedResource(resource)
@@ -143,27 +162,75 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
           
           {/* Group & Resource Selection - Single Row */}
           <div className="grid grid-cols-2 gap-4 mb-4">
-            {/* Group Selection (Optional) */}
-            <div>
+            {/* Group Selection (Optional) - Searchable */}
+            <div ref={groupDropdownRef} className="relative">
               <label className="block text-slate-300 mb-2 font-medium text-sm">
                 Filter by Group (Optional)
               </label>
-              <select
-                value={selectedGroup}
-                onChange={(e) => handleGroupChange(e.target.value)}
-                className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
-              >
-                <option value="">All Resources</option>
-                {Object.keys(groups).sort().map(group => (
-                  <option key={group} value={group}>
-                    {group} ({groups[group].length})
-                  </option>
-                ))}
-              </select>
+              
+              {/* Selected Group Display / Search Input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={isGroupDropdownOpen ? groupSearch : (selectedGroup || 'All Resources')}
+                  onChange={(e) => {
+                    setGroupSearch(e.target.value)
+                    setIsGroupDropdownOpen(true)
+                  }}
+                  onFocus={() => setIsGroupDropdownOpen(true)}
+                  placeholder="Search groups..."
+                  className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm pr-8"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsGroupDropdownOpen(!isGroupDropdownOpen)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Dropdown List */}
+              {isGroupDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-slate-700 border border-slate-600 rounded shadow-lg max-h-60 overflow-auto">
+                  {/* All Resources Option */}
+                  <button
+                    type="button"
+                    onClick={() => handleGroupSelect('')}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-600 transition ${
+                      !selectedGroup ? 'bg-primary-500/20 text-primary-400' : 'text-white'
+                    }`}
+                  >
+                    All Resources
+                  </button>
+                  
+                  {/* Filtered Groups */}
+                  {filteredGroups.length > 0 ? (
+                    filteredGroups.map(group => (
+                      <button
+                        key={group}
+                        type="button"
+                        onClick={() => handleGroupSelect(group)}
+                        className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-600 transition ${
+                          group === selectedGroup ? 'bg-primary-500/20 text-primary-400' : 'text-white'
+                        }`}
+                      >
+                        {group} <span className="text-slate-400">({groups[group].length})</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-slate-400">
+                      No groups found
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             
             {/* Resource Selection - Searchable */}
-            <div ref={dropdownRef} className="relative">
+            <div ref={resourceDropdownRef} className="relative">
               <label className="block text-slate-300 mb-2 font-medium text-sm">
                 Resource
                 {resourceGroup && !selectedGroup && (

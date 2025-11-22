@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ResourceCard } from '@/components/ResourceCard'
 import { CodeExample } from '@/components/CodeExample'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -7,33 +6,7 @@ import { getApiUrl } from '@/lib/api'
 
 const API_URL = getApiUrl()
 
-async function getResourcesAndGroups() {
-  try {
-    const res = await fetch(`${API_URL}/`, { 
-      next: { revalidate: 300 } // Revalidate every 5 minutes (ISR)
-    })
-    
-    if (!res.ok) {
-      throw new Error(`API returned ${res.status}`)
-    }
-    
-    const data = await res.json()
-    return {
-      resources: data.resources || [],
-      groups: data.groups || {}
-    }
-  } catch (error) {
-    console.error('Failed to fetch resources:', error)
-    // Fallback
-    return {
-      resources: ['users', 'posts', 'products', 'comments', 'todos', 'reviews'],
-      groups: {}
-    }
-  }
-}
-
 export default async function Home() {
-  const { resources, groups } = await getResourcesAndGroups()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -53,14 +26,16 @@ export default async function Home() {
             href="/docs" 
             className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold transition"
           >
-            View Documentation
+            Explore & Try API →
           </Link>
-          <Link 
-            href="/playground" 
+          <a 
+            href="https://github.com/0xdps/fake-stack" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-lg font-semibold transition"
           >
-            Try API Playground
-          </Link>
+            View on GitHub
+          </a>
         </div>
       </section>
 
@@ -140,8 +115,8 @@ fetch('${API_URL}/people/users?count=5')
         </div>
       </section>
 
-      {/* Available Resources - Grouped */}
-      <section className="container mx-auto px-4 py-16">
+      {/* Available Resources - Hidden */}
+      {/* <section className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-white mb-8 text-center">
           Available Resources
         </h2>
@@ -189,7 +164,7 @@ fetch('${API_URL}/people/users?count=5')
           </Link>
           {' '}for detailed API usage and examples.
         </p>
-      </section>
+      </section> */}
 
       {/* Use Cases */}
       <section className="container mx-auto px-4 py-16">
@@ -238,24 +213,4 @@ function UseCaseCard({ title, description }: { title: string; description: strin
       <p className="text-slate-400">{description}</p>
     </div>
   )
-}
-
-function getGroupIcon(group: string): string {
-  const icons: Record<string, string> = {
-    people: '👥',
-    business: '💼',
-    commerce: '🛒',
-    content: '📝',
-    social: '💬',
-    media: '🎬',
-    travel: '✈️',
-    location: '🌍',
-    finance: '💰',
-    food: '🍔',
-    education: '🎓',
-    sports: '⚽',
-    productivity: '✅',
-    reference: '📚',
-  }
-  return icons[group] || '📦'
 }

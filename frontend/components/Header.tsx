@@ -10,10 +10,7 @@ export function Header() {
         
         <div className="flex items-center gap-6">
           <Link href="/docs" className="text-slate-300 hover:text-white transition">
-            Docs
-          </Link>
-          <Link href="/playground" className="text-slate-300 hover:text-white transition">
-            Playground
+            Documentation
           </Link>
           <a 
             href="https://github.com/0xdps/fake-stack" 
