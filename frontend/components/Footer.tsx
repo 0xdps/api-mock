@@ -2,27 +2,45 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-700 bg-slate-900/50 backdrop-blur mt-20">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="text-white font-semibold mb-4">Mockly</h3>
-            <p className="text-slate-400 text-sm">
-              Free, schema-driven mock API service for developers.
+    <footer className="border-t border-slate-800/50 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-md mt-20">
+      <div className="container mx-auto px-6 py-8">
+        <div className="grid grid-cols-[50%_25%_25%] gap-12 text-sm">
+          {/* Column 1: Copyright & Info */}
+          <div className="space-y-2 text-slate-400 flex flex-col justify-center">
+            <p className="text-slate-300 leading-relaxed">
+              © 2025 Mockly. Free, schema-driven mock API service for developers.
+            </p>
+            <p className="text-sm">
+              Powered by{' '}
+              <a 
+                href="https://dps.codes" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium underline decoration-blue-400/30 hover:decoration-blue-300"
+              >
+                0xdps
+              </a>
             </p>
           </div>
           
+          {/* Column 2: Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Resources</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Resources</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href="/docs" className="text-slate-400 hover:text-white transition">
-                  Documentation
+                <Link 
+                  href="/docs" 
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">Documentation</span>
                 </Link>
               </li>
               <li>
-                <Link href="/playground" className="text-slate-400 hover:text-white transition">
-                  API Playground
+                <Link 
+                  href="/playground" 
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">Playground</span>
                 </Link>
               </li>
               <li>
@@ -30,31 +48,70 @@ export function Footer() {
                   href="https://github.com/0xdps/fake-stack" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white transition"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
                 >
-                  GitHub Repository
+                  <span className="group-hover:translate-x-0.5 transition-transform">GitHub</span>
                 </a>
               </li>
             </ul>
           </div>
           
+          {/* Column 3: Projects */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Related Projects</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Projects</h3>
+            <ul className="space-y-2">
               <li>
                 <a 
-                  href="https://fakestack.readthedocs.io" 
-                  className="text-slate-400 hover:text-white transition"
+                  href="https://www.mockly.codes/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
                 >
-                  FakeStack (Python/Go/Node)
+                  <span className="group-hover:translate-x-0.5 transition-transform">Mockly</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://pinboard-gpt.dps.codes/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">Pinboard GPT</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://devutil.dps.codes/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">DevUtil</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.pingpong.codes/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">PingPong</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://fake-stack.readthedocs.io/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">Fake Stack</span>
                 </a>
               </li>
             </ul>
           </div>
-        </div>
-        
-        <div className="mt-8 pt-8 border-t border-slate-700 text-center text-slate-400 text-sm">
-          <p>© 2025 Mockly. Open source and free to use.</p>
         </div>
       </div>
     </footer>
