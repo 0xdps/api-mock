@@ -12,11 +12,12 @@ import (
 
 // Cache stores pre-generated mock data for all resources
 type Cache struct {
-	mu       sync.RWMutex
-	data     map[string][]map[string]interface{} // resourceName -> array of items
-	metadata CacheMetadata
-	registry *schema.Registry
-	seed     int64
+	mu        sync.RWMutex
+	data      map[string][]map[string]interface{} // resourceName -> array of items
+	metaCache map[string]interface{}              // resourceName -> meta response
+	metadata  CacheMetadata
+	registry  *schema.Registry
+	seed      int64
 }
 
 // CacheMetadata tracks cache statistics
@@ -39,9 +40,10 @@ type Config struct {
 // NewCache creates a new cache instance
 func NewCache(registry *schema.Registry, config Config) *Cache {
 	return &Cache{
-		data:     make(map[string][]map[string]interface{}),
-		registry: registry,
-		seed:     config.Seed,
+		data:      make(map[string][]map[string]interface{}),
+		metaCache: make(map[string]interface{}),
+		registry:  registry,
+		seed:      config.Seed,
 		metadata: CacheMetadata{
 			ItemsPerResource: config.ItemsPerResource,
 		},
@@ -75,6 +77,39 @@ func (c *Cache) Warmup() error {
 		totalItems += len(data)
 		log.Printf("  ✓ Cached %d items for %s", len(data), resourceName)
 	}
+
+	// Pre-generate and cache meta responses
+	log.Printf("📋 Pre-generating meta responses...")
+	for _, resourceName := range resourceNames {
+		schema, ok := c.registry.GetSchema(resourceName)
+		if !ok {
+			continue
+		}
+
+		// Use root-level description if available, otherwise fall back to x-resource description
+		description := schema.Description
+		if description == "" {
+			description = schema.Resource.Description
+		}
+
+		metaResponse := map[string]interface{}{
+			"$schema":       schema.SchemaURI,
+			"title":         schema.Title,
+			"type":          schema.Type,
+			"description":   description,
+			"name":          schema.Resource.Name,
+			"singular":      schema.Resource.Singular,
+			"group":         schema.Resource.Group,
+			"properties":    schema.Properties,
+			"required":      schema.Required,
+			"property_count": len(schema.Properties),
+		}
+
+		c.mu.Lock()
+		c.metaCache[resourceName] = metaResponse
+		c.mu.Unlock()
+	}
+	log.Printf("  ✓ Cached meta responses for %d resources", len(resourceNames))
 
 	c.metadata.WarmupTime = time.Since(startTime)
 	c.metadata.TotalResources = len(resourceNames)
@@ -140,6 +175,21 @@ func (c *Cache) GetByID(resourceName string, id interface{}) (map[string]interfa
 	return nil, false
 }
 
+// GetMeta retrieves cached meta response for a resource
+func (c *Cache) GetMeta(resourceName string) (interface{}, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	meta, exists := c.metaCache[resourceName]
+	if !exists {
+		return nil, false
+	}
+
+	// Return a copy to prevent external modification
+	// For simplicity, we'll return the cached value directly since it's read-only
+	return meta, true
+}
+
 // Refresh regenerates all cached data
 func (c *Cache) Refresh() error {
 	log.Printf("🔄 Refreshing cache...")
@@ -147,6 +197,7 @@ func (c *Cache) Refresh() error {
 	// Reset stats
 	c.mu.Lock()
 	c.data = make(map[string][]map[string]interface{})
+	c.metaCache = make(map[string]interface{})
 	c.metadata.Hits = 0
 	c.metadata.Misses = 0
 	c.mu.Unlock()

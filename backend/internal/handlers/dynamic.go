@@ -32,7 +32,7 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 
 		// Check if cache should be bypassed
 		skipCache := shouldSkipCache(r)
-		
+
 		var data []map[string]interface{}
 		var err error
 
@@ -77,7 +77,7 @@ func (h *DynamicHandler) GetSingle(resourceName string) http.HandlerFunc {
 
 		// Check if cache should be bypassed
 		skipCache := shouldSkipCache(r)
-		
+
 		var item map[string]interface{}
 
 		if skipCache {
@@ -154,6 +154,18 @@ func (h *DynamicHandler) GetSingle(resourceName string) http.HandlerFunc {
 // GetResourceMetadata returns metadata about a resource
 func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Try to get from cache first
+		meta, found := h.cache.GetMeta(resourceName)
+		if found {
+			// Set cache headers for 1 hour
+			w.Header().Set("Cache-Control", "public, max-age=3600")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(meta)
+			return
+		}
+
+		// Fallback: generate on the fly if not in cache (shouldn't happen after warmup)
 		schema, ok := h.registry.GetSchema(resourceName)
 		if !ok {
 			respondJSON(w, http.StatusNotFound, map[string]string{
@@ -169,18 +181,24 @@ func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFu
 		}
 
 		// Return full schema with metadata
-		respondJSON(w, http.StatusOK, map[string]interface{}{
-			"$schema":     schema.SchemaURI,
-			"title":       schema.Title,
-			"type":        schema.Type,
-			"description": description,
-			"name":        schema.Resource.Name,
-			"singular":    schema.Resource.Singular,
-			"group":       schema.Resource.Group,
-			"properties":  schema.Properties,
-			"required":    schema.Required,
+		metaResponse := map[string]interface{}{
+			"$schema":        schema.SchemaURI,
+			"title":          schema.Title,
+			"type":           schema.Type,
+			"description":    description,
+			"name":           schema.Resource.Name,
+			"singular":       schema.Resource.Singular,
+			"group":          schema.Resource.Group,
+			"properties":     schema.Properties,
+			"required":       schema.Required,
 			"property_count": len(schema.Properties),
-		})
+		}
+
+		// Set cache headers for 1 hour
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(metaResponse)
 	}
 }
 
@@ -233,7 +251,7 @@ func (h *DynamicHandler) GetGroupResourceCollection() http.HandlerFunc {
 
 		// Check if cache should be bypassed
 		skipCache := shouldSkipCache(r)
-		
+
 		var data []map[string]interface{}
 		var err error
 
@@ -296,7 +314,7 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 
 		// Check if cache should be bypassed
 		skipCache := shouldSkipCache(r)
-		
+
 		var item map[string]interface{}
 
 		if skipCache {
