@@ -1,1 +1,17 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Booking","type":"object","x-resource":{"name":"bookings","singular":"booking","group":"travel"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"type":{"type":"string","x-generator":"word"},"reference":{"type":"string","x-generator":"uuid"},"check_in":{"type":"string","format":"date","x-generator":"future_date"},"check_out":{"type":"string","format":"date","x-generator":"future_date"},"total":{"type":"number","x-generator":"price"},"status":{"type":"string","x-generator":"status"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Booking",
+  "type": "object",
+  "description": "Travel booking reservation with user, booking type, reference number, check-in/check-out dates, total cost, and status. Used for hotel bookings, travel reservations, and accommodation management systems.",
+  "x-resource": {"name": "bookings", "singular": "booking", "group": "travel"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the booking", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who made the booking", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "type": {"type": "string", "description": "Booking type (e.g., hotel, flight, car_rental, tour)", "x-generator": "word"},
+    "reference": {"type": "string", "description": "Unique booking reference number or confirmation code", "x-generator": "uuid"},
+    "check_in": {"type": "string", "format": "date", "description": "Check-in date for accommodation bookings", "x-generator": "future_date"},
+    "check_out": {"type": "string", "format": "date", "description": "Check-out date for accommodation bookings", "x-generator": "future_date"},
+    "total": {"type": "number", "description": "Total booking cost", "x-generator": "price"},
+    "status": {"type": "string", "description": "Booking status (e.g., confirmed, pending, cancelled, completed)", "x-generator": "status"}
+  }
+}

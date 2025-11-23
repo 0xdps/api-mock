@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Account","type":"object","x-resource":{"name":"accounts","singular":"account","group":"finance"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"account_number":{"type":"string","x-generator":"uuid"},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"balance":{"type":"number","x-generator":"price"},"currency":{"type":"string","x-generator":"currency"},"type":{"type":"string","x-generator":"word"},"status":{"type":"string","x-generator":"status"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Account",
+  "type": "object",
+  "description": "Financial account record for a user, tracking account number, balance, currency, account type, and status. Used for banking, payment, and financial management systems.",
+  "x-resource": {"name": "accounts", "singular": "account", "group": "finance"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the account record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "account_number": {"type": "string", "description": "Unique account number or identifier for the financial account", "x-generator": "uuid"},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who owns this account", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "balance": {"type": "number", "description": "Current account balance in the account's currency", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the account (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "type": {"type": "string", "description": "Account type (e.g., checking, savings, credit, investment, wallet)", "x-generator": "word"},
+    "status": {"type": "string", "description": "Account status (e.g., active, inactive, frozen, closed, pending)", "x-generator": "status"}
+  }
+}

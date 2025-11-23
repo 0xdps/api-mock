@@ -2,21 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Player",
   "type": "object",
+  "description": "Sports player profile with team information, position, physical attributes, nationality, and performance statistics (goals, assists). Used for sports databases, fantasy sports, and team management systems.",
   "x-resource": {"name": "players", "singular": "player", "group": "people"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "name"},
-    "jersey_number": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 99}},
-    "position": {"type": "string", "x-generator": "position"},
-    "team_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "team_name": {"type": "string", "x-generator": "team_name"},
-    "age": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 18, "max": 40}},
-    "height": {"type": "number", "description": "Height in cm", "x-generator": "height"},
-    "weight": {"type": "number", "description": "Weight in kg", "x-generator": "weight"},
-    "nationality": {"type": "string", "x-generator": "country"},
-    "goals": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
-    "assists": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
-    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"}
+    "id": {"type": "integer", "description": "Unique identifier for the player", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Full name of the player", "x-generator": "name"},
+    "jersey_number": {"type": "integer", "description": "Jersey or uniform number", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 99}},
+    "position": {"type": "string", "description": "Playing position (e.g., Forward, Midfielder, Defender, Goalkeeper)", "x-generator": "position"},
+    "team_id": {"type": "integer", "description": "Foreign key reference to the team the player belongs to", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "team_name": {"type": "string", "description": "Name of the team the player plays for", "x-generator": "team_name"},
+    "age": {"type": "integer", "description": "Player's age", "x-generator": "random_int", "x-generator-params": {"min": 18, "max": 40}},
+    "height": {"type": "number", "description": "Player height in centimeters", "x-generator": "height"},
+    "weight": {"type": "number", "description": "Player weight in kilograms", "x-generator": "weight"},
+    "nationality": {"type": "string", "description": "Player's country of origin", "x-generator": "country"},
+    "goals": {"type": "integer", "description": "Total number of goals scored", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "assists": {"type": "integer", "description": "Total number of assists made", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
+    "photo": {"type": "string", "format": "uri", "description": "URL to the player's photo", "x-generator": "avatar"}
   }
 }
-

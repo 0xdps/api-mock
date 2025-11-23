@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Tag",
   "type": "object",
+  "description": "Product tag for labeling and categorizing items with keywords. Tags help with search, filtering, and organization. Tracks tag name, usage statistics, and visual styling.",
   "x-resource": {"name": "tags", "singular": "tag", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "name": {"type": "string", "x-generator": "word"},
-    "slug": {"type": "string", "x-generator": "slug"},
-    "description": {"type": "string", "x-generator": "sentence"},
-    "color": {"type": "string", "x-generator": "color"},
-    "usage_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the tag", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "description": "Tag name or keyword (e.g., sale, new, featured, organic, limited-edition)", "x-generator": "word"},
+    "slug": {"type": "string", "description": "URL-friendly version of the tag name for use in web addresses", "x-generator": "slug"},
+    "description": {"type": "string", "description": "Brief description explaining what products this tag applies to", "x-generator": "sentence"},
+    "color": {"type": "string", "description": "Hex color code or color name for visual tag styling and display", "x-generator": "color"},
+    "usage_count": {"type": "integer", "description": "Number of products currently tagged with this tag", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the tag was created", "x-generator": "past_date"}
   }
 }
 

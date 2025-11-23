@@ -2,21 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "News",
   "type": "object",
+  "description": "News article or news story with headline, content, source attribution, geographic and language information. Used for news websites, RSS feeds, and news aggregation platforms.",
   "x-resource": {"name": "news", "singular": "news_article", "group": "content"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "headline": {"type": "string", "x-generator": "sentence"},
-    "summary": {"type": "string", "x-generator": "paragraph"},
-    "content": {"type": "string", "x-generator": "paragraph"},
-    "author": {"type": "string", "x-generator": "name"},
-    "source": {"type": "string", "x-generator": "company"},
-    "category": {"type": "string", "x-generator": "news_category"},
-    "country": {"type": "string", "x-generator": "country"},
-    "language": {"type": "string", "x-generator": "language"},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "image": {"type": "string", "format": "uri", "x-generator": "image_url"},
-    "url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "published_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the news article", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "headline": {"type": "string", "description": "Main headline or title of the news story", "x-generator": "sentence"},
+    "summary": {"type": "string", "description": "Brief summary or lead paragraph of the news article", "x-generator": "paragraph"},
+    "content": {"type": "string", "description": "Full news article content and body text", "x-generator": "paragraph"},
+    "author": {"type": "string", "description": "Full name of the journalist or reporter who wrote the article", "x-generator": "name"},
+    "source": {"type": "string", "description": "News organization or publication that published the article (e.g., BBC, CNN, Reuters)", "x-generator": "company"},
+    "category": {"type": "string", "description": "News category (e.g., Politics, Business, Technology, Sports, World)", "x-generator": "news_category"},
+    "country": {"type": "string", "description": "Country where the news story originates or is most relevant", "x-generator": "country"},
+    "language": {"type": "string", "description": "Language code of the article content (e.g., en, es, fr)", "x-generator": "language"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of topic tags for categorization and search", "x-generator": "tags"},
+    "image": {"type": "string", "format": "uri", "description": "URL to the featured image or photo accompanying the news article", "x-generator": "image_url"},
+    "url": {"type": "string", "format": "uri", "description": "Original URL where the news article was published", "x-generator": "url"},
+    "published_at": {"type": "string", "format": "date-time", "description": "Timestamp when the news article was published", "x-generator": "past_date"}
   }
 }
-

@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Destination","type":"object","x-resource":{"name":"destinations","singular":"destination","group":"travel"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"name":{"type":"string","x-generator":"city"},"country":{"type":"string","x-generator":"country"},"description":{"type":"string","x-generator":"paragraph"},"image":{"type":"string","format":"uri","x-generator":"image_url"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}},"popular":{"type":"boolean","x-generator":"boolean"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Destination",
+  "type": "object",
+  "description": "Travel destination with name, country, description, image, rating, and popularity status. Used for travel guides, destination discovery, and tourism platforms.",
+  "x-resource": {"name": "destinations", "singular": "destination", "group": "travel"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the destination", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "description": "Name of the travel destination (city, region, or landmark)", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the destination is located", "x-generator": "country"},
+    "description": {"type": "string", "description": "Detailed description of the destination, attractions, and travel information", "x-generator": "paragraph"},
+    "image": {"type": "string", "format": "uri", "description": "URL to a representative image of the destination", "x-generator": "image_url"},
+    "rating": {"type": "number", "description": "Average traveler rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "popular": {"type": "boolean", "description": "Whether this destination is popular or trending", "x-generator": "boolean"}
+  }
+}

@@ -1,1 +1,14 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Like","type":"object","x-resource":{"name":"likes","singular":"like","group":"social"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"target_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"target_type":{"type":"string","x-generator":"word"},"created_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Like",
+  "type": "object",
+  "description": "Like or reaction record tracking which user liked which content item (post, comment, etc.), with target type and creation timestamp. Used for social media platforms, content engagement tracking, and reaction systems.",
+  "x-resource": {"name": "likes", "singular": "like", "group": "social"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the like record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who liked the content", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "target_id": {"type": "integer", "description": "ID of the content item that was liked (post, comment, etc.)", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "target_type": {"type": "string", "description": "Type of content that was liked (e.g., post, comment, video, photo)", "x-generator": "word"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the like was created", "x-generator": "past_date"}
+  }
+}

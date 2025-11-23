@@ -2,22 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Podcast",
   "type": "object",
+  "description": "Podcast episode with audio content, metadata, host information, episode details, and engagement metrics. Used for podcast platforms and audio content management.",
   "x-resource": {"name": "podcasts", "singular": "podcast", "group": "content"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "host": {"type": "string", "x-generator": "name"},
-    "category": {"type": "string", "x-generator": "podcast_category"},
-    "episode_number": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 500}},
-    "season": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10}},
-    "duration": {"type": "integer", "description": "Duration in minutes", "x-generator": "podcast_duration"},
-    "release_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "plays": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
-    "rating": {"type": "number", "x-generator": "rating"},
-    "language": {"type": "string", "x-generator": "language"},
-    "audio_url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "cover": {"type": "string", "format": "uri", "x-generator": "image_url"}
+    "id": {"type": "integer", "description": "Unique identifier for the podcast episode", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title of the podcast episode", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Episode description or show notes", "x-generator": "paragraph"},
+    "host": {"type": "string", "description": "Full name of the podcast host or hosts", "x-generator": "name"},
+    "category": {"type": "string", "description": "Podcast category or genre (e.g., Technology, Business, Comedy, True Crime)", "x-generator": "podcast_category"},
+    "episode_number": {"type": "integer", "description": "Episode number in the podcast series", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 500}},
+    "season": {"type": "integer", "description": "Season number if the podcast has seasons", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10}},
+    "duration": {"type": "integer", "description": "Episode duration in minutes", "x-generator": "podcast_duration"},
+    "release_date": {"type": "string", "format": "date", "description": "Date when the episode was released", "x-generator": "past_date"},
+    "plays": {"type": "integer", "description": "Total number of times the episode has been played or streamed", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "rating": {"type": "number", "description": "Average listener rating, typically on a scale of 1-5", "x-generator": "rating"},
+    "language": {"type": "string", "description": "Language code of the podcast content (e.g., en, es, fr)", "x-generator": "language"},
+    "audio_url": {"type": "string", "format": "uri", "description": "URL to the audio file or streaming link for the episode", "x-generator": "url"},
+    "cover": {"type": "string", "format": "uri", "description": "URL to the episode cover art or thumbnail image", "x-generator": "image_url"}
   }
 }
-

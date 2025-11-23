@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Currency",
   "type": "object",
-  "description": "Currency information and exchange rates",
+  "description": "Currency information including ISO codes, exchange rates, symbols, and countries of use. Used for currency conversion, international payments, and financial applications.",
   "x-resource": {
     "name": "currencies",
     "singular": "currency",
@@ -12,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Currency ID",
+      "description": "Unique identifier for the currency record",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -21,34 +21,34 @@
     },
     "code": {
       "type": "string",
-      "description": "ISO 4217 currency code",
+      "description": "ISO 4217 three-letter currency code (e.g., USD, EUR, GBP, JPY)",
       "x-generator": "currency_code"
     },
     "name": {
       "type": "string",
-      "description": "Currency name",
+      "description": "Full name of the currency (e.g., US Dollar, Euro, British Pound)",
       "x-generator": "currency_name"
     },
     "symbol": {
       "type": "string",
-      "description": "Currency symbol",
+      "description": "Currency symbol used for display (e.g., $, €, £, ¥)",
       "x-generator": "currency_symbol"
     },
     "exchange_rate": {
       "type": "number",
-      "description": "Exchange rate to USD",
+      "description": "Current exchange rate relative to USD (1 unit of this currency = X USD)",
       "x-generator": "exchange_rate"
     },
     "countries": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Countries using this currency",
+      "description": "Array of country names that use this currency as their official currency",
       "x-generator": "currency_countries"
     },
     "updated_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Last update time",
+      "description": "Timestamp when the exchange rate was last updated",
       "x-generator": "date_time"
     }
   },

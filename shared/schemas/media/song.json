@@ -2,16 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Song",
   "type": "object",
+  "description": "Individual song or track with artist, album association, duration, genre, playback statistics, and release date. Used for music streaming services, radio stations, and music databases.",
   "x-resource": {"name": "songs", "singular": "song", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "artist": {"type": "string", "x-generator": "name"},
-    "album": {"type": "string", "x-generator": "sentence"},
-    "duration": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 120, "max": 600}},
-    "genre": {"type": "string", "x-generator": "word"},
-    "url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "plays": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000000}},
-    "released_at": {"type": "string", "format": "date", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the song", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title of the song", "x-generator": "sentence"},
+    "artist": {"type": "string", "description": "Name of the artist or band who performed the song", "x-generator": "name"},
+    "album": {"type": "string", "description": "Name of the album this song belongs to", "x-generator": "sentence"},
+    "duration": {"type": "integer", "description": "Song duration in seconds", "x-generator": "random_int", "x-generator-params": {"min": 120, "max": 600}},
+    "genre": {"type": "string", "description": "Music genre of the song (e.g., Pop, Rock, Jazz, Country)", "x-generator": "word"},
+    "url": {"type": "string", "format": "uri", "description": "URL to the song audio file or streaming link", "x-generator": "url"},
+    "plays": {"type": "integer", "description": "Total number of times the song has been played", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000000}},
+    "released_at": {"type": "string", "format": "date", "description": "Date when the song was released", "x-generator": "past_date"}
   }
 }

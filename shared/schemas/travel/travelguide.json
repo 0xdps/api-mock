@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"TravelGuide","type":"object","x-resource":{"name":"travelguides","singular":"travelguide","group":"travel"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"destination":{"type":"string","x-generator":"city"},"title":{"type":"string","x-generator":"sentence"},"content":{"type":"string","x-generator":"paragraph"},"tips":{"type":"array","items":{"type":"string"},"x-generator":"tags"},"author":{"type":"string","x-generator":"name"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TravelGuide",
+  "type": "object",
+  "description": "Travel guide article with destination information, tips, author, rating, and content. Used for travel blogs, destination guides, and travel information platforms.",
+  "x-resource": {"name": "travelguides", "singular": "travelguide", "group": "travel"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the travel guide", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "destination": {"type": "string", "description": "Destination city or location the guide covers", "x-generator": "city"},
+    "title": {"type": "string", "description": "Title of the travel guide", "x-generator": "sentence"},
+    "content": {"type": "string", "description": "Full travel guide content with information, recommendations, and advice", "x-generator": "paragraph"},
+    "tips": {"type": "array", "items": {"type": "string"}, "description": "Array of travel tips and recommendations", "x-generator": "tags"},
+    "author": {"type": "string", "description": "Full name of the travel guide author", "x-generator": "name"},
+    "rating": {"type": "number", "description": "Average reader rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}}
+  }
+}

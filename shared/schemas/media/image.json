@@ -2,21 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Image",
   "type": "object",
+  "description": "Image file with metadata including dimensions, file size, format, photographer, location, tags, and URLs. Used for image hosting platforms, photo galleries, stock photo sites, and media libraries.",
   "x-resource": {"name": "images", "singular": "image", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "sentence"},
-    "url": {"type": "string", "format": "uri", "x-generator": "image_url"},
-    "thumbnail_url": {"type": "string", "format": "uri", "x-generator": "image_url"},
-    "width": {"type": "integer", "x-generator": "image_width"},
-    "height": {"type": "integer", "x-generator": "image_height"},
-    "size": {"type": "integer", "description": "Size in bytes", "x-generator": "file_size"},
-    "format": {"type": "string", "x-generator": "image_format"},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "photographer": {"type": "string", "x-generator": "name"},
-    "location": {"type": "string", "x-generator": "city"},
-    "uploaded_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the image", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or caption of the image", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Brief description of the image content", "x-generator": "sentence"},
+    "url": {"type": "string", "format": "uri", "description": "URL to the full-size image file", "x-generator": "image_url"},
+    "thumbnail_url": {"type": "string", "format": "uri", "description": "URL to a smaller thumbnail version of the image", "x-generator": "image_url"},
+    "width": {"type": "integer", "description": "Image width in pixels", "x-generator": "image_width"},
+    "height": {"type": "integer", "description": "Image height in pixels", "x-generator": "image_height"},
+    "size": {"type": "integer", "description": "File size in bytes", "x-generator": "file_size"},
+    "format": {"type": "string", "description": "Image file format (e.g., jpg, png, gif, webp, svg)", "x-generator": "image_format"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization and search", "x-generator": "tags"},
+    "photographer": {"type": "string", "description": "Full name of the photographer who took the image", "x-generator": "name"},
+    "location": {"type": "string", "description": "Location where the image was taken", "x-generator": "city"},
+    "uploaded_at": {"type": "string", "format": "date-time", "description": "Timestamp when the image was uploaded", "x-generator": "past_date"}
   }
 }
 

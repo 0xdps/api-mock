@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Blog","type":"object","x-resource":{"name":"blogs","singular":"blog","group":"content"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"title":{"type":"string","x-generator":"sentence"},"author":{"type":"string","x-generator":"name"},"content":{"type":"string","x-generator":"paragraph"},"tags":{"type":"array","items":{"type":"string"},"x-generator":"tags"},"views":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":0,"max":100000}},"published_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Blog",
+  "type": "object",
+  "description": "Blog post entry with content, author information, tags, and engagement metrics. Used for personal blogs, company blogs, and content management systems.",
+  "x-resource": {"name": "blogs", "singular": "blog", "group": "content"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the blog post", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or headline of the blog post", "x-generator": "sentence"},
+    "author": {"type": "string", "description": "Full name of the blog post author", "x-generator": "name"},
+    "content": {"type": "string", "description": "Full blog post content and body text", "x-generator": "paragraph"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of topic tags for categorization", "x-generator": "tags"},
+    "views": {"type": "integer", "description": "Total number of page views for this blog post", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "published_at": {"type": "string", "format": "date-time", "description": "Timestamp when the blog post was published", "x-generator": "past_date"}
+  }
+}

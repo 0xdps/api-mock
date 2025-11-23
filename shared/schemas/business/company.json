@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Company",
   "type": "object",
-  "description": "Company information",
+  "description": "Comprehensive business entity information including corporate details, financial metrics, organizational structure, and contact information. Used for company profiles, directories, and business intelligence.",
   "x-resource": {
     "name": "companies",
     "singular": "company",
@@ -12,66 +12,81 @@
   "properties": {
     "id": {
       "type": "integer",
+      "description": "Unique identifier for the company record",
       "x-generator": "random_int",
       "x-generator-params": {"min": 1, "max": 10000}
     },
     "name": {
       "type": "string",
+      "description": "Official legal name of the company",
       "x-generator": "company"
     },
     "slogan": {
       "type": "string",
+      "description": "Company tagline or marketing slogan that represents the brand",
       "x-generator": "catch_phrase"
     },
     "description": {
       "type": "string",
+      "description": "Detailed description of the company's business, mission, products, and services",
       "x-generator": "paragraph"
     },
     "industry": {
       "type": "string",
+      "description": "Primary industry sector the company operates in (e.g., Software, Manufacturing, Retail)",
       "x-generator": "industry"
     },
     "size": {
       "type": "string",
+      "description": "Company size classification based on employee count (e.g., startup, small, medium, large, enterprise)",
       "x-generator": "company_size"
     },
     "founded_year": {
       "type": "integer",
+      "description": "Year the company was established or incorporated",
       "x-generator": "founded_year"
     },
     "headquarters": {
       "type": "string",
+      "description": "City where the company's main headquarters or corporate office is located",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
+      "description": "Country where the company is headquartered or primarily operates",
       "x-generator": "country"
     },
     "website": {
       "type": "string",
       "format": "uri",
+      "description": "Official company website URL",
       "x-generator": "url"
     },
     "email": {
       "type": "string",
       "format": "email",
+      "description": "Primary corporate email address for general inquiries",
       "x-generator": "email"
     },
     "phone": {
       "type": "string",
+      "description": "Main corporate phone number for business inquiries",
       "x-generator": "phone"
     },
     "revenue": {
       "type": "number",
+      "description": "Annual revenue or total sales figure, typically in the company's primary currency",
       "x-generator": "revenue"
     },
     "employees": {
       "type": "integer",
+      "description": "Total number of employees working for the company worldwide",
       "x-generator": "employees"
     },
     "logo": {
       "type": "string",
       "format": "uri",
+      "description": "URL to the company's official logo image",
       "x-generator": "image_url"
     }
   }

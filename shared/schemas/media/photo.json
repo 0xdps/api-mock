@@ -2,16 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Photo",
   "type": "object",
+  "description": "Photograph with photographer attribution, dimensions, tags, engagement metrics, and upload timestamp. Used for photo sharing platforms, social media, and photography portfolios.",
   "x-resource": {"name": "photos", "singular": "photo", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "photographer": {"type": "string", "x-generator": "name"},
-    "url": {"type": "string", "format": "uri", "x-generator": "image_url"},
-    "width": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 800, "max": 4000}},
-    "height": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 600, "max": 3000}},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "likes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
-    "uploaded_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the photo", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "title": {"type": "string", "description": "Title or caption of the photo", "x-generator": "sentence"},
+    "photographer": {"type": "string", "description": "Full name of the photographer who took the photo", "x-generator": "name"},
+    "url": {"type": "string", "format": "uri", "description": "URL to the photo image file", "x-generator": "image_url"},
+    "width": {"type": "integer", "description": "Photo width in pixels", "x-generator": "random_int", "x-generator-params": {"min": 800, "max": 4000}},
+    "height": {"type": "integer", "description": "Photo height in pixels", "x-generator": "random_int", "x-generator-params": {"min": 600, "max": 3000}},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization and search", "x-generator": "tags"},
+    "likes": {"type": "integer", "description": "Number of likes or positive reactions the photo has received", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "uploaded_at": {"type": "string", "format": "date-time", "description": "Timestamp when the photo was uploaded", "x-generator": "past_date"}
   }
 }

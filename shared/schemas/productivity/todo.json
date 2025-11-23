@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Todo",
   "type": "object",
-  "description": "Todo items for task management",
+  "description": "Simple todo item with title, completion status, due date, priority level, and owner. Used for personal task management, to-do lists, and productivity applications.",
   "x-resource": {
     "name": "todos",
     "singular": "todo",
@@ -26,7 +26,7 @@
     },
     "user_id": {
       "type": "integer",
-      "description": "Owner user ID",
+      "description": "Foreign key reference to the user who owns this todo item",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -35,23 +35,23 @@
     },
     "title": {
       "type": "string",
-      "description": "Todo title",
+      "description": "Title or description of the todo item",
       "x-generator": "sentence"
     },
     "completed": {
       "type": "boolean",
-      "description": "Completion status",
+      "description": "Whether the todo item has been completed",
       "x-generator": "boolean"
     },
     "due_date": {
       "type": "string",
       "format": "date-time",
-      "description": "Due date",
+      "description": "Date and time when the todo item is due",
       "x-generator": "future_date"
     },
     "priority": {
       "type": "integer",
-      "description": "Priority level (1-5)",
+      "description": "Priority level from 1 (lowest) to 5 (highest)",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,

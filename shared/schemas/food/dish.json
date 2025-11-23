@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Dish","type":"object","x-resource":{"name":"dishes","singular":"dish","group":"food"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"name":{"type":"string","x-generator":"sentence"},"description":{"type":"string","x-generator":"paragraph"},"cuisine":{"type":"string","x-generator":"word"},"price":{"type":"number","x-generator":"price"},"ingredients":{"type":"array","items":{"type":"string"},"x-generator":"tags"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dish",
+  "type": "object",
+  "description": "Food dish or menu item with name, description, cuisine type, price, ingredients list, and customer rating. Used for restaurant menus, food delivery apps, and culinary platforms.",
+  "x-resource": {"name": "dishes", "singular": "dish", "group": "food"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the dish", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Name of the dish (e.g., Margherita Pizza, Chicken Tikka Masala)", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the dish, preparation method, and flavors", "x-generator": "paragraph"},
+    "cuisine": {"type": "string", "description": "Cuisine type or origin (e.g., Italian, Indian, Japanese, Mexican)", "x-generator": "word"},
+    "price": {"type": "number", "description": "Price of the dish in the restaurant's currency", "x-generator": "price"},
+    "ingredients": {"type": "array", "items": {"type": "string"}, "description": "List of main ingredients used in the dish", "x-generator": "tags"},
+    "rating": {"type": "number", "description": "Average customer rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}}
+  }
+}

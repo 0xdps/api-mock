@@ -2,19 +2,20 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Vendor",
   "type": "object",
+  "description": "Supplier or vendor company that provides goods or services. Contains vendor contact information, location, category, performance rating, and active status for procurement and supply chain management.",
   "x-resource": {"name": "vendors", "singular": "vendor", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "company"},
-    "contact_person": {"type": "string", "x-generator": "name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "phone": {"type": "string", "x-generator": "phone"},
-    "address": {"type": "string", "x-generator": "address"},
-    "city": {"type": "string", "x-generator": "city"},
-    "country": {"type": "string", "x-generator": "country"},
-    "category": {"type": "string", "x-generator": "category"},
-    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
-    "active": {"type": "boolean", "x-generator": "boolean"}
+    "id": {"type": "integer", "description": "Unique identifier for the vendor record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Official company name of the vendor or supplier", "x-generator": "company"},
+    "contact_person": {"type": "string", "description": "Full name of the primary contact person at the vendor company", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "description": "Primary business email address for vendor communications", "x-generator": "email"},
+    "phone": {"type": "string", "description": "Primary business phone number for vendor inquiries", "x-generator": "phone"},
+    "address": {"type": "string", "description": "Street address of the vendor's primary business location", "x-generator": "address"},
+    "city": {"type": "string", "description": "City where the vendor's business is located", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the vendor operates", "x-generator": "country"},
+    "category": {"type": "string", "description": "Category or type of products/services the vendor provides (e.g., IT Services, Office Supplies, Manufacturing)", "x-generator": "category"},
+    "rating": {"type": "number", "description": "Performance or quality rating of the vendor, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "active": {"type": "boolean", "description": "Whether the vendor relationship is currently active and orders can be placed", "x-generator": "boolean"}
   }
 }
 

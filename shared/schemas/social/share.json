@@ -1,1 +1,14 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Share","type":"object","x-resource":{"name":"shares","singular":"share","group":"social"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"content_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"platform":{"type":"string","x-generator":"word"},"created_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Share",
+  "type": "object",
+  "description": "Content share record tracking which user shared which content on which platform, with timestamp. Used for social media platforms, content sharing analytics, and social engagement tracking.",
+  "x-resource": {"name": "shares", "singular": "share", "group": "social"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the share record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who shared the content", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "content_id": {"type": "integer", "description": "ID of the content item that was shared (post, article, etc.)", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "platform": {"type": "string", "description": "Platform where the content was shared (e.g., facebook, twitter, linkedin, email)", "x-generator": "word"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the content was shared", "x-generator": "past_date"}
+  }
+}

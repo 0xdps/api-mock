@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Budget","type":"object","x-resource":{"name":"budgets","singular":"budget","group":"finance"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"category":{"type":"string","x-generator":"category"},"amount":{"type":"number","x-generator":"price"},"spent":{"type":"number","x-generator":"price"},"period":{"type":"string","x-generator":"word"},"currency":{"type":"string","x-generator":"currency"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Budget",
+  "type": "object",
+  "description": "Budget allocation for a user's spending category. Tracks budgeted amount, actual spending, period, and currency for personal finance and expense management.",
+  "x-resource": {"name": "budgets", "singular": "budget", "group": "finance"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the budget record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who owns this budget", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "category": {"type": "string", "description": "Budget category (e.g., groceries, entertainment, transportation, utilities)", "x-generator": "category"},
+    "amount": {"type": "number", "description": "Budgeted amount allocated for this category", "x-generator": "price"},
+    "spent": {"type": "number", "description": "Total amount already spent in this category for the current period", "x-generator": "price"},
+    "period": {"type": "string", "description": "Budget period (e.g., monthly, weekly, yearly, custom)", "x-generator": "word"},
+    "currency": {"type": "string", "description": "ISO currency code for budget amounts (e.g., USD, EUR, GBP)", "x-generator": "currency"}
+  }
+}

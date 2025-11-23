@@ -2,22 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Ticket",
   "type": "object",
+  "description": "Support ticket or issue tracking record with customer information, assignee, priority, status, category, and resolution timestamps. Used for customer support systems, help desks, and issue tracking platforms.",
   "x-resource": {"name": "tickets", "singular": "ticket", "group": "productivity"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "ticket_number": {"type": "string", "x-generator": "ticket_number"},
-    "subject": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "customer_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "customer_name": {"type": "string", "x-generator": "name"},
-    "customer_email": {"type": "string", "format": "email", "x-generator": "email"},
-    "assigned_to": {"type": "string", "x-generator": "name"},
-    "priority": {"type": "string", "x-generator": "priority"},
-    "status": {"type": "string", "x-generator": "ticket_status"},
-    "category": {"type": "string", "x-generator": "ticket_category"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "resolved_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the ticket", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "ticket_number": {"type": "string", "description": "Unique ticket reference number for customer tracking", "x-generator": "ticket_number"},
+    "subject": {"type": "string", "description": "Ticket subject or summary", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the issue or request", "x-generator": "paragraph"},
+    "customer_id": {"type": "integer", "description": "Foreign key reference to the customer who created the ticket", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "customer_name": {"type": "string", "description": "Full name of the customer", "x-generator": "name"},
+    "customer_email": {"type": "string", "format": "email", "description": "Customer email address for ticket communications", "x-generator": "email"},
+    "assigned_to": {"type": "string", "description": "Full name of the support agent assigned to handle this ticket", "x-generator": "name"},
+    "priority": {"type": "string", "description": "Ticket priority level (e.g., low, medium, high, urgent)", "x-generator": "priority"},
+    "status": {"type": "string", "description": "Current ticket status (e.g., open, in_progress, waiting, resolved, closed)", "x-generator": "ticket_status"},
+    "category": {"type": "string", "description": "Ticket category (e.g., technical, billing, feature_request, bug)", "x-generator": "ticket_category"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the ticket was created", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "description": "Timestamp when the ticket was last updated", "x-generator": "past_date"},
+    "resolved_at": {"type": "string", "format": "date-time", "description": "Timestamp when the ticket was resolved, null if still open", "x-generator": "past_date"}
   }
 }
-

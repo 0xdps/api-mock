@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Job",
   "type": "object",
-  "description": "Job postings",
+  "description": "Employment opportunity or job posting published by companies. Contains position details, requirements, compensation information, location, employment type, and posting validity dates.",
   "x-resource": {
     "name": "jobs",
     "singular": "job",
@@ -12,65 +12,80 @@
   "properties": {
     "id": {
       "type": "integer",
+      "description": "Unique identifier for the job posting",
       "x-generator": "random_int",
       "x-generator-params": {"min": 1, "max": 10000}
     },
     "title": {
       "type": "string",
+      "description": "Job title or position name (e.g., Senior Software Engineer, Marketing Manager)",
       "x-generator": "job"
     },
     "company": {
       "type": "string",
+      "description": "Name of the company or organization offering the position",
       "x-generator": "company"
     },
     "description": {
       "type": "string",
+      "description": "Detailed description of the role, responsibilities, and what the position entails",
       "x-generator": "paragraph"
     },
     "requirements": {
       "type": "string",
+      "description": "Required qualifications, skills, experience, and education needed for the position",
       "x-generator": "paragraph"
     },
     "location": {
       "type": "string",
+      "description": "City or office location where the job is based",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
+      "description": "Country where the job position is located",
       "x-generator": "country"
     },
     "type": {
       "type": "string",
+      "description": "Employment type (e.g., full-time, part-time, contract, internship, freelance)",
       "x-generator": "job_type"
     },
     "level": {
       "type": "string",
+      "description": "Experience level required (e.g., entry-level, mid-level, senior, executive)",
       "x-generator": "job_level"
     },
     "salary_min": {
       "type": "integer",
+      "description": "Minimum annual salary offered for the position",
       "x-generator": "salary_min"
     },
     "salary_max": {
       "type": "integer",
+      "description": "Maximum annual salary offered for the position",
       "x-generator": "salary_max"
     },
     "currency": {
       "type": "string",
+      "description": "ISO currency code for the salary range (e.g., USD, EUR, GBP)",
       "x-generator": "currency"
     },
     "remote": {
       "type": "boolean",
+      "description": "Whether the position allows remote work or work-from-home options",
       "x-generator": "boolean"
     },
     "posted_at": {
       "type": "string",
       "format": "date-time",
+      "description": "Timestamp when the job posting was published",
       "x-generator": "past_date"
     },
     "expires_at": {
       "type": "string",
       "format": "date-time",
+      "description": "Date and time when the job posting expires and applications are no longer accepted",
       "x-generator": "future_date"
     }
   }

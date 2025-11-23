@@ -2,13 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Wishlist",
   "type": "object",
+  "description": "Customer wishlist containing products they want to purchase later. Supports named wishlists, public/private visibility, and multiple items. Used for gift registries and saved-for-later functionality.",
   "x-resource": {"name": "wishlists", "singular": "wishlist", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "name": {"type": "string", "x-generator": "sentence"},
-    "items": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "is_public": {"type": "boolean", "x-generator": "boolean"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the wishlist", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who owns this wishlist", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "description": "Name or title of the wishlist (e.g., Birthday Wishlist, Wedding Registry, My Favorites)", "x-generator": "sentence"},
+    "items": {"type": "array", "items": {"type": "string"}, "description": "Array of product identifiers or names saved in this wishlist", "x-generator": "tags"},
+    "is_public": {"type": "boolean", "description": "Whether the wishlist is publicly visible and shareable, or private to the user", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the wishlist was created", "x-generator": "past_date"}
   }
 }

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "User",
-  "description": "A user resource",
+  "description": "User account with profile information including personal details, contact information, location, and account creation timestamp. Used for authentication, user management, and profile systems.",
   "x-resource": {
     "name": "users",
     "singular": "user",
@@ -21,7 +21,7 @@
     },
     "username": {
       "type": "string",
-      "description": "Username",
+      "description": "Unique username for login and identification",
       "x-generator": "username"
     },
     "email": {
@@ -32,41 +32,50 @@
     },
     "first_name": {
       "type": "string",
+      "description": "User's first name",
       "x-generator": "first_name"
     },
     "last_name": {
       "type": "string",
+      "description": "User's last name or surname",
       "x-generator": "last_name"
     },
     "avatar": {
       "type": "string",
       "format": "uri",
+      "description": "URL to the user's profile picture or avatar image",
       "x-generator": "avatar"
     },
     "gender": {
       "type": "string",
       "enum": ["male", "female"],
+      "description": "User's gender",
       "x-generator": "gender"
     },
     "phone": {
       "type": "string",
+      "description": "User's phone number",
       "x-generator": "phone"
     },
     "address": {
       "type": "string",
+      "description": "User's street address",
       "x-generator": "address"
     },
     "city": {
       "type": "string",
+      "description": "City where the user is located",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
+      "description": "Country where the user is located",
       "x-generator": "country"
     },
     "created_at": {
       "type": "string",
       "format": "date-time",
+      "description": "Timestamp when the user account was created",
       "x-generator": "past_date"
     }
   },

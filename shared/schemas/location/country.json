@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Country",
   "type": "object",
-  "description": "Country information",
+  "description": "Country geographic, demographic, and administrative information including ISO codes, capital city, region, population, area, languages, currency, and timezone. Used for country databases, internationalization, and geographic applications.",
   "x-resource": {
     "name": "countries",
     "singular": "country",
@@ -12,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Country ID",
+      "description": "Unique identifier for the country record",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -21,69 +21,69 @@
     },
     "name": {
       "type": "string",
-      "description": "Country name",
+      "description": "Official name of the country",
       "x-generator": "country"
     },
     "code": {
       "type": "string",
-      "description": "ISO 3166-1 alpha-2 code",
+      "description": "ISO 3166-1 alpha-2 two-letter country code (e.g., US, GB, FR, DE)",
       "x-generator": "country_code"
     },
     "code3": {
       "type": "string",
-      "description": "ISO 3166-1 alpha-3 code",
+      "description": "ISO 3166-1 alpha-3 three-letter country code (e.g., USA, GBR, FRA, DEU)",
       "x-generator": "country_code3"
     },
     "capital": {
       "type": "string",
-      "description": "Capital city",
+      "description": "Name of the capital city of the country",
       "x-generator": "capital"
     },
     "region": {
       "type": "string",
-      "description": "Geographic region",
+      "description": "Geographic region or continent (e.g., Europe, Asia, Americas, Africa)",
       "x-generator": "region"
     },
     "subregion": {
       "type": "string",
-      "description": "Geographic subregion",
+      "description": "Geographic subregion (e.g., Western Europe, South Asia, North America)",
       "x-generator": "subregion"
     },
     "population": {
       "type": "integer",
-      "description": "Population",
+      "description": "Total population of the country",
       "x-generator": "population"
     },
     "area": {
       "type": "number",
-      "description": "Area in km²",
+      "description": "Total land area in square kilometers",
       "x-generator": "area"
     },
     "languages": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Official languages",
+      "description": "Array of official languages spoken in the country",
       "x-generator": "languages_array"
     },
     "currency": {
       "type": "string",
-      "description": "Currency code",
+      "description": "ISO 4217 currency code used in the country (e.g., USD, EUR, GBP)",
       "x-generator": "currency_code"
     },
     "calling_code": {
       "type": "string",
-      "description": "Phone calling code",
+      "description": "International phone calling code (e.g., +1, +44, +33)",
       "x-generator": "calling_code"
     },
     "timezone": {
       "type": "string",
-      "description": "Primary timezone",
+      "description": "Primary IANA timezone identifier for the country",
       "x-generator": "timezone"
     },
     "flag": {
       "type": "string",
       "format": "uri",
-      "description": "Flag image URL",
+      "description": "URL to the country's flag image",
       "x-generator": "flag_url"
     }
   },

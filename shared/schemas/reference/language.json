@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Language",
   "type": "object",
-  "description": "World languages",
+  "description": "Language information including ISO codes, native names, language family, speaker count, and countries where spoken. Used for internationalization, language databases, and localization systems.",
   "x-resource": {
     "name": "languages",
     "singular": "language",
@@ -12,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Language ID",
+      "description": "Unique identifier for the language record",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -21,38 +21,38 @@
     },
     "name": {
       "type": "string",
-      "description": "Language name",
+      "description": "English name of the language (e.g., English, Spanish, French)",
       "x-generator": "language"
     },
     "native_name": {
       "type": "string",
-      "description": "Native language name",
+      "description": "Name of the language in its native script (e.g., Español, Français, 中文)",
       "x-generator": "language_native"
     },
     "code": {
       "type": "string",
-      "description": "ISO 639-1 code",
+      "description": "ISO 639-1 two-letter language code (e.g., en, es, fr, zh)",
       "x-generator": "language_code"
     },
     "code3": {
       "type": "string",
-      "description": "ISO 639-2 code",
+      "description": "ISO 639-2 three-letter language code (e.g., eng, spa, fra, zho)",
       "x-generator": "language_code3"
     },
     "family": {
       "type": "string",
-      "description": "Language family",
+      "description": "Language family or group (e.g., Indo-European, Sino-Tibetan, Afro-Asiatic)",
       "x-generator": "language_family"
     },
     "speakers": {
       "type": "integer",
-      "description": "Number of speakers",
+      "description": "Estimated number of native speakers worldwide",
       "x-generator": "speakers"
     },
     "countries": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Countries where spoken",
+      "description": "Array of country names where this language is spoken",
       "x-generator": "language_countries"
     }
   },

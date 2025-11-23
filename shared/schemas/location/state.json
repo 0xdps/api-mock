@@ -1,1 +1,15 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"State","type":"object","x-resource":{"name":"states","singular":"state","group":"location"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"name":{"type":"string","x-generator":"state"},"code":{"type":"string","x-generator":"word"},"country":{"type":"string","x-generator":"country"},"population":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":100000,"max":50000000}},"capital":{"type":"string","x-generator":"city"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "State",
+  "type": "object",
+  "description": "State or province administrative division with name, code, country, population, and capital city. Used for geographic databases, address systems, and administrative data.",
+  "x-resource": {"name": "states", "singular": "state", "group": "location"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the state record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "description": "Official name of the state or province (e.g., California, Ontario, Bavaria)", "x-generator": "state"},
+    "code": {"type": "string", "description": "State or province code or abbreviation (e.g., CA, ON, BY)", "x-generator": "word"},
+    "country": {"type": "string", "description": "Country where this state or province is located", "x-generator": "country"},
+    "population": {"type": "integer", "description": "Total population of the state or province", "x-generator": "random_int", "x-generator-params": {"min": 100000, "max": 50000000}},
+    "capital": {"type": "string", "description": "Capital city of the state or province", "x-generator": "city"}
+  }
+}

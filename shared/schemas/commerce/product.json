@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Product",
   "type": "object",
+  "description": "E-commerce product with name, description, pricing, category, brand, SKU, stock availability, and image. Used for online stores, product catalogs, and inventory management systems.",
   "x-resource": {
     "name": "products",
     "singular": "product",
@@ -11,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Unique identifier",
+      "description": "Unique identifier for the product",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -20,42 +21,42 @@
     },
     "name": {
       "type": "string",
-      "description": "Product name",
+      "description": "Product name or title displayed to customers",
       "x-generator": "sentence"
     },
     "description": {
       "type": "string",
-      "description": "Product description",
+      "description": "Detailed product description including features, specifications, and benefits",
       "x-generator": "paragraph"
     },
     "price": {
       "type": "number",
-      "description": "Product price",
+      "description": "Product price in the specified currency",
       "x-generator": "price"
     },
     "currency": {
       "type": "string",
-      "description": "Price currency",
+      "description": "ISO currency code for the product price (e.g., USD, EUR, GBP)",
       "x-generator": "currency"
     },
     "category": {
       "type": "string",
-      "description": "Product category",
+      "description": "Product category or classification (e.g., Electronics, Clothing, Books, Home & Garden)",
       "x-generator": "category"
     },
     "brand": {
       "type": "string",
-      "description": "Brand name",
+      "description": "Brand or manufacturer name of the product",
       "x-generator": "company"
     },
     "sku": {
       "type": "string",
-      "description": "Stock keeping unit",
+      "description": "Stock Keeping Unit - unique product identifier used for inventory tracking and order management",
       "x-generator": "uuid"
     },
     "stock": {
       "type": "integer",
-      "description": "Available quantity",
+      "description": "Current available stock quantity available for purchase",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 0,
@@ -65,7 +66,7 @@
     "image": {
       "type": "string",
       "format": "uri",
-      "description": "Product image URL",
+      "description": "URL to the product's main image or photo",
       "x-generator": "image_url"
     }
   },

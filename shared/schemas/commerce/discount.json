@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Discount",
   "type": "object",
+  "description": "Discount rule or promotion that can be applied to orders. Tracks discount code, type, value, eligibility requirements, usage limits, and expiration.",
   "x-resource": {"name": "discounts", "singular": "discount", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "code": {"type": "string", "x-generator": "uuid"},
-    "type": {"type": "string", "x-generator": "word"},
-    "value": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 5, "max": 100}},
-    "minimum_purchase": {"type": "number", "x-generator": "price"},
-    "max_uses": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 10, "max": 1000}},
-    "used_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
-    "expires_at": {"type": "string", "format": "date", "x-generator": "future_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the discount", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "code": {"type": "string", "description": "Unique discount code or identifier used to apply the discount", "x-generator": "uuid"},
+    "type": {"type": "string", "description": "Type of discount (e.g., percentage, fixed_amount, buy_one_get_one)", "x-generator": "word"},
+    "value": {"type": "number", "description": "Discount value - percentage (5-100) or fixed amount depending on type", "x-generator": "float", "x-generator-params": {"min": 5, "max": 100}},
+    "minimum_purchase": {"type": "number", "description": "Minimum order value required to qualify for this discount", "x-generator": "price"},
+    "max_uses": {"type": "integer", "description": "Maximum number of times this discount can be redeemed", "x-generator": "random_int", "x-generator-params": {"min": 10, "max": 1000}},
+    "used_count": {"type": "integer", "description": "Current number of times this discount has been used", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "expires_at": {"type": "string", "format": "date", "description": "Date when the discount expires and is no longer valid", "x-generator": "future_date"}
   }
 }

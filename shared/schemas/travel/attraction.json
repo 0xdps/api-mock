@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Attraction","type":"object","x-resource":{"name":"attractions","singular":"attraction","group":"travel"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"name":{"type":"string","x-generator":"sentence"},"city":{"type":"string","x-generator":"city"},"country":{"type":"string","x-generator":"country"},"type":{"type":"string","x-generator":"word"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}},"description":{"type":"string","x-generator":"paragraph"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Attraction",
+  "type": "object",
+  "description": "Tourist attraction or point of interest with name, location, type, rating, and description. Used for travel guides, tourism platforms, and destination discovery applications.",
+  "x-resource": {"name": "attractions", "singular": "attraction", "group": "travel"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the attraction", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Name of the tourist attraction or point of interest", "x-generator": "sentence"},
+    "city": {"type": "string", "description": "City where the attraction is located", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the attraction is located", "x-generator": "country"},
+    "type": {"type": "string", "description": "Type of attraction (e.g., Museum, Park, Monument, Beach, Landmark)", "x-generator": "word"},
+    "rating": {"type": "number", "description": "Average visitor rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "description": {"type": "string", "description": "Detailed description of the attraction and what visitors can expect", "x-generator": "paragraph"}
+  }
+}

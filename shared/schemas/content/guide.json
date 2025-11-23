@@ -1,1 +1,17 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Guide","type":"object","x-resource":{"name":"guides","singular":"guide","group":"content"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"title":{"type":"string","x-generator":"sentence"},"description":{"type":"string","x-generator":"paragraph"},"category":{"type":"string","x-generator":"category"},"author":{"type":"string","x-generator":"name"},"content":{"type":"string","x-generator":"paragraph"},"tags":{"type":"array","items":{"type":"string"},"x-generator":"tags"},"published_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Guide",
+  "type": "object",
+  "description": "Instructional guide or how-to article providing step-by-step instructions. Contains guide content, category, author, tags, and publication information for knowledge bases and help centers.",
+  "x-resource": {"name": "guides", "singular": "guide", "group": "content"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the guide", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title of the guide (e.g., How to Set Up Your Account, Getting Started Guide)", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Brief description or overview of what the guide covers", "x-generator": "paragraph"},
+    "category": {"type": "string", "description": "Category or topic area the guide belongs to (e.g., Setup, Troubleshooting, Advanced)", "x-generator": "category"},
+    "author": {"type": "string", "description": "Full name of the guide author", "x-generator": "name"},
+    "content": {"type": "string", "description": "Full guide content with instructions and explanations", "x-generator": "paragraph"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization and searchability", "x-generator": "tags"},
+    "published_at": {"type": "string", "format": "date-time", "description": "Timestamp when the guide was published", "x-generator": "past_date"}
+  }
+}

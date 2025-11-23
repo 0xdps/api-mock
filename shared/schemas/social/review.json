@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Review",
   "type": "object",
-  "description": "Product reviews",
+  "description": "Customer product review with rating, title, body text, verified purchase status, helpful votes, and creation date. Used for e-commerce platforms, review systems, and product feedback management.",
   "x-resource": {
     "name": "reviews",
     "singular": "review",
@@ -17,7 +17,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Review ID",
+      "description": "Unique identifier for the review",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -26,7 +26,7 @@
     },
     "product_id": {
       "type": "integer",
-      "description": "Product ID",
+      "description": "Foreign key reference to the product being reviewed",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -35,7 +35,7 @@
     },
     "user_id": {
       "type": "integer",
-      "description": "Reviewer user ID",
+      "description": "Foreign key reference to the user who wrote the review",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -44,7 +44,7 @@
     },
     "rating": {
       "type": "integer",
-      "description": "Rating (1-5 stars)",
+      "description": "Rating from 1 to 5 stars",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -53,22 +53,22 @@
     },
     "title": {
       "type": "string",
-      "description": "Review title",
+      "description": "Title or headline of the review",
       "x-generator": "sentence"
     },
     "body": {
       "type": "string",
-      "description": "Review content",
+      "description": "Detailed review content or body text",
       "x-generator": "paragraph"
     },
     "verified_purchase": {
       "type": "boolean",
-      "description": "Verified buyer",
+      "description": "Whether the reviewer is a verified purchaser of the product",
       "x-generator": "boolean"
     },
     "helpful_count": {
       "type": "integer",
-      "description": "Helpful votes",
+      "description": "Number of users who found this review helpful",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 0,
@@ -78,7 +78,7 @@
     "created_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Review date",
+      "description": "Timestamp when the review was posted",
       "x-generator": "past_date"
     }
   },

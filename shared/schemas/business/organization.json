@@ -2,21 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Organization",
   "type": "object",
+  "description": "General organizational entity that can represent companies, non-profits, institutions, or any structured group. Contains organizational details, contact information, size metrics, and founding information.",
   "x-resource": {"name": "organizations", "singular": "organization", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "company"},
-    "type": {"type": "string", "x-generator": "organization_type"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "website": {"type": "string", "format": "uri", "x-generator": "url"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "phone": {"type": "string", "x-generator": "phone"},
-    "address": {"type": "string", "x-generator": "address"},
-    "city": {"type": "string", "x-generator": "city"},
-    "country": {"type": "string", "x-generator": "country"},
-    "employees": {"type": "integer", "x-generator": "employees"},
-    "founded": {"type": "integer", "x-generator": "founded_year"},
-    "logo": {"type": "string", "format": "uri", "x-generator": "image_url"}
+    "id": {"type": "integer", "description": "Unique identifier for the organization record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Official legal name of the organization", "x-generator": "company"},
+    "type": {"type": "string", "description": "Type of organization (e.g., corporation, non-profit, government, educational institution, startup)", "x-generator": "organization_type"},
+    "description": {"type": "string", "description": "Comprehensive description of the organization's mission, activities, and purpose", "x-generator": "paragraph"},
+    "website": {"type": "string", "format": "uri", "description": "Official website URL of the organization", "x-generator": "url"},
+    "email": {"type": "string", "format": "email", "description": "Primary contact email address for the organization", "x-generator": "email"},
+    "phone": {"type": "string", "description": "Main contact phone number for the organization", "x-generator": "phone"},
+    "address": {"type": "string", "description": "Street address of the organization's primary location", "x-generator": "address"},
+    "city": {"type": "string", "description": "City where the organization is headquartered", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the organization is based or primarily operates", "x-generator": "country"},
+    "employees": {"type": "integer", "description": "Total number of employees or members in the organization", "x-generator": "employees"},
+    "founded": {"type": "integer", "description": "Year when the organization was established or founded", "x-generator": "founded_year"},
+    "logo": {"type": "string", "format": "uri", "description": "URL to the organization's official logo image", "x-generator": "image_url"}
   }
 }
 

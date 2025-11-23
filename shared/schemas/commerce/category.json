@@ -2,18 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Category",
   "type": "object",
+  "description": "Product category for organizing and classifying items in an e-commerce store. Supports hierarchical categories with parent-child relationships, visual styling, and item counts.",
   "x-resource": {"name": "categories", "singular": "category", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "name": {"type": "string", "x-generator": "category"},
-    "slug": {"type": "string", "x-generator": "slug"},
-    "description": {"type": "string", "x-generator": "sentence"},
-    "parent_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
-    "order": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
-    "icon": {"type": "string", "x-generator": "word"},
-    "color": {"type": "string", "x-generator": "color"},
-    "items_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the category", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "name": {"type": "string", "description": "Display name of the category (e.g., Electronics, Clothing, Books)", "x-generator": "category"},
+    "slug": {"type": "string", "description": "URL-friendly identifier for the category used in web addresses", "x-generator": "slug"},
+    "description": {"type": "string", "description": "Brief description of what products belong to this category", "x-generator": "sentence"},
+    "parent_id": {"type": "integer", "description": "ID of the parent category if this is a subcategory, null for top-level categories", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "order": {"type": "integer", "description": "Display order or sort position for the category in listings", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "icon": {"type": "string", "description": "Icon identifier or name for visual representation of the category", "x-generator": "word"},
+    "color": {"type": "string", "description": "Hex color code or color name for category branding and visual distinction", "x-generator": "color"},
+    "items_count": {"type": "integer", "description": "Total number of products currently assigned to this category", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the category was created", "x-generator": "past_date"}
   }
 }
 

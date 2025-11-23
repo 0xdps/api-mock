@@ -2,19 +2,20 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Contract",
   "type": "object",
+  "description": "Legal agreement or contract document between a business and a client. Tracks contract details, financial terms, duration, status, and specific terms and conditions.",
   "x-resource": {"name": "contracts", "singular": "contract", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "contract_number": {"type": "string", "x-generator": "uuid"},
-    "client_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "value": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "start_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "end_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "status": {"type": "string", "x-generator": "status"},
-    "terms": {"type": "string", "x-generator": "paragraph"}
+    "id": {"type": "integer", "description": "Unique identifier for the contract record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "contract_number": {"type": "string", "description": "Unique contract reference number or identifier used for legal and administrative purposes", "x-generator": "uuid"},
+    "client_id": {"type": "integer", "description": "Foreign key reference to the client or party the contract is with", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "title": {"type": "string", "description": "Short descriptive title or name of the contract", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the contract's purpose, scope, and objectives", "x-generator": "paragraph"},
+    "value": {"type": "number", "description": "Total monetary value or contract amount agreed upon", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the contract value (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "start_date": {"type": "string", "format": "date", "description": "Date when the contract becomes effective and obligations begin", "x-generator": "past_date"},
+    "end_date": {"type": "string", "format": "date", "description": "Date when the contract expires or terminates", "x-generator": "future_date"},
+    "status": {"type": "string", "description": "Current status of the contract (e.g., draft, active, expired, terminated, renewed)", "x-generator": "status"},
+    "terms": {"type": "string", "description": "Detailed terms and conditions, obligations, and clauses of the contract", "x-generator": "paragraph"}
   }
 }
 

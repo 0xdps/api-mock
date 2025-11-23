@@ -2,21 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Coupon",
   "type": "object",
+  "description": "Promotional coupon code that customers can apply for discounts. Tracks coupon code, discount rules, usage limits, validity period, and redemption statistics.",
   "x-resource": {"name": "coupons", "singular": "coupon", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "code": {"type": "string", "x-generator": "coupon_code"},
-    "description": {"type": "string", "x-generator": "sentence"},
-    "discount_type": {"type": "string", "x-generator": "discount_type"},
-    "discount_value": {"type": "number", "x-generator": "price"},
-    "min_purchase": {"type": "number", "x-generator": "price"},
-    "max_discount": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "usage_limit": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "used_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
-    "valid_from": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "valid_until": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "active": {"type": "boolean", "x-generator": "boolean"}
+    "id": {"type": "integer", "description": "Unique identifier for the coupon", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "code": {"type": "string", "description": "Unique alphanumeric coupon code that customers enter at checkout (e.g., SAVE20, WELCOME10)", "x-generator": "coupon_code"},
+    "description": {"type": "string", "description": "Marketing description explaining what the coupon offers", "x-generator": "sentence"},
+    "discount_type": {"type": "string", "description": "Type of discount (e.g., percentage, fixed_amount, free_shipping)", "x-generator": "discount_type"},
+    "discount_value": {"type": "number", "description": "Discount amount - percentage (e.g., 20) or fixed amount depending on discount_type", "x-generator": "price"},
+    "min_purchase": {"type": "number", "description": "Minimum purchase amount required to use this coupon", "x-generator": "price"},
+    "max_discount": {"type": "number", "description": "Maximum discount amount that can be applied, used to cap percentage discounts", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for monetary values (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "usage_limit": {"type": "integer", "description": "Maximum number of times this coupon can be used across all customers", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "used_count": {"type": "integer", "description": "Number of times this coupon has been successfully applied", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "valid_from": {"type": "string", "format": "date", "description": "Date when the coupon becomes active and can be used", "x-generator": "past_date"},
+    "valid_until": {"type": "string", "format": "date", "description": "Expiration date after which the coupon is no longer valid", "x-generator": "future_date"},
+    "active": {"type": "boolean", "description": "Whether the coupon is currently active and available for use", "x-generator": "boolean"}
   }
 }
 

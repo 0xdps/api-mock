@@ -2,20 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Client",
   "type": "object",
+  "description": "Represents a business client or customer organization that engages with a company for services or products. Contains contact information, business details, and relationship status.",
   "x-resource": {"name": "clients", "singular": "client", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "company"},
-    "contact_person": {"type": "string", "x-generator": "name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "phone": {"type": "string", "x-generator": "phone"},
-    "address": {"type": "string", "x-generator": "address"},
-    "city": {"type": "string", "x-generator": "city"},
-    "country": {"type": "string", "x-generator": "country"},
-    "industry": {"type": "string", "x-generator": "industry"},
-    "status": {"type": "string", "x-generator": "status"},
-    "contract_value": {"type": "number", "x-generator": "price"},
-    "since": {"type": "string", "format": "date", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the client record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Official company or organization name of the client", "x-generator": "company"},
+    "contact_person": {"type": "string", "description": "Full name of the primary contact person representing the client", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "description": "Primary business email address for client communications", "x-generator": "email"},
+    "phone": {"type": "string", "description": "Primary business phone number including country and area codes", "x-generator": "phone"},
+    "address": {"type": "string", "description": "Street address and building number of the client's primary business location", "x-generator": "address"},
+    "city": {"type": "string", "description": "City where the client's primary business is located", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the client's business operates", "x-generator": "country"},
+    "industry": {"type": "string", "description": "Primary industry sector or business category the client operates in (e.g., Technology, Healthcare, Finance)", "x-generator": "industry"},
+    "status": {"type": "string", "description": "Current relationship status with the client (e.g., active, inactive, prospect, terminated)", "x-generator": "status"},
+    "contract_value": {"type": "number", "description": "Total monetary value of contracts or agreements with this client", "x-generator": "price"},
+    "since": {"type": "string", "format": "date", "description": "Date when the business relationship with this client was established", "x-generator": "past_date"}
   }
 }
 

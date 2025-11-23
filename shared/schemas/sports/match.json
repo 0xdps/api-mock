@@ -2,20 +2,20 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Match",
   "type": "object",
+  "description": "Sports match or game with teams, scores, sport type, league, venue, status, match date, and attendance. Used for sports databases, match tracking, and sports management systems.",
   "x-resource": {"name": "matches", "singular": "match", "group": "sports"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "home_team": {"type": "string", "x-generator": "team_name"},
-    "away_team": {"type": "string", "x-generator": "team_name"},
-    "home_score": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10}},
-    "away_score": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10}},
-    "sport": {"type": "string", "x-generator": "sport"},
-    "league": {"type": "string", "x-generator": "league"},
-    "stadium": {"type": "string", "x-generator": "stadium"},
-    "city": {"type": "string", "x-generator": "city"},
-    "status": {"type": "string", "x-generator": "match_status"},
-    "match_date": {"type": "string", "format": "date-time", "x-generator": "future_date"},
-    "attendance": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1000, "max": 100000}}
+    "id": {"type": "integer", "description": "Unique identifier for the match", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "home_team": {"type": "string", "description": "Name of the home team", "x-generator": "team_name"},
+    "away_team": {"type": "string", "description": "Name of the away team", "x-generator": "team_name"},
+    "home_score": {"type": "integer", "description": "Score of the home team", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10}},
+    "away_score": {"type": "integer", "description": "Score of the away team", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10}},
+    "sport": {"type": "string", "description": "Sport type (e.g., Football, Basketball, Soccer, Tennis)", "x-generator": "sport"},
+    "league": {"type": "string", "description": "League or competition name", "x-generator": "league"},
+    "stadium": {"type": "string", "description": "Name of the stadium or venue where the match is played", "x-generator": "stadium"},
+    "city": {"type": "string", "description": "City where the match takes place", "x-generator": "city"},
+    "status": {"type": "string", "description": "Match status (e.g., scheduled, live, finished, postponed, cancelled)", "x-generator": "match_status"},
+    "match_date": {"type": "string", "format": "date-time", "description": "Date and time when the match is scheduled or was played", "x-generator": "future_date"},
+    "attendance": {"type": "integer", "description": "Number of spectators who attended the match", "x-generator": "random_int", "x-generator-params": {"min": 1000, "max": 100000}}
   }
 }
-

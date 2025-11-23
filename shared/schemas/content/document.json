@@ -1,1 +1,17 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Document","type":"object","x-resource":{"name":"documents","singular":"document","group":"content"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"title":{"type":"string","x-generator":"sentence"},"type":{"type":"string","x-generator":"word"},"content":{"type":"string","x-generator":"paragraph"},"author":{"type":"string","x-generator":"name"},"version":{"type":"string","x-generator":"word"},"file_url":{"type":"string","format":"uri","x-generator":"url"},"created_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Document",
+  "type": "object",
+  "description": "Document file or text document with version control. Represents various document types like PDFs, Word documents, technical specifications, or any file-based content.",
+  "x-resource": {"name": "documents", "singular": "document", "group": "content"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the document", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Document title or filename", "x-generator": "sentence"},
+    "type": {"type": "string", "description": "Document type or format (e.g., pdf, docx, markdown, specification, manual)", "x-generator": "word"},
+    "content": {"type": "string", "description": "Document content or text (if text-based), or description for file-based documents", "x-generator": "paragraph"},
+    "author": {"type": "string", "description": "Full name of the document author or creator", "x-generator": "name"},
+    "version": {"type": "string", "description": "Document version number or identifier (e.g., 1.0, 2.1, v3)", "x-generator": "word"},
+    "file_url": {"type": "string", "format": "uri", "description": "URL or file path where the document file is stored", "x-generator": "url"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the document was created", "x-generator": "past_date"}
+  }
+}

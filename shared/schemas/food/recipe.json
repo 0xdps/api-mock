@@ -2,22 +2,23 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Recipe",
   "type": "object",
+  "description": "Cooking recipe with instructions, ingredients, timing, nutritional information, difficulty level, and author details. Used for recipe websites, cooking apps, and meal planning platforms.",
   "x-resource": {"name": "recipes", "singular": "recipe", "group": "food"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "recipe_title"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "cuisine": {"type": "string", "x-generator": "cuisine"},
-    "category": {"type": "string", "x-generator": "recipe_category"},
-    "difficulty": {"type": "string", "x-generator": "difficulty"},
-    "prep_time": {"type": "integer", "description": "Minutes", "x-generator": "prep_time"},
-    "cook_time": {"type": "integer", "description": "Minutes", "x-generator": "cook_time"},
-    "servings": {"type": "integer", "x-generator": "servings"},
-    "calories": {"type": "integer", "x-generator": "calories"},
-    "rating": {"type": "number", "x-generator": "rating"},
-    "author": {"type": "string", "x-generator": "name"},
-    "image": {"type": "string", "format": "uri", "x-generator": "image_url"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the recipe", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Recipe title or name (e.g., Classic Chocolate Chip Cookies, Beef Stroganoff)", "x-generator": "recipe_title"},
+    "description": {"type": "string", "description": "Brief description of the recipe, its origin, or what makes it special", "x-generator": "paragraph"},
+    "cuisine": {"type": "string", "description": "Cuisine type or origin (e.g., Italian, French, Asian, American)", "x-generator": "cuisine"},
+    "category": {"type": "string", "description": "Recipe category (e.g., appetizer, main course, dessert, breakfast, snack)", "x-generator": "recipe_category"},
+    "difficulty": {"type": "string", "description": "Difficulty level (e.g., easy, medium, hard, expert)", "x-generator": "difficulty"},
+    "prep_time": {"type": "integer", "description": "Preparation time in minutes before cooking begins", "x-generator": "prep_time"},
+    "cook_time": {"type": "integer", "description": "Cooking time in minutes", "x-generator": "cook_time"},
+    "servings": {"type": "integer", "description": "Number of servings the recipe yields", "x-generator": "servings"},
+    "calories": {"type": "integer", "description": "Total calories per serving", "x-generator": "calories"},
+    "rating": {"type": "number", "description": "Average user rating, typically on a scale of 1-5", "x-generator": "rating"},
+    "author": {"type": "string", "description": "Full name of the recipe author or creator", "x-generator": "name"},
+    "image": {"type": "string", "format": "uri", "description": "URL to the recipe image or photo", "x-generator": "image_url"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the recipe was created or published", "x-generator": "past_date"}
   }
 }
 

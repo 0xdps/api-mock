@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Cart",
   "type": "object",
+  "description": "Shopping cart containing items a customer intends to purchase. Tracks cart contents, total value, currency, status, and timestamps for e-commerce checkout processes.",
   "x-resource": {"name": "carts", "singular": "cart", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "items": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "total": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "status": {"type": "string", "x-generator": "status"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the shopping cart", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user or customer who owns this cart", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "items": {"type": "array", "items": {"type": "string"}, "description": "Array of product identifiers or item names currently in the cart", "x-generator": "tags"},
+    "total": {"type": "number", "description": "Total price of all items in the cart including any applicable discounts", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the cart total (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "status": {"type": "string", "description": "Current status of the cart (e.g., active, abandoned, converted, expired)", "x-generator": "status"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the cart was first created", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "description": "Timestamp when the cart was last modified", "x-generator": "past_date"}
   }
 }

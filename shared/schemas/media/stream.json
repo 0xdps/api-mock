@@ -2,14 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Stream",
   "type": "object",
+  "description": "Live streaming session with streamer, title, viewer count, status, and start time. Used for live streaming platforms, gaming streams, and video broadcasting services.",
   "x-resource": {"name": "streams", "singular": "stream", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "streamer": {"type": "string", "x-generator": "name"},
-    "url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "viewers": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
-    "status": {"type": "string", "x-generator": "status"},
-    "started_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the stream", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or name of the stream", "x-generator": "sentence"},
+    "streamer": {"type": "string", "description": "Full name or username of the person streaming", "x-generator": "name"},
+    "url": {"type": "string", "format": "uri", "description": "URL to watch or access the live stream", "x-generator": "url"},
+    "viewers": {"type": "integer", "description": "Current number of viewers watching the stream", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
+    "status": {"type": "string", "description": "Stream status (e.g., live, offline, scheduled, ended)", "x-generator": "status"},
+    "started_at": {"type": "string", "format": "date-time", "description": "Timestamp when the stream started", "x-generator": "past_date"}
   }
 }

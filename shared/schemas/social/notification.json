@@ -2,18 +2,18 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Notification",
   "type": "object",
+  "description": "User notification with title, message, type, priority, read status, action URL, and timestamps. Used for notification systems, alert management, and user engagement platforms.",
   "x-resource": {"name": "notifications", "singular": "notification", "group": "social"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "message": {"type": "string", "x-generator": "sentence"},
-    "type": {"type": "string", "x-generator": "notification_type"},
-    "priority": {"type": "string", "x-generator": "priority"},
-    "read": {"type": "boolean", "x-generator": "boolean"},
-    "action_url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "read_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the notification", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who receives this notification", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "title": {"type": "string", "description": "Notification title or subject", "x-generator": "sentence"},
+    "message": {"type": "string", "description": "Notification message or body text", "x-generator": "sentence"},
+    "type": {"type": "string", "description": "Notification type (e.g., like, comment, follow, mention, system)", "x-generator": "notification_type"},
+    "priority": {"type": "string", "description": "Notification priority level (e.g., low, normal, high, urgent)", "x-generator": "priority"},
+    "read": {"type": "boolean", "description": "Whether the notification has been read by the user", "x-generator": "boolean"},
+    "action_url": {"type": "string", "format": "uri", "description": "URL to navigate to when the notification is clicked", "x-generator": "url"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the notification was created", "x-generator": "past_date"},
+    "read_at": {"type": "string", "format": "date-time", "description": "Timestamp when the notification was read, null if unread", "x-generator": "past_date"}
   }
 }
-

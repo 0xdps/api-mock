@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Instructor",
   "type": "object",
+  "description": "Educational instructor or teacher profile with expertise areas, course count, student enrollment, ratings, experience, and certifications. Used for online learning platforms, educational institutions, and training programs.",
   "x-resource": {"name": "instructors", "singular": "instructor", "group": "people"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "bio": {"type": "string", "x-generator": "paragraph"},
-    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"},
-    "expertise": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "courses_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 20}},
-    "students_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
-    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
-    "years_experience": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 30}},
-    "certifications": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"}
+    "id": {"type": "integer", "description": "Unique identifier for the instructor", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Full name of the instructor", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "description": "Instructor's email address", "x-generator": "email"},
+    "bio": {"type": "string", "description": "Instructor biography and background", "x-generator": "paragraph"},
+    "photo": {"type": "string", "format": "uri", "description": "URL to the instructor's photo", "x-generator": "avatar"},
+    "expertise": {"type": "array", "items": {"type": "string"}, "description": "Array of subjects or topics the instructor teaches (e.g., Programming, Design, Business)", "x-generator": "tags"},
+    "courses_count": {"type": "integer", "description": "Total number of courses taught by this instructor", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 20}},
+    "students_count": {"type": "integer", "description": "Total number of students enrolled in this instructor's courses", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "rating": {"type": "number", "description": "Average student rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "years_experience": {"type": "integer", "description": "Number of years of teaching or professional experience", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 30}},
+    "certifications": {"type": "array", "items": {"type": "string"}, "description": "Array of professional certifications or qualifications", "x-generator": "tags"}
   }
 }
-

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Weather",
   "type": "object",
-  "description": "Weather data for locations",
+  "description": "Current weather conditions and meteorological data for a specific location including temperature, humidity, pressure, wind, visibility, UV index, and weather conditions. Used for weather applications, forecasting services, and climate monitoring.",
   "x-resource": {
     "name": "weather",
     "singular": "weather",
@@ -12,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Weather record ID",
+      "description": "Unique identifier for the weather record",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -21,78 +21,78 @@
     },
     "city": {
       "type": "string",
-      "description": "City name",
+      "description": "Name of the city where weather was observed",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
-      "description": "Country name",
+      "description": "Name of the country where weather was observed",
       "x-generator": "country"
     },
     "latitude": {
       "type": "number",
-      "description": "Latitude",
+      "description": "Geographic latitude coordinate of the weather observation location",
       "x-generator": "latitude"
     },
     "longitude": {
       "type": "number",
-      "description": "Longitude",
+      "description": "Geographic longitude coordinate of the weather observation location",
       "x-generator": "longitude"
     },
     "temperature": {
       "type": "number",
-      "description": "Temperature in Celsius",
+      "description": "Current air temperature in degrees Celsius",
       "x-generator": "temperature"
     },
     "feels_like": {
       "type": "number",
-      "description": "Feels like temperature",
+      "description": "Apparent or 'feels like' temperature in degrees Celsius, accounting for wind and humidity",
       "x-generator": "temperature"
     },
     "humidity": {
       "type": "integer",
-      "description": "Humidity percentage",
+      "description": "Relative humidity percentage (0-100)",
       "x-generator": "humidity"
     },
     "pressure": {
       "type": "integer",
-      "description": "Atmospheric pressure in hPa",
+      "description": "Atmospheric pressure in hectopascals (hPa) or millibars",
       "x-generator": "pressure"
     },
     "wind_speed": {
       "type": "number",
-      "description": "Wind speed in m/s",
+      "description": "Wind speed in meters per second",
       "x-generator": "wind_speed"
     },
     "wind_direction": {
       "type": "string",
-      "description": "Wind direction",
+      "description": "Wind direction (e.g., N, NE, E, SE, S, SW, W, NW) or degrees (0-360)",
       "x-generator": "wind_direction"
     },
     "condition": {
       "type": "string",
-      "description": "Weather condition",
+      "description": "Current weather condition (e.g., clear, cloudy, rain, snow, fog, storm)",
       "x-generator": "weather_condition"
     },
     "description": {
       "type": "string",
-      "description": "Detailed description",
+      "description": "Detailed textual description of current weather conditions",
       "x-generator": "weather_description"
     },
     "visibility": {
       "type": "integer",
-      "description": "Visibility in meters",
+      "description": "Horizontal visibility distance in meters",
       "x-generator": "visibility"
     },
     "uv_index": {
       "type": "integer",
-      "description": "UV index",
+      "description": "Ultraviolet (UV) index value (0-11+), indicating sunburn risk",
       "x-generator": "uv_index"
     },
     "timestamp": {
       "type": "string",
       "format": "date-time",
-      "description": "Observation time",
+      "description": "Timestamp when the weather observation was recorded",
       "x-generator": "date_time"
     }
   },

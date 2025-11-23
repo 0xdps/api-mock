@@ -2,17 +2,18 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Department",
   "type": "object",
+  "description": "Organizational unit within a company representing a functional division such as Sales, Engineering, Marketing, or HR. Contains department structure, staffing, budget allocation, and management information.",
   "x-resource": {"name": "departments", "singular": "department", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
-    "name": {"type": "string", "x-generator": "department"},
-    "code": {"type": "string", "x-generator": "word"},
-    "manager_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
-    "employee_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 100}},
-    "budget": {"type": "number", "x-generator": "random_int", "x-generator-params": {"min": 100000, "max": 5000000}},
-    "location": {"type": "string", "x-generator": "city"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "established": {"type": "string", "format": "date", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the department record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "name": {"type": "string", "description": "Official name of the department (e.g., Engineering, Sales, Human Resources)", "x-generator": "department"},
+    "code": {"type": "string", "description": "Short alphanumeric code used internally to identify the department", "x-generator": "word"},
+    "manager_id": {"type": "integer", "description": "Employee ID of the department manager or head", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "employee_count": {"type": "integer", "description": "Total number of employees currently assigned to this department", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 100}},
+    "budget": {"type": "number", "description": "Annual budget allocation for the department in the company's primary currency", "x-generator": "random_int", "x-generator-params": {"min": 100000, "max": 5000000}},
+    "location": {"type": "string", "description": "City or office location where the department is primarily based", "x-generator": "city"},
+    "description": {"type": "string", "description": "Detailed description of the department's responsibilities, functions, and objectives", "x-generator": "paragraph"},
+    "established": {"type": "string", "format": "date", "description": "Date when the department was created or established within the organization", "x-generator": "past_date"}
   }
 }
 

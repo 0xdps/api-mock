@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Transaction","type":"object","x-resource":{"name":"transactions","singular":"transaction","group":"finance"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"amount":{"type":"number","x-generator":"price"},"currency":{"type":"string","x-generator":"currency"},"type":{"type":"string","x-generator":"word"},"status":{"type":"string","x-generator":"status"},"timestamp":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction",
+  "type": "object",
+  "description": "Financial transaction record representing a money movement (deposit, withdrawal, transfer, payment). Tracks transaction amount, type, status, currency, and timestamp for accounting and financial tracking.",
+  "x-resource": {"name": "transactions", "singular": "transaction", "group": "finance"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the transaction", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who initiated or is associated with this transaction", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "amount": {"type": "number", "description": "Transaction amount (positive for credits, negative for debits)", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the transaction amount (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "type": {"type": "string", "description": "Transaction type (e.g., deposit, withdrawal, transfer, payment, refund, fee)", "x-generator": "word"},
+    "status": {"type": "string", "description": "Transaction status (e.g., pending, completed, failed, cancelled, refunded)", "x-generator": "status"},
+    "timestamp": {"type": "string", "format": "date-time", "description": "Timestamp when the transaction occurred or was initiated", "x-generator": "past_date"}
+  }
+}

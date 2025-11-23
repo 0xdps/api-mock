@@ -2,21 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Contact",
   "type": "object",
+  "description": "Contact entry in an address book or CRM system with personal information, company details, job title, location, notes, and tags. Used for contact management, CRM systems, and address books.",
   "x-resource": {"name": "contacts", "singular": "contact", "group": "people"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "first_name": {"type": "string", "x-generator": "first_name"},
-    "last_name": {"type": "string", "x-generator": "last_name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "phone": {"type": "string", "x-generator": "phone"},
-    "company": {"type": "string", "x-generator": "company"},
-    "job_title": {"type": "string", "x-generator": "job"},
-    "address": {"type": "string", "x-generator": "address"},
-    "city": {"type": "string", "x-generator": "city"},
-    "country": {"type": "string", "x-generator": "country"},
-    "notes": {"type": "string", "x-generator": "sentence"},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the contact", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "first_name": {"type": "string", "description": "Contact's first name", "x-generator": "first_name"},
+    "last_name": {"type": "string", "description": "Contact's last name", "x-generator": "last_name"},
+    "email": {"type": "string", "format": "email", "description": "Contact's email address", "x-generator": "email"},
+    "phone": {"type": "string", "description": "Contact's phone number", "x-generator": "phone"},
+    "company": {"type": "string", "description": "Company or organization the contact works for", "x-generator": "company"},
+    "job_title": {"type": "string", "description": "Job title or position of the contact", "x-generator": "job"},
+    "address": {"type": "string", "description": "Street address of the contact", "x-generator": "address"},
+    "city": {"type": "string", "description": "City where the contact is located", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the contact is located", "x-generator": "country"},
+    "notes": {"type": "string", "description": "Additional notes or information about the contact", "x-generator": "sentence"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization (e.g., client, friend, colleague)", "x-generator": "tags"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the contact was added", "x-generator": "past_date"}
   }
 }
-

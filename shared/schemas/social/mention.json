@@ -1,1 +1,14 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Mention","type":"object","x-resource":{"name":"mentions","singular":"mention","group":"social"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"mentioned_in":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"context":{"type":"string","x-generator":"sentence"},"created_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mention",
+  "type": "object",
+  "description": "User mention record tracking when a user is mentioned in content, with context and timestamp. Used for social media platforms, notification systems, and @mention functionality.",
+  "x-resource": {"name": "mentions", "singular": "mention", "group": "social"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the mention record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user who was mentioned", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "mentioned_in": {"type": "integer", "description": "ID of the content item where the mention occurred (post, comment, etc.)", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "context": {"type": "string", "description": "Text context or excerpt where the mention appears", "x-generator": "sentence"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the mention was created", "x-generator": "past_date"}
+  }
+}

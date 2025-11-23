@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Author",
   "type": "object",
+  "description": "Author profile with biography, publication statistics, genres, ratings, and verification status. Used for book databases, publishing platforms, and literary management systems.",
   "x-resource": {"name": "authors", "singular": "author", "group": "people"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "bio": {"type": "string", "x-generator": "paragraph"},
-    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"},
-    "website": {"type": "string", "format": "uri", "x-generator": "url"},
-    "books_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 50}},
-    "articles_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
-    "genres": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
-    "verified": {"type": "boolean", "x-generator": "boolean"}
+    "id": {"type": "integer", "description": "Unique identifier for the author", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Full name of the author", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "description": "Author's contact email address", "x-generator": "email"},
+    "bio": {"type": "string", "description": "Author biography or background information", "x-generator": "paragraph"},
+    "photo": {"type": "string", "format": "uri", "description": "URL to the author's photo or portrait", "x-generator": "avatar"},
+    "website": {"type": "string", "format": "uri", "description": "Author's personal or professional website URL", "x-generator": "url"},
+    "books_count": {"type": "integer", "description": "Total number of books published by this author", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 50}},
+    "articles_count": {"type": "integer", "description": "Total number of articles written by this author", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "genres": {"type": "array", "items": {"type": "string"}, "description": "Array of genres the author writes in (e.g., Fiction, Non-Fiction, Mystery)", "x-generator": "tags"},
+    "rating": {"type": "number", "description": "Average reader rating of the author's works, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "verified": {"type": "boolean", "description": "Whether the author account is verified as authentic", "x-generator": "boolean"}
   }
 }
-

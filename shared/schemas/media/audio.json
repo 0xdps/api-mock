@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Audio",
   "type": "object",
+  "description": "Audio file or recording with title, description, duration, format, playback statistics, and file URL. Used for audio hosting platforms, podcasts, sound libraries, and media management systems.",
   "x-resource": {"name": "audios", "singular": "audio", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "duration": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 30, "max": 3600}},
-    "url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "format": {"type": "string", "x-generator": "word"},
-    "plays": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50000}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the audio file", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or name of the audio file", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Description or summary of the audio content", "x-generator": "paragraph"},
+    "duration": {"type": "integer", "description": "Audio duration in seconds", "x-generator": "random_int", "x-generator-params": {"min": 30, "max": 3600}},
+    "url": {"type": "string", "format": "uri", "description": "URL or file path to the audio file", "x-generator": "url"},
+    "format": {"type": "string", "description": "Audio file format (e.g., mp3, wav, ogg, m4a, flac)", "x-generator": "word"},
+    "plays": {"type": "integer", "description": "Total number of times the audio has been played", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50000}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the audio file was uploaded or created", "x-generator": "past_date"}
   }
 }

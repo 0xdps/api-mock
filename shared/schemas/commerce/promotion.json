@@ -2,14 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Promotion",
   "type": "object",
+  "description": "Marketing promotion or sale campaign offering percentage discounts. Contains promotion details, discount percentage, active period, and status for promotional campaigns.",
   "x-resource": {"name": "promotions", "singular": "promotion", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "discount_percentage": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 5, "max": 50}},
-    "start_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "end_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "active": {"type": "boolean", "x-generator": "boolean"}
+    "id": {"type": "integer", "description": "Unique identifier for the promotion", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "title": {"type": "string", "description": "Promotional title or campaign name (e.g., Summer Sale, Black Friday, Holiday Special)", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the promotion, terms, and eligible products", "x-generator": "paragraph"},
+    "discount_percentage": {"type": "number", "description": "Discount percentage offered (typically 5-50%)", "x-generator": "float", "x-generator-params": {"min": 5, "max": 50}},
+    "start_date": {"type": "string", "format": "date", "description": "Date when the promotion becomes active", "x-generator": "past_date"},
+    "end_date": {"type": "string", "format": "date", "description": "Date when the promotion expires", "x-generator": "future_date"},
+    "active": {"type": "boolean", "description": "Whether the promotion is currently active and available", "x-generator": "boolean"}
   }
 }

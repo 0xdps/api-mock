@@ -2,17 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Testimonial",
   "type": "object",
+  "description": "Customer testimonial with author information, company, position, message, rating, avatar, and featured status. Used for testimonials sections, review displays, and customer feedback showcases.",
   "x-resource": {"name": "testimonials", "singular": "testimonial", "group": "social"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "name"},
-    "position": {"type": "string", "x-generator": "job"},
-    "company": {"type": "string", "x-generator": "company"},
-    "message": {"type": "string", "x-generator": "paragraph"},
-    "rating": {"type": "number", "x-generator": "rating"},
-    "avatar": {"type": "string", "format": "uri", "x-generator": "avatar"},
-    "featured": {"type": "boolean", "x-generator": "boolean"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the testimonial", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Full name of the person giving the testimonial", "x-generator": "name"},
+    "position": {"type": "string", "description": "Job title or position of the testimonial author", "x-generator": "job"},
+    "company": {"type": "string", "description": "Company or organization the testimonial author works for", "x-generator": "company"},
+    "message": {"type": "string", "description": "Testimonial text or quote", "x-generator": "paragraph"},
+    "rating": {"type": "number", "description": "Rating given, typically on a scale of 1-5", "x-generator": "rating"},
+    "avatar": {"type": "string", "format": "uri", "description": "URL to the testimonial author's photo", "x-generator": "avatar"},
+    "featured": {"type": "boolean", "description": "Whether this testimonial is featured and should be prominently displayed", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the testimonial was created", "x-generator": "past_date"}
   }
 }
-

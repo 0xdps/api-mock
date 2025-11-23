@@ -2,21 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Task",
   "type": "object",
+  "description": "Work task or to-do item with assignee, project association, status, priority, due date, time tracking, and completion information. Used for project management, task tracking, and productivity applications.",
   "x-resource": {"name": "tasks", "singular": "task", "group": "productivity"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "project_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "assignee": {"type": "string", "x-generator": "name"},
-    "assignee_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "status": {"type": "string", "x-generator": "task_status"},
-    "priority": {"type": "string", "x-generator": "priority"},
-    "due_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "estimated_hours": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 40}},
-    "actual_hours": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "completed_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the task", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "project_id": {"type": "integer", "description": "Foreign key reference to the project this task belongs to", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "title": {"type": "string", "description": "Task title or summary", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the task requirements and objectives", "x-generator": "paragraph"},
+    "assignee": {"type": "string", "description": "Full name of the person assigned to this task", "x-generator": "name"},
+    "assignee_id": {"type": "integer", "description": "Foreign key reference to the user assigned to this task", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "status": {"type": "string", "description": "Current task status (e.g., todo, in_progress, review, done, cancelled)", "x-generator": "task_status"},
+    "priority": {"type": "string", "description": "Task priority level (e.g., low, medium, high, urgent)", "x-generator": "priority"},
+    "due_date": {"type": "string", "format": "date", "description": "Date by which the task should be completed", "x-generator": "future_date"},
+    "estimated_hours": {"type": "integer", "description": "Estimated time to complete the task in hours", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 40}},
+    "actual_hours": {"type": "integer", "description": "Actual time spent on the task in hours", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the task was created", "x-generator": "past_date"},
+    "completed_at": {"type": "string", "format": "date-time", "description": "Timestamp when the task was completed, null if still pending", "x-generator": "past_date"}
   }
 }
 

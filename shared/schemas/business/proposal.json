@@ -2,18 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Proposal",
   "type": "object",
+  "description": "Business proposal or bid document submitted to potential clients. Contains proposal details, pricing, client information, submission dates, validity period, and current status.",
   "x-resource": {"name": "proposals", "singular": "proposal", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "client_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "value": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "status": {"type": "string", "x-generator": "status"},
-    "submitted_date": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "valid_until": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "created_by": {"type": "string", "x-generator": "name"}
+    "id": {"type": "integer", "description": "Unique identifier for the proposal record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or subject of the proposal", "x-generator": "sentence"},
+    "client_id": {"type": "integer", "description": "Foreign key reference to the client or prospect the proposal is submitted to", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "description": {"type": "string", "description": "Detailed description of the proposed solution, services, or project scope", "x-generator": "paragraph"},
+    "value": {"type": "number", "description": "Total proposed value or price for the services or project", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the proposal value (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "status": {"type": "string", "description": "Current status of the proposal (e.g., draft, submitted, under-review, accepted, rejected, expired)", "x-generator": "status"},
+    "submitted_date": {"type": "string", "format": "date-time", "description": "Date and time when the proposal was submitted to the client", "x-generator": "past_date"},
+    "valid_until": {"type": "string", "format": "date", "description": "Expiration date after which the proposal terms are no longer valid", "x-generator": "future_date"},
+    "created_by": {"type": "string", "description": "Full name of the person who created or authored the proposal", "x-generator": "name"}
   }
 }
 

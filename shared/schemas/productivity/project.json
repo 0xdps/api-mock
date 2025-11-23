@@ -2,22 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Project",
   "type": "object",
+  "description": "Project record with owner, status, priority, budget, timeline, completion percentage, and team size. Used for project management, team collaboration, and business planning systems.",
   "x-resource": {"name": "projects", "singular": "project", "group": "productivity"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "sentence"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "owner": {"type": "string", "x-generator": "name"},
-    "owner_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "status": {"type": "string", "x-generator": "project_status"},
-    "priority": {"type": "string", "x-generator": "priority"},
-    "budget": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "start_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "end_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "completion": {"type": "integer", "description": "Percentage", "x-generator": "percentage"},
-    "team_size": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 50}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the project", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Project name or title", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Detailed description of the project goals and scope", "x-generator": "paragraph"},
+    "owner": {"type": "string", "description": "Full name of the project owner or manager", "x-generator": "name"},
+    "owner_id": {"type": "integer", "description": "Foreign key reference to the user who owns this project", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "status": {"type": "string", "description": "Current project status (e.g., planning, active, on_hold, completed, cancelled)", "x-generator": "project_status"},
+    "priority": {"type": "string", "description": "Project priority level (e.g., low, medium, high, critical)", "x-generator": "priority"},
+    "budget": {"type": "number", "description": "Total project budget", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the budget (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "start_date": {"type": "string", "format": "date", "description": "Project start date", "x-generator": "past_date"},
+    "end_date": {"type": "string", "format": "date", "description": "Project end date or deadline", "x-generator": "future_date"},
+    "completion": {"type": "integer", "description": "Project completion percentage (0-100)", "x-generator": "percentage"},
+    "team_size": {"type": "integer", "description": "Number of team members working on the project", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 50}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the project was created", "x-generator": "past_date"}
   }
 }
-

@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Note",
   "type": "object",
+  "description": "Personal note or memo with title, content, author, color coding, tags, pin/archive status, and timestamps. Used for note-taking applications, personal organizers, and knowledge management systems.",
   "x-resource": {"name": "notes", "singular": "note", "group": "productivity"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "content": {"type": "string", "x-generator": "paragraph"},
-    "author_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "author": {"type": "string", "x-generator": "name"},
-    "color": {"type": "string", "x-generator": "color"},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "pinned": {"type": "boolean", "x-generator": "boolean"},
-    "archived": {"type": "boolean", "x-generator": "boolean"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the note", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Note title or heading", "x-generator": "sentence"},
+    "content": {"type": "string", "description": "Note content or body text", "x-generator": "paragraph"},
+    "author_id": {"type": "integer", "description": "Foreign key reference to the user who created the note", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "author": {"type": "string", "description": "Full name of the note author", "x-generator": "name"},
+    "color": {"type": "string", "description": "Color code or name for visual organization", "x-generator": "color"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization and search", "x-generator": "tags"},
+    "pinned": {"type": "boolean", "description": "Whether the note is pinned to the top of the list", "x-generator": "boolean"},
+    "archived": {"type": "boolean", "description": "Whether the note is archived and hidden from the main view", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the note was created", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "description": "Timestamp when the note was last modified", "x-generator": "past_date"}
   }
 }
-

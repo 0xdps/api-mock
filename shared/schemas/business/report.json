@@ -2,19 +2,20 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Report",
   "type": "object",
+  "description": "Business report document containing analysis, metrics, or summaries. Tracks report metadata, creator, department, reporting period, status, and file location.",
   "x-resource": {"name": "reports", "singular": "report", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "sentence"},
-    "type": {"type": "string", "x-generator": "word"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "created_by": {"type": "string", "x-generator": "name"},
-    "department": {"type": "string", "x-generator": "department"},
-    "period_start": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "period_end": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "status": {"type": "string", "x-generator": "status"},
-    "file_url": {"type": "string", "format": "uri", "x-generator": "url"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the report record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title or name of the report", "x-generator": "sentence"},
+    "type": {"type": "string", "description": "Type or category of report (e.g., financial, sales, performance, audit, quarterly)", "x-generator": "word"},
+    "description": {"type": "string", "description": "Summary or overview of what the report contains and its purpose", "x-generator": "paragraph"},
+    "created_by": {"type": "string", "description": "Full name of the person who authored or created the report", "x-generator": "name"},
+    "department": {"type": "string", "description": "Department or division that generated or owns this report", "x-generator": "department"},
+    "period_start": {"type": "string", "format": "date", "description": "Start date of the reporting period covered by this report", "x-generator": "past_date"},
+    "period_end": {"type": "string", "format": "date", "description": "End date of the reporting period covered by this report", "x-generator": "past_date"},
+    "status": {"type": "string", "description": "Current status of the report (e.g., draft, final, published, archived)", "x-generator": "status"},
+    "file_url": {"type": "string", "format": "uri", "description": "URL or file path where the report document is stored (PDF, Excel, etc.)", "x-generator": "url"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the report was created", "x-generator": "past_date"}
   }
 }
 

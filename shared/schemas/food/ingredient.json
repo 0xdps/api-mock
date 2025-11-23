@@ -1,1 +1,15 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Ingredient","type":"object","x-resource":{"name":"ingredients","singular":"ingredient","group":"food"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":5000}},"name":{"type":"string","x-generator":"word"},"category":{"type":"string","x-generator":"category"},"unit":{"type":"string","x-generator":"word"},"calories":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":0,"max":1000}},"allergens":{"type":"array","items":{"type":"string"},"x-generator":"tags"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ingredient",
+  "type": "object",
+  "description": "Food ingredient with nutritional information, category, measurement unit, and allergen data. Used for recipe management, meal planning, and dietary tracking applications.",
+  "x-resource": {"name": "ingredients", "singular": "ingredient", "group": "food"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the ingredient", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 5000}},
+    "name": {"type": "string", "description": "Name of the ingredient (e.g., flour, tomatoes, olive oil)", "x-generator": "word"},
+    "category": {"type": "string", "description": "Ingredient category (e.g., vegetables, grains, dairy, spices, proteins)", "x-generator": "category"},
+    "unit": {"type": "string", "description": "Standard measurement unit (e.g., grams, cups, tablespoons, pieces)", "x-generator": "word"},
+    "calories": {"type": "integer", "description": "Calories per standard unit of the ingredient", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000}},
+    "allergens": {"type": "array", "items": {"type": "string"}, "description": "List of allergens present (e.g., gluten, dairy, nuts, eggs, soy)", "x-generator": "tags"}
+  }
+}

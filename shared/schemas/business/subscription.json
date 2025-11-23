@@ -2,20 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Subscription",
   "type": "object",
+  "description": "Recurring subscription plan for a user or customer. Tracks subscription details, pricing, billing cycle, status, renewal settings, and trial period information.",
   "x-resource": {"name": "subscriptions", "singular": "subscription", "group": "business"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "user_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "plan": {"type": "string", "x-generator": "subscription_plan"},
-    "status": {"type": "string", "x-generator": "subscription_status"},
-    "price": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "billing_cycle": {"type": "string", "x-generator": "billing_cycle"},
-    "start_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "end_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "next_billing_date": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "auto_renew": {"type": "boolean", "x-generator": "boolean"},
-    "trial_ends_at": {"type": "string", "format": "date", "x-generator": "future_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the subscription record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user or customer who owns this subscription", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "plan": {"type": "string", "description": "Subscription plan name or tier (e.g., Basic, Pro, Enterprise, Premium)", "x-generator": "subscription_plan"},
+    "status": {"type": "string", "description": "Current subscription status (e.g., active, cancelled, expired, suspended, trial)", "x-generator": "subscription_status"},
+    "price": {"type": "number", "description": "Recurring subscription price per billing cycle", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the subscription price (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "billing_cycle": {"type": "string", "description": "Frequency of billing (e.g., monthly, quarterly, annually, weekly)", "x-generator": "billing_cycle"},
+    "start_date": {"type": "string", "format": "date", "description": "Date when the subscription became active", "x-generator": "past_date"},
+    "end_date": {"type": "string", "format": "date", "description": "Date when the subscription expires or is scheduled to end", "x-generator": "future_date"},
+    "next_billing_date": {"type": "string", "format": "date", "description": "Date of the next scheduled billing or renewal charge", "x-generator": "future_date"},
+    "auto_renew": {"type": "boolean", "description": "Whether the subscription automatically renews at the end of the billing cycle", "x-generator": "boolean"},
+    "trial_ends_at": {"type": "string", "format": "date", "description": "Date when a trial period ends and regular billing begins, if applicable", "x-generator": "future_date"}
   }
 }
 

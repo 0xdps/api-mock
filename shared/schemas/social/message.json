@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Message",
   "type": "object",
+  "description": "Direct message or private message between users with sender/receiver information, content, message type, read status, and timestamps. Used for messaging systems, chat applications, and private communication platforms.",
   "x-resource": {"name": "messages", "singular": "message", "group": "social"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "conversation_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "sender_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "sender_name": {"type": "string", "x-generator": "name"},
-    "receiver_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "receiver_name": {"type": "string", "x-generator": "name"},
-    "content": {"type": "string", "x-generator": "sentence"},
-    "type": {"type": "string", "x-generator": "message_type"},
-    "read": {"type": "boolean", "x-generator": "boolean"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "read_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the message", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "conversation_id": {"type": "integer", "description": "Foreign key reference to the conversation this message belongs to", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "sender_id": {"type": "integer", "description": "Foreign key reference to the user who sent the message", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "sender_name": {"type": "string", "description": "Full name of the message sender", "x-generator": "name"},
+    "receiver_id": {"type": "integer", "description": "Foreign key reference to the user who receives the message", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "receiver_name": {"type": "string", "description": "Full name of the message receiver", "x-generator": "name"},
+    "content": {"type": "string", "description": "Message text content", "x-generator": "sentence"},
+    "type": {"type": "string", "description": "Message type (e.g., text, image, file, system)", "x-generator": "message_type"},
+    "read": {"type": "boolean", "description": "Whether the message has been read by the receiver", "x-generator": "boolean"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the message was sent", "x-generator": "past_date"},
+    "read_at": {"type": "string", "format": "date-time", "description": "Timestamp when the message was read, null if unread", "x-generator": "past_date"}
   }
 }
-

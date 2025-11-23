@@ -2,20 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Album",
   "type": "object",
+  "description": "Music album collection with artist, genre, release information, track count, duration, pricing, and ratings. Used for music streaming platforms, record stores, and music databases.",
   "x-resource": {"name": "albums", "singular": "album", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "album_title"},
-    "artist": {"type": "string", "x-generator": "name"},
-    "genre": {"type": "string", "x-generator": "music_genre"},
-    "release_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "label": {"type": "string", "x-generator": "company"},
-    "tracks": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 8, "max": 20}},
-    "duration": {"type": "integer", "description": "Duration in seconds", "x-generator": "album_duration"},
-    "rating": {"type": "number", "x-generator": "rating"},
-    "price": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "cover": {"type": "string", "format": "uri", "x-generator": "image_url"}
+    "id": {"type": "integer", "description": "Unique identifier for the album", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Album title or name", "x-generator": "album_title"},
+    "artist": {"type": "string", "description": "Name of the artist or band who created the album", "x-generator": "name"},
+    "genre": {"type": "string", "description": "Music genre (e.g., Rock, Pop, Jazz, Classical, Electronic)", "x-generator": "music_genre"},
+    "release_date": {"type": "string", "format": "date", "description": "Date when the album was originally released", "x-generator": "past_date"},
+    "label": {"type": "string", "description": "Record label or music company that released the album", "x-generator": "company"},
+    "tracks": {"type": "integer", "description": "Total number of tracks or songs on the album", "x-generator": "random_int", "x-generator-params": {"min": 8, "max": 20}},
+    "duration": {"type": "integer", "description": "Total album duration in seconds", "x-generator": "album_duration"},
+    "rating": {"type": "number", "description": "Average user or critic rating, typically on a scale of 1-5", "x-generator": "rating"},
+    "price": {"type": "number", "description": "Purchase price of the album", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the album price (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "cover": {"type": "string", "format": "uri", "description": "URL to the album cover art image", "x-generator": "image_url"}
   }
 }
 

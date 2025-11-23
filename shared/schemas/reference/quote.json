@@ -2,16 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Quote",
   "type": "object",
+  "description": "Inspirational or famous quote with author attribution, category, tags, language, and engagement metrics. Used for quote databases, inspiration platforms, and content management systems.",
   "x-resource": {"name": "quotes", "singular": "quote", "group": "reference"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "text": {"type": "string", "x-generator": "quote"},
-    "author": {"type": "string", "x-generator": "name"},
-    "category": {"type": "string", "x-generator": "quote_category"},
-    "tags": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "language": {"type": "string", "x-generator": "language"},
-    "likes": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the quote", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "text": {"type": "string", "description": "The quote text or content", "x-generator": "quote"},
+    "author": {"type": "string", "description": "Name of the person who said or wrote the quote", "x-generator": "name"},
+    "category": {"type": "string", "description": "Quote category (e.g., Inspiration, Success, Love, Wisdom, Humor)", "x-generator": "quote_category"},
+    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of tags for categorization and search", "x-generator": "tags"},
+    "language": {"type": "string", "description": "Language code of the quote (e.g., en, es, fr)", "x-generator": "language"},
+    "likes": {"type": "integer", "description": "Number of likes or favorites the quote has received", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the quote was added to the database", "x-generator": "past_date"}
   }
 }
-

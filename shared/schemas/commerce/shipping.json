@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Shipping",
   "type": "object",
+  "description": "Shipping and delivery information for an order. Tracks shipping carrier, tracking number, delivery address, shipment date, estimated delivery, and shipping status.",
   "x-resource": {"name": "shippings", "singular": "shipping", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "order_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "tracking_number": {"type": "string", "x-generator": "uuid"},
-    "carrier": {"type": "string", "x-generator": "company"},
-    "status": {"type": "string", "x-generator": "status"},
-    "shipped_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "estimated_delivery": {"type": "string", "format": "date", "x-generator": "future_date"},
-    "address": {"type": "string", "x-generator": "address"}
+    "id": {"type": "integer", "description": "Unique identifier for the shipping record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "order_id": {"type": "integer", "description": "Foreign key reference to the order being shipped", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "tracking_number": {"type": "string", "description": "Unique tracking number provided by the shipping carrier for package tracking", "x-generator": "uuid"},
+    "carrier": {"type": "string", "description": "Shipping carrier or logistics company (e.g., FedEx, UPS, DHL, USPS)", "x-generator": "company"},
+    "status": {"type": "string", "description": "Current shipping status (e.g., pending, shipped, in_transit, out_for_delivery, delivered, failed)", "x-generator": "status"},
+    "shipped_date": {"type": "string", "format": "date", "description": "Date when the order was shipped and left the warehouse", "x-generator": "past_date"},
+    "estimated_delivery": {"type": "string", "format": "date", "description": "Expected delivery date provided by the shipping carrier", "x-generator": "future_date"},
+    "address": {"type": "string", "description": "Complete delivery address where the package is being shipped", "x-generator": "address"}
   }
 }

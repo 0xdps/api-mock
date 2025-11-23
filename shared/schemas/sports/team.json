@@ -2,21 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Team",
   "type": "object",
+  "description": "Sports team with name, sport, league, founding year, location, stadium, coach, win/loss/draw records, and logo. Used for sports databases, team management, and sports analytics platforms.",
   "x-resource": {"name": "teams", "singular": "team", "group": "sports"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "team_name"},
-    "sport": {"type": "string", "x-generator": "sport"},
-    "league": {"type": "string", "x-generator": "league"},
-    "founded": {"type": "integer", "x-generator": "founded_year"},
-    "city": {"type": "string", "x-generator": "city"},
-    "country": {"type": "string", "x-generator": "country"},
-    "stadium": {"type": "string", "x-generator": "stadium"},
-    "coach": {"type": "string", "x-generator": "name"},
-    "wins": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
-    "losses": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
-    "draws": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
-    "logo": {"type": "string", "format": "uri", "x-generator": "image_url"}
+    "id": {"type": "integer", "description": "Unique identifier for the team", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Team name", "x-generator": "team_name"},
+    "sport": {"type": "string", "description": "Sport the team plays (e.g., Football, Basketball, Soccer)", "x-generator": "sport"},
+    "league": {"type": "string", "description": "League or competition the team participates in", "x-generator": "league"},
+    "founded": {"type": "integer", "description": "Year when the team was founded", "x-generator": "founded_year"},
+    "city": {"type": "string", "description": "City where the team is based", "x-generator": "city"},
+    "country": {"type": "string", "description": "Country where the team is located", "x-generator": "country"},
+    "stadium": {"type": "string", "description": "Name of the team's home stadium or arena", "x-generator": "stadium"},
+    "coach": {"type": "string", "description": "Full name of the team's head coach", "x-generator": "name"},
+    "wins": {"type": "integer", "description": "Total number of wins in the current season or all-time", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "losses": {"type": "integer", "description": "Total number of losses in the current season or all-time", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "draws": {"type": "integer", "description": "Total number of draws or ties in the current season or all-time", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
+    "logo": {"type": "string", "format": "uri", "description": "URL to the team's logo image", "x-generator": "image_url"}
   }
 }
-

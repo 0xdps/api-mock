@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Post",
-  "description": "Blog posts and articles",
+  "description": "Social media post or blog post entry with content, author, publication status, and engagement metrics. Used for social platforms, blogs, and content feeds.",
   "x-resource": {
     "name": "posts",
     "singular": "post",
@@ -12,6 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
+      "description": "Unique identifier for the post",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -20,6 +21,7 @@
     },
     "user_id": {
       "type": "integer",
+      "description": "Foreign key reference to the user who created the post",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -28,10 +30,12 @@
     },
     "title": {
       "type": "string",
+      "description": "Title or headline of the post",
       "x-generator": "sentence"
     },
     "body": {
       "type": "string",
+      "description": "Full post content and body text",
       "x-generator": "paragraph",
       "x-generator-params": {
         "paragraphs": 3
@@ -39,16 +43,19 @@
     },
     "published": {
       "type": "boolean",
+      "description": "Whether the post is published and visible to the public",
       "x-generator": "boolean"
     },
     "created_at": {
       "type": "string",
       "format": "date-time",
+      "description": "Timestamp when the post was created",
       "x-generator": "past_date"
     },
     "views": {
       "type": "integer",
       "minimum": 0,
+      "description": "Total number of times the post has been viewed",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 0,
@@ -58,6 +65,7 @@
     "likes": {
       "type": "integer",
       "minimum": 0,
+      "description": "Number of likes or positive reactions the post has received",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 0,

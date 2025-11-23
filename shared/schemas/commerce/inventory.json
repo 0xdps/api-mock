@@ -2,14 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Inventory",
   "type": "object",
+  "description": "Stock inventory record tracking product availability, quantities, reserved items, and warehouse location. Used for inventory management and stock level monitoring.",
   "x-resource": {"name": "inventory", "singular": "inventory_item", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "product_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 5000}},
-    "sku": {"type": "string", "x-generator": "uuid"},
-    "quantity": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000}},
-    "reserved": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
-    "location": {"type": "string", "x-generator": "city"},
-    "last_updated": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the inventory record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "product_id": {"type": "integer", "description": "Foreign key reference to the product this inventory record belongs to", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 5000}},
+    "sku": {"type": "string", "description": "Stock Keeping Unit - unique identifier for the specific product variant", "x-generator": "uuid"},
+    "quantity": {"type": "integer", "description": "Current available stock quantity for this product", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 1000}},
+    "reserved": {"type": "integer", "description": "Number of units reserved for pending orders or holds", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100}},
+    "location": {"type": "string", "description": "Warehouse or storage location where this inventory is stored", "x-generator": "city"},
+    "last_updated": {"type": "string", "format": "date-time", "description": "Timestamp when the inventory quantity was last updated", "x-generator": "past_date"}
   }
 }

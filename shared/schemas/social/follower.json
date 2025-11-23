@@ -1,1 +1,13 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Follower","type":"object","x-resource":{"name":"followers","singular":"follower","group":"social"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"user_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"follower_id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":1000}},"followed_at":{"type":"string","format":"date-time","x-generator":"past_date"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Follower",
+  "type": "object",
+  "description": "Follower relationship record tracking which user follows another user, with follow timestamp. Used for social media platforms, follower systems, and social networking applications.",
+  "x-resource": {"name": "followers", "singular": "follower", "group": "social"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the follower relationship", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "user_id": {"type": "integer", "description": "Foreign key reference to the user being followed", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "follower_id": {"type": "integer", "description": "Foreign key reference to the user who is following", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "followed_at": {"type": "string", "format": "date-time", "description": "Timestamp when the follow relationship was established", "x-generator": "past_date"}
+  }
+}

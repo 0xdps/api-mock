@@ -1,1 +1,14 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Coordinate","type":"object","x-resource":{"name":"coordinates","singular":"coordinate","group":"location"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":100000}},"latitude":{"type":"number","x-generator":"latitude"},"longitude":{"type":"number","x-generator":"longitude"},"place":{"type":"string","x-generator":"city"},"elevation":{"type":"integer","x-generator":"elevation"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Coordinate",
+  "type": "object",
+  "description": "Geographic coordinate point with latitude, longitude, place name, and elevation. Used for mapping, GPS tracking, location services, and geographic data storage.",
+  "x-resource": {"name": "coordinates", "singular": "coordinate", "group": "location"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the coordinate record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100000}},
+    "latitude": {"type": "number", "description": "Geographic latitude coordinate in decimal degrees (-90 to 90)", "x-generator": "latitude"},
+    "longitude": {"type": "number", "description": "Geographic longitude coordinate in decimal degrees (-180 to 180)", "x-generator": "longitude"},
+    "place": {"type": "string", "description": "Name of the place or location at these coordinates", "x-generator": "city"},
+    "elevation": {"type": "integer", "description": "Elevation above sea level in meters", "x-generator": "elevation"}
+  }
+}

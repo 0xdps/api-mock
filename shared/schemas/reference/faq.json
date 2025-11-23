@@ -2,17 +2,18 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "FAQ",
   "type": "object",
+  "description": "Frequently Asked Question entry with question, answer, category, display order, helpful votes, view count, and timestamps. Used for help centers, knowledge bases, and customer support documentation.",
   "x-resource": {"name": "faqs", "singular": "faq", "group": "reference"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "question": {"type": "string", "x-generator": "sentence"},
-    "answer": {"type": "string", "x-generator": "paragraph"},
-    "category": {"type": "string", "x-generator": "faq_category"},
-    "order": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
-    "helpful_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
-    "views": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "updated_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the FAQ entry", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "question": {"type": "string", "description": "The frequently asked question", "x-generator": "sentence"},
+    "answer": {"type": "string", "description": "Answer or solution to the question", "x-generator": "paragraph"},
+    "category": {"type": "string", "description": "FAQ category (e.g., Getting Started, Billing, Technical, Account)", "x-generator": "faq_category"},
+    "order": {"type": "integer", "description": "Display order or sort position in the FAQ list", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 100}},
+    "helpful_count": {"type": "integer", "description": "Number of users who found this FAQ helpful", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 500}},
+    "views": {"type": "integer", "description": "Total number of times this FAQ has been viewed", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 10000}},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the FAQ was created", "x-generator": "past_date"},
+    "updated_at": {"type": "string", "format": "date-time", "description": "Timestamp when the FAQ was last updated", "x-generator": "past_date"}
   }
 }
 

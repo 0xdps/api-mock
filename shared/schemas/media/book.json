@@ -2,22 +2,23 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Book",
   "type": "object",
+  "description": "Book publication with author, ISBN, publisher, publication details, genre, pricing, and ratings. Used for bookstores, libraries, e-book platforms, and literary databases.",
   "x-resource": {"name": "books", "singular": "book", "group": "media"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "title": {"type": "string", "x-generator": "book_title"},
-    "author": {"type": "string", "x-generator": "name"},
-    "isbn": {"type": "string", "x-generator": "isbn"},
-    "description": {"type": "string", "x-generator": "paragraph"},
-    "genre": {"type": "string", "x-generator": "book_genre"},
-    "publisher": {"type": "string", "x-generator": "company"},
-    "published_date": {"type": "string", "format": "date", "x-generator": "past_date"},
-    "pages": {"type": "integer", "x-generator": "book_pages"},
-    "language": {"type": "string", "x-generator": "language"},
-    "price": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "rating": {"type": "number", "x-generator": "rating"},
-    "cover": {"type": "string", "format": "uri", "x-generator": "image_url"}
+    "id": {"type": "integer", "description": "Unique identifier for the book", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title of the book", "x-generator": "book_title"},
+    "author": {"type": "string", "description": "Full name of the book author", "x-generator": "name"},
+    "isbn": {"type": "string", "description": "International Standard Book Number (ISBN-10 or ISBN-13)", "x-generator": "isbn"},
+    "description": {"type": "string", "description": "Book synopsis or description", "x-generator": "paragraph"},
+    "genre": {"type": "string", "description": "Book genre or category (e.g., Fiction, Non-Fiction, Mystery, Science Fiction, Biography)", "x-generator": "book_genre"},
+    "publisher": {"type": "string", "description": "Name of the publishing company", "x-generator": "company"},
+    "published_date": {"type": "string", "format": "date", "description": "Date when the book was first published", "x-generator": "past_date"},
+    "pages": {"type": "integer", "description": "Total number of pages in the book", "x-generator": "book_pages"},
+    "language": {"type": "string", "description": "Language code of the book content (e.g., en, es, fr)", "x-generator": "language"},
+    "price": {"type": "number", "description": "Book price in the specified currency", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the book price (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "rating": {"type": "number", "description": "Average reader rating, typically on a scale of 1-5", "x-generator": "rating"},
+    "cover": {"type": "string", "format": "uri", "description": "URL to the book cover image", "x-generator": "image_url"}
   }
 }
 

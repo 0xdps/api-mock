@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Event",
   "type": "object",
-  "description": "Events and conferences",
+  "description": "Calendar event or conference with date/time, location, venue, organizer, capacity, pricing, and online/offline status. Used for event management, calendar applications, and conference booking systems.",
   "x-resource": {
     "name": "events",
     "singular": "event",
@@ -12,71 +12,87 @@
   "properties": {
     "id": {
       "type": "integer",
+      "description": "Unique identifier for the event",
       "x-generator": "random_int",
       "x-generator-params": {"min": 1, "max": 10000}
     },
     "title": {
       "type": "string",
+      "description": "Event title or name",
       "x-generator": "event_title"
     },
     "description": {
       "type": "string",
+      "description": "Detailed description of the event",
       "x-generator": "paragraph"
     },
     "category": {
       "type": "string",
+      "description": "Event category (e.g., Conference, Workshop, Concert, Sports, Networking)",
       "x-generator": "event_category"
     },
     "start_date": {
       "type": "string",
       "format": "date-time",
+      "description": "Event start date and time",
       "x-generator": "future_date"
     },
     "end_date": {
       "type": "string",
       "format": "date-time",
+      "description": "Event end date and time",
       "x-generator": "future_date"
     },
     "location": {
       "type": "string",
+      "description": "Street address of the event location",
       "x-generator": "address"
     },
     "city": {
       "type": "string",
+      "description": "City where the event takes place",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
+      "description": "Country where the event takes place",
       "x-generator": "country"
     },
     "venue": {
       "type": "string",
+      "description": "Venue name where the event is held",
       "x-generator": "venue"
     },
     "organizer": {
       "type": "string",
+      "description": "Name of the organization or person organizing the event",
       "x-generator": "company"
     },
     "capacity": {
       "type": "integer",
+      "description": "Maximum number of attendees the event can accommodate",
       "x-generator": "random_int",
       "x-generator-params": {"min": 50, "max": 5000}
     },
     "price": {
       "type": "number",
+      "description": "Ticket price or entry fee",
       "x-generator": "price"
     },
     "currency": {
       "type": "string",
+      "description": "ISO currency code for the price (e.g., USD, EUR, GBP)",
       "x-generator": "currency"
     },
     "is_online": {
       "type": "boolean",
+      "description": "Whether the event is held online/virtual or in-person",
       "x-generator": "boolean"
     },
     "url": {
       "type": "string",
       "format": "uri",
+      "description": "Event website URL or registration link",
       "x-generator": "url"
     }
   }

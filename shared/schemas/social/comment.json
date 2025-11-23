@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Comment",
   "type": "object",
-  "description": "Comments on posts",
+  "description": "User comment on a post or content item with author information, content, engagement metrics, and timestamps. Used for social media platforms, blogs, forums, and content discussion systems.",
   "x-resource": {
     "name": "comments",
     "singular": "comment",
@@ -21,7 +21,7 @@
     },
     "post_id": {
       "type": "integer",
-      "description": "Associated post ID",
+      "description": "Foreign key reference to the post or content item this comment is on",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -30,7 +30,7 @@
     },
     "user_id": {
       "type": "integer",
-      "description": "Comment author ID",
+      "description": "Foreign key reference to the user who wrote the comment",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -39,18 +39,18 @@
     },
     "body": {
       "type": "string",
-      "description": "Comment text",
+      "description": "Text content of the comment",
       "x-generator": "paragraph"
     },
     "created_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Creation timestamp",
+      "description": "Timestamp when the comment was created",
       "x-generator": "past_date"
     },
     "likes": {
       "type": "integer",
-      "description": "Number of likes",
+      "description": "Number of likes or positive reactions the comment has received",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 0,

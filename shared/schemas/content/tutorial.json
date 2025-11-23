@@ -1,1 +1,17 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Tutorial","type":"object","x-resource":{"name":"tutorials","singular":"tutorial","group":"content"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"title":{"type":"string","x-generator":"sentence"},"description":{"type":"string","x-generator":"paragraph"},"difficulty":{"type":"string","x-generator":"word"},"duration":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":5,"max":180}},"author":{"type":"string","x-generator":"name"},"steps":{"type":"array","items":{"type":"string"},"x-generator":"tags"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tutorial",
+  "type": "object",
+  "description": "Step-by-step tutorial or instructional content with difficulty level, duration, author, and user ratings. Used for learning platforms, documentation sites, and educational content.",
+  "x-resource": {"name": "tutorials", "singular": "tutorial", "group": "content"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the tutorial", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "title": {"type": "string", "description": "Title of the tutorial (e.g., Introduction to React, Python Basics)", "x-generator": "sentence"},
+    "description": {"type": "string", "description": "Brief description of what the tutorial teaches", "x-generator": "paragraph"},
+    "difficulty": {"type": "string", "description": "Difficulty level (e.g., beginner, intermediate, advanced, expert)", "x-generator": "word"},
+    "duration": {"type": "integer", "description": "Estimated time to complete the tutorial in minutes", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 180}},
+    "author": {"type": "string", "description": "Full name of the tutorial author or instructor", "x-generator": "name"},
+    "steps": {"type": "array", "items": {"type": "string"}, "description": "Array of step-by-step instructions or lesson titles", "x-generator": "tags"},
+    "rating": {"type": "number", "description": "Average user rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}}
+  }
+}

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "City",
   "type": "object",
-  "description": "City information",
+  "description": "City geographic and demographic information including location coordinates, population, timezone, elevation, and administrative details. Used for location services, mapping applications, and geographic data systems.",
   "x-resource": {
     "name": "cities",
     "singular": "city",
@@ -12,7 +12,7 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "City ID",
+      "description": "Unique identifier for the city record",
       "x-generator": "random_int",
       "x-generator-params": {
         "min": 1,
@@ -21,47 +21,47 @@
     },
     "name": {
       "type": "string",
-      "description": "City name",
+      "description": "Official name of the city",
       "x-generator": "city"
     },
     "country": {
       "type": "string",
-      "description": "Country name",
+      "description": "Name of the country where the city is located",
       "x-generator": "country"
     },
     "country_code": {
       "type": "string",
-      "description": "Country ISO code",
+      "description": "ISO 3166-1 alpha-2 country code (e.g., US, GB, FR)",
       "x-generator": "country_code"
     },
     "state": {
       "type": "string",
-      "description": "State or province",
+      "description": "State, province, or administrative region where the city is located",
       "x-generator": "state"
     },
     "latitude": {
       "type": "number",
-      "description": "Latitude",
+      "description": "Geographic latitude coordinate (decimal degrees, -90 to 90)",
       "x-generator": "latitude"
     },
     "longitude": {
       "type": "number",
-      "description": "Longitude",
+      "description": "Geographic longitude coordinate (decimal degrees, -180 to 180)",
       "x-generator": "longitude"
     },
     "population": {
       "type": "integer",
-      "description": "Population",
+      "description": "Total population of the city",
       "x-generator": "city_population"
     },
     "timezone": {
       "type": "string",
-      "description": "Timezone",
+      "description": "IANA timezone identifier (e.g., America/New_York, Europe/London)",
       "x-generator": "timezone"
     },
     "elevation": {
       "type": "integer",
-      "description": "Elevation in meters",
+      "description": "Elevation above sea level in meters",
       "x-generator": "elevation"
     }
   },

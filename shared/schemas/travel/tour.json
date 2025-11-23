@@ -1,1 +1,16 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","title":"Tour","type":"object","x-resource":{"name":"tours","singular":"tour","group":"travel"},"properties":{"id":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":10000}},"name":{"type":"string","x-generator":"sentence"},"destination":{"type":"string","x-generator":"city"},"duration":{"type":"integer","x-generator":"random_int","x-generator-params":{"min":1,"max":30}},"price":{"type":"number","x-generator":"price"},"rating":{"type":"number","x-generator":"float","x-generator-params":{"min":1,"max":5}},"description":{"type":"string","x-generator":"paragraph"}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tour",
+  "type": "object",
+  "description": "Tour package with destination, duration, pricing, rating, and description. Used for tour booking platforms, travel agencies, and tourism services.",
+  "x-resource": {"name": "tours", "singular": "tour", "group": "travel"},
+  "properties": {
+    "id": {"type": "integer", "description": "Unique identifier for the tour", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Tour name or title", "x-generator": "sentence"},
+    "destination": {"type": "string", "description": "Destination city or location for the tour", "x-generator": "city"},
+    "duration": {"type": "integer", "description": "Tour duration in days", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 30}},
+    "price": {"type": "number", "description": "Tour price per person", "x-generator": "price"},
+    "rating": {"type": "number", "description": "Average customer rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "description": {"type": "string", "description": "Detailed description of the tour itinerary, activities, and inclusions", "x-generator": "paragraph"}
+  }
+}

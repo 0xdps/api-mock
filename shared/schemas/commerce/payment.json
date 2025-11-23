@@ -2,20 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Payment",
   "type": "object",
+  "description": "Payment transaction record for an order. Tracks payment details, transaction ID, amount, payment method, status, and card information (last 4 digits and brand for card payments).",
   "x-resource": {"name": "payments", "singular": "payment", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "transaction_id": {"type": "string", "x-generator": "transaction_id"},
-    "order_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "customer_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
-    "amount": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "method": {"type": "string", "x-generator": "payment_method"},
-    "status": {"type": "string", "x-generator": "payment_status"},
-    "card_last4": {"type": "string", "x-generator": "card_last4"},
-    "card_brand": {"type": "string", "x-generator": "card_brand"},
-    "created_at": {"type": "string", "format": "date-time", "x-generator": "past_date"},
-    "processed_at": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the payment record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "transaction_id": {"type": "string", "description": "Unique transaction identifier from the payment processor or gateway", "x-generator": "transaction_id"},
+    "order_id": {"type": "integer", "description": "Foreign key reference to the order this payment is for", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "customer_id": {"type": "integer", "description": "Foreign key reference to the customer who made the payment", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 1000}},
+    "amount": {"type": "number", "description": "Payment amount charged to the customer", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the payment amount (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "method": {"type": "string", "description": "Payment method used (e.g., credit_card, debit_card, paypal, bank_transfer, apple_pay)", "x-generator": "payment_method"},
+    "status": {"type": "string", "description": "Payment processing status (e.g., pending, processing, completed, failed, refunded)", "x-generator": "payment_status"},
+    "card_last4": {"type": "string", "description": "Last 4 digits of the credit/debit card used for payment (if applicable)", "x-generator": "card_last4"},
+    "card_brand": {"type": "string", "description": "Card brand or network (e.g., Visa, Mastercard, American Express, Discover) if card payment", "x-generator": "card_brand"},
+    "created_at": {"type": "string", "format": "date-time", "description": "Timestamp when the payment was initiated", "x-generator": "past_date"},
+    "processed_at": {"type": "string", "format": "date-time", "description": "Timestamp when the payment was successfully processed and completed", "x-generator": "past_date"}
   }
 }
 

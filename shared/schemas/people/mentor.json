@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Mentor",
   "type": "object",
+  "description": "Mentor profile with specialization areas, experience, mentee count, ratings, hourly rate, and availability. Used for mentorship platforms, career development programs, and professional networking.",
   "x-resource": {"name": "mentors", "singular": "mentor", "group": "people"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "name": {"type": "string", "x-generator": "name"},
-    "email": {"type": "string", "format": "email", "x-generator": "email"},
-    "bio": {"type": "string", "x-generator": "paragraph"},
-    "photo": {"type": "string", "format": "uri", "x-generator": "avatar"},
-    "specialization": {"type": "array", "items": {"type": "string"}, "x-generator": "tags"},
-    "experience_years": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 30}},
-    "mentees_count": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
-    "rating": {"type": "number", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
-    "hourly_rate": {"type": "number", "x-generator": "price"},
-    "availability": {"type": "string", "x-generator": "word"}
+    "id": {"type": "integer", "description": "Unique identifier for the mentor", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "name": {"type": "string", "description": "Full name of the mentor", "x-generator": "name"},
+    "email": {"type": "string", "format": "email", "description": "Mentor's email address", "x-generator": "email"},
+    "bio": {"type": "string", "description": "Mentor biography and professional background", "x-generator": "paragraph"},
+    "photo": {"type": "string", "format": "uri", "description": "URL to the mentor's photo", "x-generator": "avatar"},
+    "specialization": {"type": "array", "items": {"type": "string"}, "description": "Array of areas the mentor specializes in (e.g., Career Development, Entrepreneurship, Technology)", "x-generator": "tags"},
+    "experience_years": {"type": "integer", "description": "Number of years of professional experience", "x-generator": "random_int", "x-generator-params": {"min": 5, "max": 30}},
+    "mentees_count": {"type": "integer", "description": "Current number of mentees being guided by this mentor", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 50}},
+    "rating": {"type": "number", "description": "Average mentee rating, typically on a scale of 1-5", "x-generator": "float", "x-generator-params": {"min": 1, "max": 5}},
+    "hourly_rate": {"type": "number", "description": "Hourly rate for mentorship sessions", "x-generator": "price"},
+    "availability": {"type": "string", "description": "Availability status (e.g., available, busy, limited)", "x-generator": "word"}
   }
 }
-

@@ -2,14 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Refund",
   "type": "object",
+  "description": "Refund transaction record for returning money to a customer. Tracks refund amount, reason, status, processing date, and associated order.",
   "x-resource": {"name": "refunds", "singular": "refund", "group": "commerce"},
   "properties": {
-    "id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "order_id": {"type": "integer", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
-    "amount": {"type": "number", "x-generator": "price"},
-    "currency": {"type": "string", "x-generator": "currency"},
-    "reason": {"type": "string", "x-generator": "sentence"},
-    "status": {"type": "string", "x-generator": "status"},
-    "processed_date": {"type": "string", "format": "date-time", "x-generator": "past_date"}
+    "id": {"type": "integer", "description": "Unique identifier for the refund record", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "order_id": {"type": "integer", "description": "Foreign key reference to the order this refund is associated with", "x-generator": "random_int", "x-generator-params": {"min": 1, "max": 10000}},
+    "amount": {"type": "number", "description": "Refund amount to be returned to the customer", "x-generator": "price"},
+    "currency": {"type": "string", "description": "ISO currency code for the refund amount (e.g., USD, EUR, GBP)", "x-generator": "currency"},
+    "reason": {"type": "string", "description": "Reason for the refund (e.g., defective product, wrong item, customer request)", "x-generator": "sentence"},
+    "status": {"type": "string", "description": "Current refund status (e.g., pending, processing, completed, cancelled)", "x-generator": "status"},
+    "processed_date": {"type": "string", "format": "date-time", "description": "Timestamp when the refund was processed and funds were returned", "x-generator": "past_date"}
   }
 }
