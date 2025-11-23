@@ -162,10 +162,16 @@ func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFu
 			return
 		}
 
+		// Use root-level description if available, otherwise fall back to x-resource description
+		description := schema.Description
+		if description == "" {
+			description = schema.Resource.Description
+		}
+
 		respondJSON(w, http.StatusOK, map[string]interface{}{
 			"name":        schema.Resource.Name,
 			"singular":    schema.Resource.Singular,
-			"description": schema.Resource.Description,
+			"description": description,
 			"group":       schema.Resource.Group,
 			"title":       schema.Title,
 			"properties":  len(schema.Properties),
