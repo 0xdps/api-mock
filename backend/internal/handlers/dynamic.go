@@ -168,13 +168,18 @@ func (h *DynamicHandler) GetResourceMetadata(resourceName string) http.HandlerFu
 			description = schema.Resource.Description
 		}
 
+		// Return full schema with metadata
 		respondJSON(w, http.StatusOK, map[string]interface{}{
+			"$schema":     schema.SchemaURI,
+			"title":       schema.Title,
+			"type":        schema.Type,
+			"description": description,
 			"name":        schema.Resource.Name,
 			"singular":    schema.Resource.Singular,
-			"description": description,
 			"group":       schema.Resource.Group,
-			"title":       schema.Title,
-			"properties":  len(schema.Properties),
+			"properties":  schema.Properties,
+			"required":    schema.Required,
+			"property_count": len(schema.Properties),
 		})
 	}
 }

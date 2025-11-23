@@ -134,6 +134,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   }
   
   const properties = schema.properties || {}
+  const requiredFields = schema.required || []
   const resourceName = schema['x-resource']?.name || pluralize(resource)
   
   const getGroupIcon = (group: string): string => {
@@ -551,14 +552,6 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
       <section className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-white">Schema Properties</h2>
-          <a 
-            href={`${API_URL}${directPath}/meta`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-primary-500 hover:text-primary-400 transition"
-          >
-            View Full Schema →
-          </a>
         </div>
         
         {Object.keys(properties).length > 0 ? (
@@ -571,7 +564,7 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
                     <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded uppercase font-medium">
                       {value.type || 'any'}
                     </span>
-                    {value.required && (
+                    {requiredFields.includes(key) && (
                       <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded">
                         required
                       </span>
@@ -584,10 +577,16 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
                 )}
                 
                 <div className="flex flex-wrap gap-2 text-xs">
-                  {value['x-faker'] && (
+                  {(value['x-generator'] || value['x-faker']) && (
                     <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
                       <span className="text-slate-500">Generator:</span>
-                      <code className="text-primary-400">{value['x-faker']}</code>
+                      <code className="text-primary-400">{value['x-generator'] || value['x-faker']}</code>
+                    </span>
+                  )}
+                  {value['x-generator-params'] && (
+                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
+                      <span className="text-slate-500">Params:</span>
+                      <code className="text-primary-400 text-xs">{JSON.stringify(value['x-generator-params'])}</code>
                     </span>
                   )}
                   {value.format && (
@@ -641,36 +640,46 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
         ) : (
           <div className="bg-slate-900/50 p-8 rounded-lg border border-slate-700 text-center">
             <p className="text-slate-400 mb-4">No properties defined in schema</p>
-            <a 
-              href={`${API_URL}${directPath}/meta`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setShowRawSchema(true)}
               className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded text-sm transition"
             >
-              View Full Schema →
-            </a>
+              View Raw Schema
+            </button>
           </div>
         )}
         
         {/* Raw Schema Toggle */}
         <div className="mt-4 pt-4 border-t border-slate-700">
-          <button
-            onClick={() => setShowRawSchema(!showRawSchema)}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition"
-          >
-            <svg 
-              className={`w-4 h-4 transition-transform ${showRawSchema ? 'rotate-90' : ''}`}
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => setShowRawSchema(!showRawSchema)}
+              className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            {showRawSchema ? 'Hide' : 'Show'} Raw JSON Schema
-          </button>
+              <svg 
+                className={`w-4 h-4 transition-transform ${showRawSchema ? 'rotate-90' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              {showRawSchema ? 'Hide' : 'Show'} Complete JSON Schema
+            </button>
+            {showRawSchema && (
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(schema, null, 2))
+                }}
+                className="text-xs text-primary-500 hover:text-primary-400 transition"
+              >
+                Copy Schema
+              </button>
+            )}
+          </div>
           
           {showRawSchema && (
-            <div className="mt-3 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-96">
+            <div className="mt-3 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-[600px]">
               <pre className="text-green-400 text-xs">
                 <code>{JSON.stringify(schema, null, 2)}</code>
               </pre>
