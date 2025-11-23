@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 interface DocsSidebarProps {
   groups: Record<string, string[]>
   selectedResource: string
-  onResourceSelect: (resource: string) => void
 }
 
-export function DocsSidebar({ groups, selectedResource, onResourceSelect }: DocsSidebarProps) {
+export function DocsSidebar({ groups, selectedResource }: DocsSidebarProps) {
   const [search, setSearch] = useState('')
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(Object.keys(groups)))
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -35,6 +35,23 @@ export function DocsSidebar({ groups, selectedResource, onResourceSelect }: Docs
     }
   }, [search, filteredGroups])
   
+  // Auto-expand group containing selected resource
+  useEffect(() => {
+    if (selectedResource && !search) {
+      const groupContainingResource = Object.entries(groups).find(([_, resources]) => 
+        resources.includes(selectedResource)
+      )?.[0]
+      
+      if (groupContainingResource) {
+        setExpandedGroups(prev => {
+          const next = new Set(prev)
+          next.add(groupContainingResource)
+          return next
+        })
+      }
+    }
+  }, [selectedResource, groups, search])
+  
   const toggleGroup = (groupName: string) => {
     const newExpanded = new Set(expandedGroups)
     if (newExpanded.has(groupName)) {
@@ -45,8 +62,7 @@ export function DocsSidebar({ groups, selectedResource, onResourceSelect }: Docs
     setExpandedGroups(newExpanded)
   }
   
-  const handleResourceClick = (resource: string) => {
-    onResourceSelect(resource)
+  const handleResourceClick = () => {
     setIsSidebarOpen(false) // Close on mobile
   }
   
@@ -131,17 +147,19 @@ export function DocsSidebar({ groups, selectedResource, onResourceSelect }: Docs
                 {expandedGroups.has(groupName) && (
                   <div className="ml-4 mt-1 space-y-1">
                     {resources.map((resource) => (
-                      <button
+                      <Link
                         key={resource}
-                        onClick={() => handleResourceClick(resource)}
-                        className={`w-full text-left px-3 py-1.5 rounded text-sm transition ${
+                        href={`/docs/${resource}`}
+                        onClick={handleResourceClick}
+                        scroll={false}
+                        className={`block w-full text-left px-3 py-1.5 rounded text-sm transition ${
                           selectedResource === resource
                             ? 'bg-primary-500 text-white'
                             : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                         }`}
                       >
                         {resource}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 )}

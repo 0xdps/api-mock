@@ -1,16 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { DocsSidebar } from './DocsSidebar'
 import { ResourceDocumentation } from './ResourceDocumentation'
 
 interface DocsContentProps {
   schemas: Array<{ name: string; schema: any; group: string }>
   groups: Record<string, string[]>
+  initialResource: string
 }
 
-export function DocsContent({ schemas, groups }: DocsContentProps) {
-  const [selectedResource, setSelectedResource] = useState(schemas[0]?.name || '')
+export function DocsContent({ schemas, groups, initialResource }: DocsContentProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [selectedResource, setSelectedResource] = useState(initialResource)
+  
+  // Sync with URL on mount (for direct loads)
+  useEffect(() => {
+    const resourceFromUrl = searchParams.get('resource')
+    if (resourceFromUrl && schemas.some(s => s.name === resourceFromUrl)) {
+      setSelectedResource(resourceFromUrl)
+    }
+  }, [searchParams, schemas])
+  
+  // Update URL when resource changes (client-side navigation)
+  const handleResourceSelect = (resource: string) => {
+    setSelectedResource(resource)
+    // Update URL without page reload (shallow routing)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('resource', resource)
+    router.push(`/docs?${params.toString()}`, { scroll: false })
+  }
   
   // Find the selected schema
   const selectedSchema = schemas.find(s => s.name === selectedResource)
@@ -22,7 +43,7 @@ export function DocsContent({ schemas, groups }: DocsContentProps) {
         <DocsSidebar 
           groups={groups}
           selectedResource={selectedResource}
-          onResourceSelect={setSelectedResource}
+          onResourceSelect={handleResourceSelect}
         />
       </div>
       
@@ -31,7 +52,7 @@ export function DocsContent({ schemas, groups }: DocsContentProps) {
         <DocsSidebar 
           groups={groups}
           selectedResource={selectedResource}
-          onResourceSelect={setSelectedResource}
+          onResourceSelect={handleResourceSelect}
         />
       </div>
       
