@@ -13,7 +13,7 @@
     "content": {"type": "string", "description": "Full article body text and content", "x-generator": "paragraph"},
     "excerpt": {"type": "string", "description": "Short summary or preview text displayed in article listings", "x-generator": "sentence"},
     "category": {"type": "string", "description": "Article category or topic (e.g., Technology, Politics, Sports, Lifestyle)", "x-generator": "article_category"},
-    "tags": {"type": "array", "items": {"type": "string"}, "description": "Array of topic tags for categorization and search", "x-generator": "tags"},
+    "tags": {"type": "array", "items": {"type": "string"}, "minItems": 1, "maxItems": 5, "uniqueItems": true, "description": "Array of topic tags for categorization and search", "x-generator": "tags"},
     "status": {"type": "string", "description": "Publication status (e.g., draft, published, archived, scheduled)", "x-generator": "status"},
     "views": {"type": "integer", "description": "Total number of times the article has been viewed", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 100000}},
     "likes": {"type": "integer", "description": "Number of likes or positive reactions the article has received", "x-generator": "random_int", "x-generator-params": {"min": 0, "max": 5000}},

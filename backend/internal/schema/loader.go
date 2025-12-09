@@ -5,9 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"math"
+	"net/mail"
+	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
 )
@@ -44,17 +49,38 @@ type PropertySchema struct {
 	Properties      map[string]PropertySchema `json:"properties,omitempty"`
 	Items           *PropertySchema           `json:"items,omitempty"`
 	GeneratorCount  int                       `json:"x-generator-count,omitempty"`
+	
+	// Enum constraints
+	Enum []interface{} `json:"enum,omitempty"`
+	
+	// Numeric constraints
+	Minimum          *float64 `json:"minimum,omitempty"`
+	Maximum          *float64 `json:"maximum,omitempty"`
+	ExclusiveMinimum *float64 `json:"exclusiveMinimum,omitempty"`
+	ExclusiveMaximum *float64 `json:"exclusiveMaximum,omitempty"`
+	MultipleOf       *float64 `json:"multipleOf,omitempty"`
+	
+	// String constraints
+	MinLength *int    `json:"minLength,omitempty"`
+	MaxLength *int    `json:"maxLength,omitempty"`
+	Pattern   string  `json:"pattern,omitempty"`
+	
+	// Array constraints
+	MinItems    *int `json:"minItems,omitempty"`
+	MaxItems    *int `json:"maxItems,omitempty"`
+	UniqueItems bool `json:"uniqueItems,omitempty"`
 }
 
 // Schema represents a JSON Schema with our custom extensions
 type Schema struct {
-	SchemaURI   string                    `json:"$schema"`
-	Type        string                    `json:"type"`
-	Title       string                    `json:"title"`
-	Description string                    `json:"description,omitempty"`
-	Resource    ResourceMetadata          `json:"x-resource"`
-	Properties  map[string]PropertySchema `json:"properties"`
-	Required    []string                  `json:"required,omitempty"`
+	SchemaURI            string                    `json:"$schema"`
+	Type                 string                    `json:"type"`
+	Title                string                    `json:"title"`
+	Description          string                    `json:"description,omitempty"`
+	Resource             ResourceMetadata          `json:"x-resource"`
+	Properties           map[string]PropertySchema `json:"properties"`
+	Required             []string                  `json:"required,omitempty"`
+	AdditionalProperties interface{}               `json:"additionalProperties,omitempty"`
 }
 
 // Field represents a data field to generate
@@ -161,6 +187,284 @@ func (r *Registry) GetAllResourceNames() []string {
 		names = append(names, name)
 	}
 	return names
+}
+
+// ValidateItem validates an item against a schema
+// ValidateItem validates an item against the schema
+// skipFields can be used to skip validation of certain fields (e.g., id during POST)
+func (s *Schema) ValidateItem(item map[string]interface{}, skipFields ...string) error {
+	// Check required fields
+	skipMap := make(map[string]bool)
+	for _, field := range skipFields {
+		skipMap[field] = true
+	}
+	
+	for _, requiredField := range s.Required {
+		if skipMap[requiredField] {
+			continue
+		}
+		if _, exists := item[requiredField]; !exists {
+			return fmt.Errorf("missing required field: %s", requiredField)
+		}
+	}
+
+	// Validate each property in the item
+	for propName, propValue := range item {
+		propSchema, exists := s.Properties[propName]
+		if !exists {
+			// Check if additional properties are allowed
+			if s.AdditionalProperties != nil {
+				if additionalPropsAllowed, ok := s.AdditionalProperties.(bool); ok && !additionalPropsAllowed {
+					return fmt.Errorf("additional property '%s' is not allowed by schema", propName)
+				}
+				// If it's a schema object, we could validate against it, but for now skip
+			}
+			// Extra properties allowed (lenient mode by default)
+			continue
+		}
+
+		if err := validateProperty(propName, propValue, propSchema); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// validateProperty validates a single property value against its schema
+func validateProperty(name string, value interface{}, schema PropertySchema) error {
+	if value == nil {
+		// Null values are allowed unless field is required (checked separately)
+		return nil
+	}
+
+	// Validate enum constraint (applies to all types)
+	if len(schema.Enum) > 0 {
+		valid := false
+		for _, allowed := range schema.Enum {
+			if value == allowed {
+				valid = true
+				break
+			}
+		}
+		if !valid {
+			return fmt.Errorf("field '%s' must be one of %v, got '%v'", name, schema.Enum, value)
+		}
+	}
+
+	switch schema.Type {
+	case "string":
+		str, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("field '%s' must be a string, got %T", name, value)
+		}
+
+		// String length constraints
+		if schema.MinLength != nil && len(str) < *schema.MinLength {
+			return fmt.Errorf("field '%s' must be at least %d characters, got %d", name, *schema.MinLength, len(str))
+		}
+		if schema.MaxLength != nil && len(str) > *schema.MaxLength {
+			return fmt.Errorf("field '%s' must be at most %d characters, got %d", name, *schema.MaxLength, len(str))
+		}
+
+		// Pattern constraint
+		if schema.Pattern != "" {
+			matched, err := regexp.MatchString(schema.Pattern, str)
+			if err != nil {
+				return fmt.Errorf("field '%s' has invalid pattern in schema: %v", name, err)
+			}
+			if !matched {
+				return fmt.Errorf("field '%s' does not match required pattern '%s'", name, schema.Pattern)
+			}
+		}
+
+		// Format validation
+		if schema.Format != "" {
+			if err := validateFormat(name, str, schema.Format); err != nil {
+				return err
+			}
+		}
+
+	case "number", "integer":
+		var numValue float64
+		
+		switch v := value.(type) {
+		case float64:
+			numValue = v
+			// For integer type, check if it's a whole number
+			if schema.Type == "integer" && v != float64(int64(v)) {
+				return fmt.Errorf("field '%s' must be an integer, got float %v", name, v)
+			}
+		case float32:
+			numValue = float64(v)
+		case int:
+			numValue = float64(v)
+		case int64:
+			numValue = float64(v)
+		case int32:
+			numValue = float64(v)
+		default:
+			return fmt.Errorf("field '%s' must be a number, got %T", name, value)
+		}
+
+		// Numeric constraints
+		if schema.Minimum != nil {
+			if numValue < *schema.Minimum {
+				return fmt.Errorf("field '%s' must be >= %v, got %v", name, *schema.Minimum, numValue)
+			}
+		}
+		if schema.Maximum != nil {
+			if numValue > *schema.Maximum {
+				return fmt.Errorf("field '%s' must be <= %v, got %v", name, *schema.Maximum, numValue)
+			}
+		}
+		if schema.ExclusiveMinimum != nil {
+			if numValue <= *schema.ExclusiveMinimum {
+				return fmt.Errorf("field '%s' must be > %v, got %v", name, *schema.ExclusiveMinimum, numValue)
+			}
+		}
+		if schema.ExclusiveMaximum != nil {
+			if numValue >= *schema.ExclusiveMaximum {
+				return fmt.Errorf("field '%s' must be < %v, got %v", name, *schema.ExclusiveMaximum, numValue)
+			}
+		}
+		if schema.MultipleOf != nil && *schema.MultipleOf > 0 {
+			remainder := math.Mod(numValue, *schema.MultipleOf)
+			if math.Abs(remainder) > 1e-10 { // floating point tolerance
+				return fmt.Errorf("field '%s' must be a multiple of %v, got %v", name, *schema.MultipleOf, numValue)
+			}
+		}
+
+	case "boolean":
+		if _, ok := value.(bool); !ok {
+			return fmt.Errorf("field '%s' must be a boolean, got %T", name, value)
+		}
+
+	case "array":
+		arr, ok := value.([]interface{})
+		if !ok {
+			return fmt.Errorf("field '%s' must be an array, got %T", name, value)
+		}
+
+		// Array length constraints
+		if schema.MinItems != nil && len(arr) < *schema.MinItems {
+			return fmt.Errorf("field '%s' must have at least %d items, got %d", name, *schema.MinItems, len(arr))
+		}
+		if schema.MaxItems != nil && len(arr) > *schema.MaxItems {
+			return fmt.Errorf("field '%s' must have at most %d items, got %d", name, *schema.MaxItems, len(arr))
+		}
+
+		// Unique items constraint
+		if schema.UniqueItems {
+			seen := make(map[string]bool)
+			for i, item := range arr {
+				// Convert to JSON string for comparison
+				itemJSON, _ := json.Marshal(item)
+				key := string(itemJSON)
+				if seen[key] {
+					return fmt.Errorf("field '%s' must have unique items, duplicate found at index %d", name, i)
+				}
+				seen[key] = true
+			}
+		}
+
+		// Validate array items if schema specifies items type
+		if schema.Items != nil {
+			for i, item := range arr {
+				if err := validateProperty(fmt.Sprintf("%s[%d]", name, i), item, *schema.Items); err != nil {
+					return err
+				}
+			}
+		}
+
+	case "object":
+		obj, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("field '%s' must be an object, got %T", name, value)
+		}
+
+		// Validate nested properties if schema specifies them
+		if len(schema.Properties) > 0 {
+			for nestedName, nestedValue := range obj {
+				if nestedSchema, exists := schema.Properties[nestedName]; exists {
+					if err := validateProperty(fmt.Sprintf("%s.%s", name, nestedName), nestedValue, nestedSchema); err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+	default:
+		// Unknown type or no type specified - accept any value
+		return nil
+	}
+
+	return nil
+}
+
+// validateFormat validates string format constraints
+func validateFormat(name string, value string, format string) error {
+	switch format {
+	case "email":
+		if _, err := mail.ParseAddress(value); err != nil {
+			return fmt.Errorf("field '%s' must be a valid email address, got '%s'", name, value)
+		}
+
+	case "uri", "url":
+		if _, err := url.ParseRequestURI(value); err != nil {
+			return fmt.Errorf("field '%s' must be a valid URI, got '%s'", name, value)
+		}
+
+	case "date":
+		if _, err := time.Parse("2006-01-02", value); err != nil {
+			return fmt.Errorf("field '%s' must be a valid date in YYYY-MM-DD format, got '%s'", name, value)
+		}
+
+	case "date-time":
+		// Try RFC3339 format (JSON standard)
+		if _, err := time.Parse(time.RFC3339, value); err != nil {
+			// Also try RFC3339Nano for more precision
+			if _, err2 := time.Parse(time.RFC3339Nano, value); err2 != nil {
+				return fmt.Errorf("field '%s' must be a valid date-time in RFC3339 format, got '%s'", name, value)
+			}
+		}
+
+	case "uuid":
+		// UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+		uuidPattern := `^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$`
+		matched, err := regexp.MatchString(uuidPattern, value)
+		if err != nil || !matched {
+			return fmt.Errorf("field '%s' must be a valid UUID, got '%s'", name, value)
+		}
+
+	case "hostname":
+		// Simple hostname validation
+		hostnamePattern := `^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$`
+		matched, err := regexp.MatchString(hostnamePattern, value)
+		if err != nil || !matched {
+			return fmt.Errorf("field '%s' must be a valid hostname, got '%s'", name, value)
+		}
+
+	case "ipv4":
+		ipPattern := `^(\d{1,3}\.){3}\d{1,3}$`
+		matched, err := regexp.MatchString(ipPattern, value)
+		if err != nil || !matched {
+			return fmt.Errorf("field '%s' must be a valid IPv4 address, got '%s'", name, value)
+		}
+		// Additional validation for each octet
+		parts := strings.Split(value, ".")
+		for _, part := range parts {
+			var octet int
+			fmt.Sscanf(part, "%d", &octet)
+			if octet < 0 || octet > 255 {
+				return fmt.Errorf("field '%s' must be a valid IPv4 address, got '%s'", name, value)
+			}
+		}
+
+	// Note: Other formats like ipv6, time, regex, etc. can be added as needed
+	}
+
+	return nil
 }
 
 // SchemaToFields converts a schema into generator field definitions

@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/0xdps/api-mock/go/internal/cache"
+	"github.com/0xdps/api-mock/go/internal/filters"
 	"github.com/0xdps/api-mock/go/internal/schema"
 	"github.com/go-chi/chi/v5"
 )
@@ -32,6 +35,9 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 
 		// Check if cache should be bypassed
 		skipCache := shouldSkipCache(r)
+
+		// Parse filters from query parameters
+		filterList := filters.ParseFilters(r.URL.Query())
 
 		var data []map[string]interface{}
 		var err error
@@ -63,6 +69,11 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 			} else {
 				w.Header().Set("X-Cache", "HIT")
 			}
+		}
+
+		// Apply filters if present
+		if len(filterList) > 0 {
+			data = filters.ApplyFilters(data, filterList)
 		}
 
 		respondJSON(w, http.StatusOK, data)
@@ -385,6 +396,131 @@ func (h *DynamicHandler) GetGroupResourceSingle() http.HandlerFunc {
 		}
 
 		respondJSON(w, http.StatusOK, item)
+	}
+}
+
+// PostCollection creates a new item in a resource collection
+func (h *DynamicHandler) PostCollection(resourceName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var newItem map[string]interface{}
+		if err := json.NewDecoder(r.Body).Decode(&newItem); err != nil {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": "Invalid request body",
+			})
+			return
+		}
+
+		// Reject if user tries to provide an ID (IDs are auto-generated)
+		if _, hasID := newItem["id"]; hasID {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": "Cannot specify 'id' field in POST request. IDs are auto-generated.",
+			})
+			return
+		}
+
+		// Validate against schema (skip 'id' field as it will be auto-generated)
+		schema, ok := h.registry.GetSchema(resourceName)
+		if ok && schema != nil {
+			if err := schema.ValidateItem(newItem, "id"); err != nil {
+				respondJSON(w, http.StatusBadRequest, map[string]string{
+					"error": fmt.Sprintf("Validation failed: %s", err.Error()),
+				})
+				return
+			}
+		}
+
+		// Auto-generate ID
+		newItem["id"] = int(time.Now().UnixNano() / 1000000) // milliseconds
+
+		// Add item to cache (includes constraint validation)
+		if err := h.cache.AddItem(resourceName, newItem); err != nil {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		respondJSON(w, http.StatusCreated, newItem)
+	}
+}
+
+// PutSingle updates an item in a resource
+func (h *DynamicHandler) PutSingle(resourceName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+
+		var updates map[string]interface{}
+		if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": "Invalid request body",
+			})
+			return
+		}
+
+		// Get existing item to merge with updates for validation
+		existingItem, found := h.cache.GetByID(resourceName, id)
+		if !found {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Item not found",
+			})
+			return
+		}
+
+		// Merge updates with existing item for full validation
+		mergedItem := make(map[string]interface{})
+		for k, v := range existingItem {
+			mergedItem[k] = v
+		}
+		for k, v := range updates {
+			mergedItem[k] = v
+		}
+
+		// Validate merged item against schema
+		schema, ok := h.registry.GetSchema(resourceName)
+		if ok && schema != nil {
+			if err := schema.ValidateItem(mergedItem); err != nil {
+				respondJSON(w, http.StatusBadRequest, map[string]string{
+					"error": fmt.Sprintf("Validation failed: %s", err.Error()),
+				})
+				return
+			}
+		}
+
+		// Update item in cache
+		if err := h.cache.UpdateItemByID(resourceName, id, updates); err != nil {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		// Get updated item
+		item, found := h.cache.GetByID(resourceName, id)
+		if !found {
+			respondJSON(w, http.StatusNotFound, map[string]string{
+				"error": "Item not found after update",
+			})
+			return
+		}
+
+		respondJSON(w, http.StatusOK, item)
+	}
+}
+
+// DeleteSingle deletes an item from a resource
+func (h *DynamicHandler) DeleteSingle(resourceName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+
+		// Delete item from cache (includes constraint validation)
+		if err := h.cache.DeleteItemByID(resourceName, id); err != nil {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		respondJSON(w, http.StatusNoContent, nil)
 	}
 }
 

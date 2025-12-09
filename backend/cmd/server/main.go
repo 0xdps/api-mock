@@ -11,6 +11,7 @@ import (
 	"github.com/0xdps/api-mock/go/internal/cache"
 	"github.com/0xdps/api-mock/go/internal/handlers"
 	"github.com/0xdps/api-mock/go/internal/middleware"
+	"github.com/0xdps/api-mock/go/internal/redisstore"
 	"github.com/0xdps/api-mock/go/internal/schema"
 	"github.com/0xdps/api-mock/go/internal/static"
 	"github.com/go-chi/chi/v5"
@@ -26,21 +27,69 @@ func main() {
 
 	log.Printf("Loaded %d schemas: %v", len(registry.Schemas), registry.GetAllResourceNames())
 
-	// Initialize cache with configuration from environment
-	cacheConfig := cache.Config{
-		ItemsPerResource: getEnvInt("CACHE_ITEMS_PER_RESOURCE", 100),
-		Seed:             getEnvInt64("CACHE_SEED", 42), // Fixed seed for reproducibility
+	// Initialize Redis
+	redisConfig := redisstore.Config{
+		Host:     getEnvString("REDIS_HOST", "localhost"),
+		Port:     getEnvInt("REDIS_PORT", 6379),
+		Password: getEnvString("REDIS_PASSWORD", ""),
+		DB:       getEnvInt("REDIS_DB", 0),
 	}
 
-	apiCache := cache.NewCache(registry, cacheConfig)
+	redisStore, err := redisstore.NewStore(redisConfig)
+	if err != nil {
+		log.Fatalf("Failed to connect to Redis: %v", err)
+	}
+	defer redisStore.Close()
 
-	// Warmup cache on startup
-	if err := apiCache.Warmup(); err != nil {
-		log.Fatalf("Failed to warmup cache: %v", err)
+	// Initialize cache with configuration from environment
+	cacheModeStr := getEnvString("CACHE_MODE", "all") // off, local, remote, or all
+	cacheMode := cache.CacheMode(cacheModeStr)
+	
+	// Validate cache mode
+	validModes := map[string]bool{
+		"off":    true,
+		"local":  true,
+		"remote": true,
+		"all":    true,
+	}
+	if !validModes[cacheModeStr] {
+		log.Printf("⚠️  Invalid CACHE_MODE '%s', defaulting to 'all'", cacheModeStr)
+		cacheMode = cache.CacheModeAll
+	}
+	
+	log.Printf("📦 Cache mode: %s", cacheMode)
+	
+	cacheConfig := cache.Config{
+		ItemsPerResource:    getEnvInt("CACHE_ITEMS_PER_RESOURCE", 100),
+		Seed:                getEnvInt64("CACHE_SEED", 42), // Fixed seed for reproducibility
+		MaxItemsPerResource: getEnvInt("MAX_ITEMS_PER_RESOURCE", 1000),
+		Mode:                cacheMode,
+	}
+
+	apiCache := cache.NewCache(registry, cacheConfig, redisStore)
+
+	// Check if Redis already has data
+	resourceNames := registry.GetAllResourceNames()
+	hasData, err := redisStore.HasResources(resourceNames)
+	if err != nil {
+		log.Fatalf("Failed to check Redis: %v", err)
+	}
+
+	if hasData {
+		// Load from Redis
+		log.Printf("✅ Redis has existing data, loading into memory...")
+		if err := apiCache.LoadFromRedis(); err != nil {
+			log.Fatalf("Failed to load from Redis: %v", err)
+		}
+	} else {
+		// Generate and populate both Redis and in-memory
+		log.Printf("📝 Redis is empty, generating and populating cache...")
+		if err := apiCache.Warmup(); err != nil {
+			log.Fatalf("Failed to warmup cache: %v", err)
+		}
 	}
 
 	r := chi.NewRouter()
-	resourceNames := registry.GetAllResourceNames()
 
 	// Middleware
 	r.Use(chimiddleware.Logger)
@@ -234,12 +283,14 @@ func main() {
 
 			// For nested routes, register without adding /:id suffix
 			r.Get(routePath, dynamicHandler.GetCollection(resourceName))
+			r.Post(routePath, dynamicHandler.PostCollection(resourceName))
 			r.Get(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
 			log.Printf("Registered nested route: %s -> %s", resourceName, routePath)
 
 			// Register aliases
 			for _, alias := range registry.GetRouteAliases(resourceName) {
 				r.Get(alias, dynamicHandler.GetCollection(resourceName))
+				r.Post(alias, dynamicHandler.PostCollection(resourceName))
 				r.Get(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
 				log.Printf("  + alias: %s", alias)
 			}
@@ -251,14 +302,20 @@ func main() {
 
 			// Standard routes with /:id
 			r.Get(routePath, dynamicHandler.GetCollection(resourceName))
+			r.Post(routePath, dynamicHandler.PostCollection(resourceName))
 			r.Get(routePath+"/{id}", dynamicHandler.GetSingle(resourceName))
+			r.Put(routePath+"/{id}", dynamicHandler.PutSingle(resourceName))
+			r.Delete(routePath+"/{id}", dynamicHandler.DeleteSingle(resourceName))
 			r.Get(routePath+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
 			log.Printf("Registered routes: %s -> %s", resourceName, routePath)
 
 			// Register aliases
 			for _, alias := range registry.GetRouteAliases(resourceName) {
 				r.Get(alias, dynamicHandler.GetCollection(resourceName))
+				r.Post(alias, dynamicHandler.PostCollection(resourceName))
 				r.Get(alias+"/{id}", dynamicHandler.GetSingle(resourceName))
+				r.Put(alias+"/{id}", dynamicHandler.PutSingle(resourceName))
+				r.Delete(alias+"/{id}", dynamicHandler.DeleteSingle(resourceName))
 				r.Get(alias+"/meta", dynamicHandler.GetResourceMetadata(resourceName))
 				log.Printf("  + alias: %s", alias)
 			}
@@ -312,7 +369,14 @@ func main() {
 	}
 }
 
-// getEnvInt reads an integer from environment variable with default
+// getEnvString reads a string from environment variable with default
+func getEnvString(key string, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
 func getEnvInt(key string, defaultValue int) int {
 	value := os.Getenv(key)
 	if value == "" {
