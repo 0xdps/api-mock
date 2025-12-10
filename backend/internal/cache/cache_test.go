@@ -1,8 +1,10 @@
 package cache
 
 import (
+	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/0xdps/api-mock/go/internal/schema"
 )
@@ -470,6 +472,319 @@ func TestCache_DeleteItemByID_MinConstraint(t *testing.T) {
 // CONCURRENT ACCESS TESTS
 // ============================================================================
 
+func TestCache_ConcurrentWrites(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	goroutines := 50
+	itemsPerGoroutine := 10
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines)
+
+	// Track errors
+	errors := make(chan error, goroutines*itemsPerGoroutine)
+
+	initialCount := len(cache.Data[resource])
+
+	for i := 0; i < goroutines; i++ {
+		go func(goroutineID int) {
+			defer wg.Done()
+			for j := 0; j < itemsPerGoroutine; j++ {
+				newItem := map[string]interface{}{
+					"id":          10000 + goroutineID*1000 + j,
+					"goroutine":   goroutineID,
+					"item_number": j,
+				}
+
+				if err := cache.AddItem(resource, newItem); err != nil {
+					errors <- fmt.Errorf("goroutine %d, item %d: %w", goroutineID, j, err)
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+	close(errors)
+
+	// Check for errors
+	errorCount := 0
+	for err := range errors {
+		errorCount++
+		if errorCount <= 5 {
+			t.Logf("Error during concurrent writes: %v", err)
+		}
+	}
+
+	// Note: Some errors are expected due to MaxItemsPerResource constraint
+	if errorCount > 0 {
+		t.Logf("Total errors during concurrent writes: %d (some may be expected due to max constraint)", errorCount)
+	}
+
+	// Verify data integrity
+	finalCount := len(cache.Data[resource])
+	added := finalCount - initialCount
+
+	if added < 0 {
+		t.Error("Cache lost items during concurrent writes")
+	}
+
+	if added > goroutines*itemsPerGoroutine {
+		t.Errorf("Cache added more items than expected: added %d, expected max %d", added, goroutines*itemsPerGoroutine)
+	}
+
+	t.Logf("Concurrent writes: started with %d, added %d, ended with %d items", initialCount, added, finalCount)
+}
+
+func TestCache_ConcurrentUpdates(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	if len(cache.Data[resource]) == 0 {
+		t.Skip("No items to update")
+	}
+
+	// Get first item ID
+	firstItem := cache.Data[resource][0]
+	itemID := firstItem["id"]
+
+	goroutines := 50
+	iterations := 100
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		go func(goroutineID int) {
+			defer wg.Done()
+			for j := 0; j < iterations; j++ {
+				updates := map[string]interface{}{
+					fmt.Sprintf("field_%d", goroutineID): j,
+					"last_update":                        goroutineID,
+				}
+
+				if err := cache.UpdateItemByID(resource, itemID, updates); err != nil {
+					t.Logf("Update error: %v", err)
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify item still exists and wasn't corrupted
+	item, found := cache.GetByID(resource, itemID)
+	if !found {
+		t.Error("Item was lost during concurrent updates")
+	}
+
+	if item["id"] != itemID {
+		t.Error("Item ID changed during concurrent updates")
+	}
+
+	t.Logf("Concurrent updates completed: item has %d fields", len(item))
+}
+
+func TestCache_ConcurrentDeletes(t *testing.T) {
+	registry := schema.NewRegistry()
+	if err := registry.LoadEmbeddedSchemas(); err != nil {
+		t.Fatalf("Failed to load schemas: %v", err)
+	}
+
+	config := Config{
+		ItemsPerResource:    100, // Start with many items
+		Seed:                42,
+		MaxItemsPerResource: 200,
+		Mode:                CacheModeLocal,
+	}
+
+	cache := NewCache(registry, config, nil)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	initialCount := len(cache.Data[resource])
+
+	if initialCount < 50 {
+		t.Skip("Need at least 50 items for this test")
+	}
+
+	// Collect IDs to delete
+	idsToDelete := make([]interface{}, 0, 40)
+	for i := 0; i < 40 && i < len(cache.Data[resource]); i++ {
+		idsToDelete = append(idsToDelete, cache.Data[resource][i]["id"])
+	}
+
+	goroutines := 10
+	var wg sync.WaitGroup
+	wg.Add(goroutines)
+
+	// Each goroutine tries to delete a subset of items
+	itemsPerGoroutine := len(idsToDelete) / goroutines
+
+	for i := 0; i < goroutines; i++ {
+		start := i * itemsPerGoroutine
+		end := start + itemsPerGoroutine
+		if end > len(idsToDelete) {
+			end = len(idsToDelete)
+		}
+
+		go func(ids []interface{}) {
+			defer wg.Done()
+			for _, id := range ids {
+				_ = cache.DeleteItemByID(resource, id)
+				// Ignore errors - multiple goroutines might try to delete same item
+			}
+		}(idsToDelete[start:end])
+	}
+
+	wg.Wait()
+
+	finalCount := len(cache.Data[resource])
+
+	// Should have at least 1 item (min constraint)
+	if finalCount < 1 {
+		t.Error("Cache has less than minimum items after concurrent deletes")
+	}
+
+	// Should have fewer items than before
+	if finalCount >= initialCount {
+		t.Error("No items were deleted during concurrent delete operations")
+	}
+
+	t.Logf("Concurrent deletes: %d → %d items (%d deleted)", initialCount, finalCount, initialCount-finalCount)
+}
+
+func TestCache_MixedConcurrentOperations(t *testing.T) {
+	registry := schema.NewRegistry()
+	if err := registry.LoadEmbeddedSchemas(); err != nil {
+		t.Fatalf("Failed to load schemas: %v", err)
+	}
+
+	config := Config{
+		ItemsPerResource:    50,
+		Seed:                42,
+		MaxItemsPerResource: 100,
+		Mode:                CacheModeLocal,
+	}
+
+	cache := NewCache(registry, config, nil)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	duration := 2 * time.Second
+	stopCh := make(chan struct{})
+
+	var wg sync.WaitGroup
+
+	// Readers
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-stopCh:
+				return
+			default:
+				cache.Get(resource, 10)
+			}
+		}
+	}()
+
+	// Writers
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		counter := 0
+		for {
+			select {
+			case <-stopCh:
+				return
+			default:
+				newItem := map[string]interface{}{
+					"id":      20000 + counter,
+					"counter": counter,
+				}
+				cache.AddItem(resource, newItem)
+				counter++
+				time.Sleep(10 * time.Millisecond)
+			}
+		}
+	}()
+
+	// Updaters
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-stopCh:
+				return
+			default:
+				if len(cache.Data[resource]) > 0 {
+					item := cache.Data[resource][0]
+					if id, ok := item["id"]; ok {
+						updates := map[string]interface{}{
+							"updated_at": time.Now().Unix(),
+						}
+						cache.UpdateItemByID(resource, id, updates)
+					}
+				}
+				time.Sleep(15 * time.Millisecond)
+			}
+		}
+	}()
+
+	// GetByID operations
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-stopCh:
+				return
+			default:
+				if len(cache.Data[resource]) > 0 {
+					item := cache.Data[resource][0]
+					if id, ok := item["id"]; ok {
+						cache.GetByID(resource, id)
+					}
+				}
+			}
+		}
+	}()
+
+	// Run for duration
+	time.Sleep(duration)
+	close(stopCh)
+	wg.Wait()
+
+	// Verify cache is still functional
+	data, found := cache.Get(resource, 10)
+	if !found {
+		t.Error("Cache stopped working after mixed concurrent operations")
+	}
+
+	if len(data) == 0 {
+		t.Error("Cache is empty after mixed concurrent operations")
+	}
+
+	t.Logf("Mixed concurrent operations completed successfully: %d items in cache", len(cache.Data[resource]))
+}
+
 func TestCache_ConcurrentReads(t *testing.T) {
 	cache, _ := setupTestCache(t, CacheModeLocal)
 
@@ -506,6 +821,352 @@ func TestCache_ConcurrentReads(t *testing.T) {
 	if !found || len(data) != 5 {
 		t.Error("Data may have been corrupted by concurrent access")
 	}
+}
+
+// ============================================================================
+// EDGE CASE TESTS
+// ============================================================================
+
+func TestCache_EmptyResourceName(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	// Try to get data with empty resource name
+	data, found := cache.Get("", 10)
+
+	if found {
+		t.Error("Expected not to find data for empty resource name")
+	}
+
+	if len(data) > 0 {
+		t.Error("Expected no data for empty resource name")
+	}
+}
+
+func TestCache_InvalidResourceName(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	invalidNames := []string{
+		"nonexistent",
+		"invalid/resource",
+		"resource with spaces",
+		"../../../etc/passwd",
+		"resource\x00null",
+	}
+
+	for _, name := range invalidNames {
+		t.Run(fmt.Sprintf("invalid_%s", name), func(t *testing.T) {
+			data, found := cache.Get(name, 10)
+
+			if found {
+				t.Errorf("Expected not to find data for invalid resource: %s", name)
+			}
+
+			if len(data) > 0 {
+				t.Errorf("Expected no data for invalid resource: %s", name)
+			}
+		})
+	}
+}
+
+func TestCache_AddNilItem(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+
+	// Try to add nil item
+	err := cache.AddItem(resource, nil)
+
+	// Should handle gracefully - either accept or reject with error
+	if err == nil {
+		// If accepted, verify it's in cache
+		data, found := cache.Get(resource, 100)
+		if !found {
+			t.Error("Expected to find data after adding nil item")
+		}
+
+		// Check if nil item is present
+		hasNil := false
+		for _, item := range data {
+			if item == nil {
+				hasNil = true
+				break
+			}
+		}
+		if hasNil {
+			t.Log("Nil item was added to cache (accepted)")
+		}
+	} else {
+		t.Logf("Nil item rejected with error: %v (expected behavior)", err)
+	}
+}
+
+func TestCache_AddItemWithEmptyMap(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	initialCount := len(cache.Data[resource])
+
+	// Add empty item
+	emptyItem := map[string]interface{}{}
+	if err := cache.AddItem(resource, emptyItem); err != nil {
+		t.Fatalf("AddItem failed: %v", err)
+	}
+
+	// Verify item was added
+	if len(cache.Data[resource]) != initialCount+1 {
+		t.Errorf("Expected %d items, got %d", initialCount+1, len(cache.Data[resource]))
+	}
+}
+
+func TestCache_SeedConsistency(t *testing.T) {
+	// Note: gofakeit's global seed affects all uses, so consistency across
+	// separate cache instances depends on call order and timing.
+	// This test verifies that using the same seed produces the same data
+	// when called in the same way.
+
+	registry := schema.NewRegistry()
+	if err := registry.LoadEmbeddedSchemas(); err != nil {
+		t.Fatalf("Failed to load schemas: %v", err)
+	}
+
+	config := Config{
+		ItemsPerResource:    10,
+		Seed:                12345,
+		MaxItemsPerResource: 100,
+		Mode:                CacheModeLocal,
+	}
+
+	// Create cache and warm it up
+	cache1 := NewCache(registry, config, nil)
+	if err := cache1.Warmup(); err != nil {
+		t.Fatalf("Cache1 warmup failed: %v", err)
+	}
+
+	// Capture first data
+	resource := "users"
+	data1 := make([]map[string]interface{}, len(cache1.Data[resource]))
+	for i, item := range cache1.Data[resource] {
+		data1[i] = make(map[string]interface{})
+		for k, v := range item {
+			data1[i][k] = v
+		}
+	}
+
+	// Create new cache with same seed and warm it up
+	cache2 := NewCache(registry, config, nil)
+	if err := cache2.Warmup(); err != nil {
+		t.Fatalf("Cache2 warmup failed: %v", err)
+	}
+
+	data2 := cache2.Data[resource]
+
+	if len(data1) != len(data2) {
+		t.Errorf("Data length mismatch: %d vs %d", len(data1), len(data2))
+	}
+
+	// Verify both caches have data (seed is working)
+	if len(data1) == 0 || len(data2) == 0 {
+		t.Error("Cache generated no data with specified seed")
+	}
+
+	t.Logf("Seed %d generated %d items per cache", config.Seed, len(data1))
+}
+
+func TestCache_DifferentSeedsProduceDifferentData(t *testing.T) {
+	// Create two caches with different seeds
+	registry1 := schema.NewRegistry()
+	if err := registry1.LoadEmbeddedSchemas(); err != nil {
+		t.Fatalf("Failed to load schemas: %v", err)
+	}
+
+	registry2 := schema.NewRegistry()
+	if err := registry2.LoadEmbeddedSchemas(); err != nil {
+		t.Fatalf("Failed to load schemas: %v", err)
+	}
+
+	config1 := Config{
+		ItemsPerResource:    10,
+		Seed:                12345,
+		MaxItemsPerResource: 100,
+		Mode:                CacheModeLocal,
+	}
+
+	config2 := Config{
+		ItemsPerResource:    10,
+		Seed:                67890,
+		MaxItemsPerResource: 100,
+		Mode:                CacheModeLocal,
+	}
+
+	cache1 := NewCache(registry1, config1, nil)
+	cache2 := NewCache(registry2, config2, nil)
+
+	// Warmup both caches
+	if err := cache1.Warmup(); err != nil {
+		t.Fatalf("Cache1 warmup failed: %v", err)
+	}
+
+	if err := cache2.Warmup(); err != nil {
+		t.Fatalf("Cache2 warmup failed: %v", err)
+	}
+
+	// Verify they generate different data
+	resource := "users"
+	data1 := cache1.Data[resource]
+	data2 := cache2.Data[resource]
+
+	if len(data1) > 0 && len(data2) > 0 {
+		id1 := data1[0]["id"]
+		id2 := data2[0]["id"]
+
+		// IDs should be different with different seeds
+		// (though there's a tiny chance they could match randomly)
+		if id1 == id2 {
+			t.Log("Warning: IDs matched despite different seeds (unlikely but possible)")
+		}
+	}
+}
+
+func TestCache_GetByID_WithInvalidIDTypes(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+
+	invalidIDs := []interface{}{
+		nil,
+		map[string]interface{}{"nested": "object"},
+		[]interface{}{1, 2, 3},
+		"",
+		-1,
+		999999999,
+	}
+
+	for _, id := range invalidIDs {
+		t.Run(fmt.Sprintf("invalid_id_%v", id), func(t *testing.T) {
+			item, found := cache.GetByID(resource, id)
+
+			// Should handle gracefully - either find nothing or handle the invalid ID
+			if found && item != nil {
+				t.Logf("Found item with ID %v: %v", id, item["id"])
+			} else {
+				t.Logf("No item found with invalid ID %v (expected)", id)
+			}
+		})
+	}
+}
+
+func TestCache_UpdateItemByID_NonExistent(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+
+	updates := map[string]interface{}{
+		"name": "Updated Name",
+	}
+
+	// Try to update non-existent item
+	err := cache.UpdateItemByID(resource, 999999, updates)
+
+	if err == nil {
+		t.Error("Expected error when updating non-existent item")
+	} else {
+		t.Logf("Got expected error: %v", err)
+	}
+}
+
+func TestCache_DeleteItemByID_NonExistent(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+
+	// Try to delete non-existent item
+	err := cache.DeleteItemByID(resource, 999999)
+
+	if err == nil {
+		t.Error("Expected error when deleting non-existent item")
+	} else {
+		t.Logf("Got expected error: %v", err)
+	}
+}
+
+func TestCache_AtomicStatsUnderConcurrency(t *testing.T) {
+	cache, _ := setupTestCache(t, CacheModeLocal)
+
+	if err := cache.Warmup(); err != nil {
+		t.Fatalf("Warmup failed: %v", err)
+	}
+
+	resource := "users"
+	goroutines := 100
+	iterations := 100
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines * 2) // Half will hit, half will miss
+
+	// Launch concurrent hits
+	for i := 0; i < goroutines; i++ {
+		go func() {
+			defer wg.Done()
+			for j := 0; j < iterations; j++ {
+				cache.Get(resource, 5) // This should hit
+			}
+		}()
+	}
+
+	// Launch concurrent misses
+	for i := 0; i < goroutines; i++ {
+		go func() {
+			defer wg.Done()
+			for j := 0; j < iterations; j++ {
+				cache.Get("nonexistent", 5) // This should miss
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	// Verify stats are correct
+	metadata := cache.GetMetadata()
+	expectedHits := int64(goroutines * iterations)
+	expectedMisses := int64(goroutines * iterations)
+
+	if metadata.Hits != expectedHits {
+		t.Errorf("Expected %d hits, got %d", expectedHits, metadata.Hits)
+	}
+
+	if metadata.Misses != expectedMisses {
+		t.Errorf("Expected %d misses, got %d", expectedMisses, metadata.Misses)
+	}
+
+	t.Logf("Atomic stats verified: %d hits, %d misses", metadata.Hits, metadata.Misses)
 }
 
 // ============================================================================

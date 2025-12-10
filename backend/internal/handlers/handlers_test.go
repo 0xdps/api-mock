@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 
@@ -239,286 +240,32 @@ func TestGetMetadata(t *testing.T) {
 // POST TESTS (CREATE)
 // ============================================================================
 
-// TestCreateItem tests POST to create new items
-// NOTE: Handler calls cache.AddItem which requires Redis for constraint checking
-// In this test we verify the in-memory cache directly without going through POST handler
-func TestCreateItem(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 5)
-
-	for i, resourceName := range resources {
-		t.Run(fmt.Sprintf("POST_%s_create", resourceName), func(t *testing.T) {
-			newItem := map[string]interface{}{
-				"id":   1000 + i,
-				"test": "data",
-			}
-
-			// Test cache directly since handler requires Redis
-			if testCache != nil && testCache.Data != nil {
-				initialCount := len(testCache.Data[resourceName])
-				testCache.Data[resourceName] = append(testCache.Data[resourceName], newItem)
-
-				if len(testCache.Data[resourceName]) != initialCount+1 {
-					t.Error("Item not added to cache")
-				}
-
-				// Verify item is in cache
-				found := false
-				for _, item := range testCache.Data[resourceName] {
-					if item["id"] == newItem["id"] {
-						found = true
-						break
-					}
-				}
-				if !found {
-					t.Error("Created item not found in cache")
-				}
-			}
-		})
-	}
-}
-
-// TestCreateItemMaxConstraint tests max items constraint (1000 per resource)
-// Testing that we can't exceed MaxItemsPerResource (default 100)
-func TestCreateItemMaxConstraint(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("POST_%s_max_constraint", resource), func(t *testing.T) {
-		if len(testCache.Data[resource]) > 1 {
-			testCache.Data[resource] = testCache.Data[resource][:1]
-		}
-
-		// Try to add items up to max, but respect the constraint
-		maxAllowed := 100
-		currentCount := len(testCache.Data[resource])
-		itemsToAdd := maxAllowed - currentCount
-
-		for i := 0; i < itemsToAdd && len(testCache.Data[resource]) < maxAllowed; i++ {
-			newItem := map[string]interface{}{
-				"id": 5000 + i,
-			}
-			testCache.Data[resource] = append(testCache.Data[resource], newItem)
-		}
-
-		// Verify we reached max
-		if len(testCache.Data[resource]) == maxAllowed {
-			t.Logf("Constraint respected: reached max of %d items", maxAllowed)
-		} else if len(testCache.Data[resource]) > maxAllowed {
-			t.Errorf("Max constraint violated: %d > %d", len(testCache.Data[resource]), maxAllowed)
-		}
-	})
-}
+// NOTE: POST tests that require Redis integration have been removed.
+// These tests were directly manipulating cache instead of testing HTTP handlers.
+// Proper HTTP handler tests with Redis mocking will be added separately.
 
 // ============================================================================
 // PUT TESTS (UPDATE)
 // ============================================================================
 
-// TestUpdateItem tests PUT to update items
-// NOTE: Handler calls cache.UpdateItemByID which requires Redis
-// Testing cache behavior directly
-func TestUpdateItem(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 5)
-
-	for _, resourceName := range resources {
-		t.Run(fmt.Sprintf("PUT_%s_update", resourceName), func(t *testing.T) {
-			if len(testCache.Data[resourceName]) == 0 {
-				t.Skip("No items to update")
-			}
-
-			originalItem := testCache.Data[resourceName][0]
-			originalID := originalItem["id"]
-
-			// Simulate update in cache
-			testCache.Data[resourceName][0]["updated"] = true
-			testCache.Data[resourceName][0]["value"] = "test_update"
-
-			if testCache.Data[resourceName][0]["updated"] != true {
-				t.Error("Update not applied to cache")
-			}
-
-			if testCache.Data[resourceName][0]["id"] != originalID {
-				t.Error("Item ID changed during update")
-			}
-		})
-	}
-}
-
-// TestUpdateItemMultipleFields tests updating multiple fields
-// Testing cache behavior directly (no handler Redis requirement)
-func TestUpdateItemMultipleFields(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("PUT_%s_update_multiple", resource), func(t *testing.T) {
-		if len(testCache.Data[resource]) == 0 {
-			t.Skip("No items to update")
-		}
-
-		originalItem := testCache.Data[resource][0]
-		originalID := originalItem["id"]
-
-		// Simulate multi-field update in cache
-		testCache.Data[resource][0]["field1"] = "value1"
-		testCache.Data[resource][0]["field2"] = "value2"
-		testCache.Data[resource][0]["field3"] = 123
-
-		// Verify all updates applied
-		if testCache.Data[resource][0]["field1"] != "value1" ||
-			testCache.Data[resource][0]["field2"] != "value2" ||
-			testCache.Data[resource][0]["field3"] != 123 {
-			t.Error("Not all fields were updated")
-		}
-
-		// Verify item identity preserved
-		if testCache.Data[resource][0]["id"] != originalID {
-			t.Error("Item ID changed during update")
-		}
-	})
-}
+// NOTE: PUT tests that require Redis integration have been removed.
+// These tests were directly manipulating cache instead of testing HTTP handlers.
+// Proper HTTP handler tests with Redis mocking will be added separately.
 
 // ============================================================================
 // DELETE TESTS
 // ============================================================================
 
-// TestDeleteItem tests DELETE to remove items
-// NOTE: Handler requires Redis - testing cache operations directly
-func TestDeleteItem(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 5)
-
-	for _, resourceName := range resources {
-		t.Run(fmt.Sprintf("DELETE_%s_item", resourceName), func(t *testing.T) {
-			if len(testCache.Data[resourceName]) <= 1 {
-				t.Skip("Cannot delete: min 1 item required")
-			}
-
-			initialCount := len(testCache.Data[resourceName])
-			
-			// Simulate deletion in cache
-			testCache.Data[resourceName] = testCache.Data[resourceName][1:]
-
-			if len(testCache.Data[resourceName]) != initialCount-1 {
-				t.Error("Item not deleted from cache")
-			}
-		})
-	}
-}
-
-// TestDeleteItemMinConstraint tests that can't delete if only 1 item (min constraint)
-// Testing cache enforcement of minimum items per resource
-func TestDeleteItemMinConstraint(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("DELETE_%s_min_constraint", resource), func(t *testing.T) {
-		// Keep only 1 item
-		if len(testCache.Data[resource]) > 1 {
-			testCache.Data[resource] = testCache.Data[resource][:1]
-		}
-
-		if len(testCache.Data[resource]) != 1 {
-			t.Skip("Cannot set up constraint test")
-		}
-
-		// Verify we can't delete when only 1 item exists
-		initialLen := len(testCache.Data[resource])
-		
-		// Try to delete (in real scenario, handler should reject this)
-		// For this test, verify constraint logic
-		if initialLen == 1 {
-			t.Log("Min constraint: cannot have 0 items, must keep 1")
-		}
-	})
-}
-
-// TestDeleteMultipleItems tests deleting multiple items sequentially
-// Testing cache operations and item removal logic
-func TestDeleteMultipleItems(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("DELETE_%s_multiple", resource), func(t *testing.T) {
-		if len(testCache.Data[resource]) < 5 {
-			t.Skip("Not enough items for this test")
-		}
-
-		initialCount := len(testCache.Data[resource])
-		deletedCount := 0
-
-		// Simulate deleting multiple items
-		for len(testCache.Data[resource]) > 1 && deletedCount < 4 {
-			testCache.Data[resource] = testCache.Data[resource][1:]
-			deletedCount++
-		}
-
-		if deletedCount > 0 && len(testCache.Data[resource]) == initialCount-deletedCount {
-			t.Logf("Successfully deleted %d items, now have %d", deletedCount, len(testCache.Data[resource]))
-		} else {
-			t.Error("Items not deleted correctly from cache")
-		}
-	})
-}
+// NOTE: DELETE tests that require Redis integration have been removed.
+// These tests were directly manipulating cache instead of testing HTTP handlers.
+// Proper HTTP handler tests with Redis mocking will be added separately.
 
 // ============================================================================
 // COMBINED CRUD TESTS
 // ============================================================================
 
-// TestCRUDCycle tests complete CRUD cycle for random resources
-// Testing cache operations directly since handlers require Redis
-func TestCRUDCycle(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 3)
-
-	for _, resource := range resources {
-		t.Run(fmt.Sprintf("CRUD_cycle_%s", resource), func(t *testing.T) {
-			initialCount := len(testCache.Data[resource])
-
-			// 1. CREATE
-			newItem := map[string]interface{}{
-				"id":   9999,
-				"test": "created_item",
-			}
-			testCache.Data[resource] = append(testCache.Data[resource], newItem)
-			if len(testCache.Data[resource]) != initialCount+1 {
-				t.Errorf("Create failed: expected %d items, got %d", initialCount+1, len(testCache.Data[resource]))
-				return
-			}
-
-			// 2. READ (GET)
-			getReq := httptest.NewRequest("GET", fmt.Sprintf("/%s?count=100", resource), nil)
-			getW := httptest.NewRecorder()
-			handler.GetCollection(resource)(getW, getReq)
-
-			if getW.Code != http.StatusOK {
-				t.Errorf("GET failed: %d", getW.Code)
-				return
-			}
-
-			var data []map[string]interface{}
-			json.NewDecoder(getW.Body).Decode(&data)
-			if len(data) == 0 {
-				t.Error("GET returned empty data")
-				return
-			}
-
-			// 3. UPDATE (cache operation)
-			testCache.Data[resource][len(testCache.Data[resource])-1]["updated"] = true
-			testCache.Data[resource][len(testCache.Data[resource])-1]["value"] = "updated_value"
-
-			// 4. DELETE (if more than 1 item)
-			if len(testCache.Data[resource]) > 1 {
-				testCache.Data[resource] = testCache.Data[resource][:len(testCache.Data[resource])-1]
-				if len(testCache.Data[resource]) != initialCount {
-					t.Errorf("Delete failed: expected %d items, got %d", initialCount, len(testCache.Data[resource]))
-				}
-			}
-
-			t.Logf("CRUD cycle for %s completed", resource)
-		})
-	}
-}
+// NOTE: CRUD cycle tests have been removed as they were directly manipulating cache.
+// Proper end-to-end HTTP handler tests will be added separately.
 
 // TestCRUDWithNoCacheToggle tests CRUD with nocache parameter toggled
 func TestCRUDWithNoCacheToggle(t *testing.T) {
@@ -745,251 +492,9 @@ func TestDataIntegrity(t *testing.T) {
 // SCHEMA VALIDATION TESTS
 // ============================================================================
 
-// TestCreateWithSchemaValidation tests that schema properties are respected
-// Validates property types and required fields based on resource schema
-func TestCreateWithSchemaValidation(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 3)
-
-	for _, resource := range resources {
-		t.Run(fmt.Sprintf("schema_validation_%s", resource), func(t *testing.T) {
-			// Get schema properties for this resource
-			schema, ok := handler.registry.GetSchema(resource)
-			if !ok || schema == nil {
-				t.Skip("Schema not found")
-			}
-
-			// Test 1: Create with only ID (minimal valid object)
-			minimalItem := map[string]interface{}{
-				"id": 9000,
-			}
-			initialLen := len(testCache.Data[resource])
-			testCache.Data[resource] = append(testCache.Data[resource], minimalItem)
-			if len(testCache.Data[resource]) != initialLen+1 {
-				t.Error("Failed to add minimal item to cache")
-			}
-
-			// Verify item was added
-			found := false
-			for _, item := range testCache.Data[resource] {
-				if id, ok := item["id"]; ok && id == 9000 {
-					found = true
-					break
-				}
-			}
-			if !found {
-				t.Error("Minimal item not found in cache after creation")
-			}
-
-			t.Logf("Schema validation: resource %s allows minimal objects with ID", resource)
-		})
-	}
-}
-
-// TestCreateWithExtraProperties tests handling of extra properties not in schema
-// Some APIs accept extra properties, others reject them
-func TestCreateWithExtraProperties(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("extra_properties_%s", resource), func(t *testing.T) {
-		// Create item with extra properties not in schema
-		itemWithExtra := map[string]interface{}{
-			"id":           9001,
-			"name":         "test item",
-			"extra_field":  "this should not be in schema",
-			"another_extra": 12345,
-		}
-
-		initialLen := len(testCache.Data[resource])
-		testCache.Data[resource] = append(testCache.Data[resource], itemWithExtra)
-
-		// Verify item was added (even with extra properties)
-		if len(testCache.Data[resource]) != initialLen+1 {
-			t.Error("Item with extra properties was not added")
-		}
-
-		// Verify extra properties are preserved
-		lastItem := testCache.Data[resource][len(testCache.Data[resource])-1]
-		if lastItem["extra_field"] != "this should not be in schema" {
-			t.Error("Extra properties not preserved in cache")
-		}
-
-		t.Logf("Extra properties are preserved: item has %d fields", len(lastItem))
-	})
-}
-
-// TestCreateWithWrongPropertyTypes tests behavior when property types don't match
-func TestCreateWithWrongPropertyTypes(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("type_mismatch_%s", resource), func(t *testing.T) {
-		// Get current item structure to understand expected types
-		if len(testCache.Data[resource]) == 0 {
-			t.Skip("No items in cache to analyze schema")
-		}
-
-		sampleItem := testCache.Data[resource][0]
-		t.Logf("Sample item fields: %v", getFieldNames(sampleItem))
-
-		// Test 1: String instead of expected type
-		wrongTypeItem := map[string]interface{}{
-			"id": "not_a_number", // ID should typically be numeric
-		}
-
-		initialLen := len(testCache.Data[resource])
-		testCache.Data[resource] = append(testCache.Data[resource], wrongTypeItem)
-
-		// Verify item was added (Go is flexible with types)
-		if len(testCache.Data[resource]) != initialLen+1 {
-			t.Error("Item with type mismatch was not added")
-		}
-
-		t.Logf("Type mismatch handling: item accepts string ID")
-
-		// Test 2: Object instead of scalar
-		wrongTypeItem2 := map[string]interface{}{
-			"id": 9002,
-			"data": map[string]interface{}{
-				"nested": "object",
-			},
-		}
-
-		testCache.Data[resource] = append(testCache.Data[resource], wrongTypeItem2)
-		if len(testCache.Data[resource]) != initialLen+2 {
-			t.Error("Item with nested object was not added")
-		}
-
-		t.Logf("Type handling: items accept nested objects")
-	})
-}
-
-// TestCreateWithNullProperties tests handling of null/nil properties
-func TestCreateWithNullProperties(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("null_properties_%s", resource), func(t *testing.T) {
-		itemWithNulls := map[string]interface{}{
-			"id":        9003,
-			"name":      nil,
-			"email":     nil,
-			"phone":     nil,
-			"valid_key": "valid_value",
-		}
-
-		initialLen := len(testCache.Data[resource])
-		testCache.Data[resource] = append(testCache.Data[resource], itemWithNulls)
-
-		if len(testCache.Data[resource]) != initialLen+1 {
-			t.Error("Item with null properties was not added")
-		}
-
-		// Verify null properties are preserved
-		lastItem := testCache.Data[resource][len(testCache.Data[resource])-1]
-		if lastItem["name"] != nil {
-			t.Error("Null property was converted instead of preserved")
-		}
-
-		t.Logf("Null properties are preserved in cache")
-	})
-}
-
-// TestCreatePropertyValidationFromSchema tests properties match schema definitions
-func TestCreatePropertyValidationFromSchema(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resources := randomResources(t, handler, 2)
-
-	for _, resource := range resources {
-		t.Run(fmt.Sprintf("schema_props_%s", resource), func(t *testing.T) {
-			schema, ok := handler.registry.GetSchema(resource)
-			if !ok || schema == nil {
-				t.Skip("Schema not available")
-			}
-
-			// Analyze schema properties
-			propNames := getSchemaPropertyNames(schema)
-			t.Logf("Schema properties: %v", propNames)
-
-			// Create item with properties from schema
-			newItem := map[string]interface{}{
-				"id": 9010,
-			}
-
-			// Add some schema properties if available
-			if len(propNames) > 0 {
-				// Use first available property
-				propName := propNames[0]
-				newItem[propName] = "test_value"
-			}
-
-			initialLen := len(testCache.Data[resource])
-			testCache.Data[resource] = append(testCache.Data[resource], newItem)
-
-			if len(testCache.Data[resource]) != initialLen+1 {
-				t.Error("Item with schema properties was not added")
-			}
-
-			t.Logf("Item created with %d schema properties", len(newItem)-1)
-		})
-	}
-}
-
-// TestCreateWithEmptyObject tests creation with empty/minimal object
-func TestCreateWithEmptyObject(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("empty_object_%s", resource), func(t *testing.T) {
-		// Empty object
-		emptyItem := map[string]interface{}{}
-
-		initialLen := len(testCache.Data[resource])
-		testCache.Data[resource] = append(testCache.Data[resource], emptyItem)
-
-		if len(testCache.Data[resource]) != initialLen+1 {
-			t.Error("Empty object was not added to cache")
-		}
-
-		t.Logf("Empty objects are accepted")
-	})
-}
-
-// TestCreateWithLargeValues tests handling of large property values
-func TestCreateWithLargeValues(t *testing.T) {
-	handler, testCache := setupTestHandler(t)
-	resource := randomResources(t, handler, 1)[0]
-
-	t.Run(fmt.Sprintf("large_values_%s", resource), func(t *testing.T) {
-		// Create large string value
-		largeString := ""
-		for i := 0; i < 10000; i++ {
-			largeString += "x"
-		}
-
-		largeItem := map[string]interface{}{
-			"id":          9011,
-			"large_text":  largeString,
-			"large_array": make([]interface{}, 1000),
-		}
-
-		initialLen := len(testCache.Data[resource])
-		testCache.Data[resource] = append(testCache.Data[resource], largeItem)
-
-		if len(testCache.Data[resource]) != initialLen+1 {
-			t.Error("Item with large values was not added")
-		}
-
-		// Verify large values are preserved
-		lastItem := testCache.Data[resource][len(testCache.Data[resource])-1]
-		if str, ok := lastItem["large_text"].(string); !ok || len(str) != 10000 {
-			t.Error("Large text value was corrupted")
-		}
-
-		t.Logf("Large values handled correctly: %d char text, %d element array", len(largeString), 1000)
-	})
-}
+// NOTE: Schema validation tests that directly manipulated cache have been removed.
+// Proper validation tests exist in schema_validation_test.go that test HTTP handlers.
+// These redundant tests were not testing actual handler behavior.
 
 // ============================================================================
 // HELPER FUNCTIONS FOR SCHEMA TESTING
@@ -1014,4 +519,454 @@ func getSchemaPropertyNames(schema *schema.Schema) []string {
 		names = append(names, k)
 	}
 	return names
+}
+
+// ============================================================================
+// HTTP-LEVEL HANDLER TESTS
+// ============================================================================
+
+func TestHandler_InvalidHTTPMethods(t *testing.T) {
+	handler, _ := setupTestHandler(t)
+	resourceName := "users"
+	
+	invalidMethods := []string{"PATCH", "OPTIONS", "TRACE", "CONNECT", "HEAD"}
+	
+	for _, method := range invalidMethods {
+		t.Run(method, func(t *testing.T) {
+			req := httptest.NewRequest(method, fmt.Sprintf("/%s", resourceName), nil)
+			w := httptest.NewRecorder()
+			
+			// For GET endpoint - only POST should fail
+			if method != "GET" {
+				handler.GetCollection(resourceName)(w, req)
+				
+				// Since we're calling GetCollection which is designed for GET,
+				// the method check is not in the handler itself - chi router handles this
+				// So we can only verify the handler works when called directly
+				t.Logf("Method %s tested on GET endpoint: status %d", method, w.Code)
+			}
+		})
+	}
+}
+
+func TestHandler_MalformedJSON_POST(t *testing.T) {
+	handler, _ := setupTestHandler(t)
+	resourceName := "users"
+	
+	testCases := []struct {
+		name string
+		body string
+	}{
+		{"Empty", ""},
+		{"Invalid JSON", `{"name": "test`},
+		{"Malformed Array", `[{"id": 1},`},
+		{"Wrong Type", `"just a string"`},
+		{"Null Body", "null"},
+		{"Non-JSON", "this is not json at all"},
+		{"Trailing Comma", `{"id": 1,}`},
+		{"Single Quote", `{'id': 1}`},
+	}
+	
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBufferString(tc.body))
+			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			
+			handler.PostCollection(resourceName)(w, req)
+			
+			if w.Code != http.StatusBadRequest {
+				t.Errorf("Expected status 400 for malformed JSON, got %d", w.Code)
+			}
+			
+			// Verify error message is present
+			body := w.Body.String()
+			if body == "" {
+				t.Error("Expected error message in response body")
+			}
+		})
+	}
+}
+
+func TestHandler_MalformedJSON_PUT(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get a valid ID first
+	items, _ := testCache.Get(resourceName, 1)
+	
+	if len(items) == 0 {
+		t.Fatal("No test data available")
+	}
+	
+	item := items[0]
+	id := fmt.Sprintf("%v", item["id"])
+	
+	testCases := []struct {
+		name string
+		body string
+	}{
+		{"Empty", ""},
+		{"Invalid JSON", `{"name": "test`},
+		{"Non-Object", `[1, 2, 3]`},
+		{"Null Body", "null"},
+	}
+	
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest("PUT", fmt.Sprintf("/%s/%s", resourceName, id), bytes.NewBufferString(tc.body))
+			req.Header.Set("Content-Type", "application/json")
+			req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+			w := httptest.NewRecorder()
+			
+			handler.PutSingle(resourceName)(w, req)
+			
+			if w.Code != http.StatusBadRequest {
+				t.Errorf("Expected status 400 for malformed JSON, got %d", w.Code)
+			}
+		})
+	}
+}
+
+func TestHandler_MissingContentType(t *testing.T) {
+	handler, _ := setupTestHandler(t)
+	resourceName := "users"
+	
+	validJSON := `{"name": "Test User", "email": "test@example.com"}`
+	
+	t.Run("POST_WithoutContentType", func(t *testing.T) {
+		req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBufferString(validJSON))
+		// Intentionally not setting Content-Type
+		w := httptest.NewRecorder()
+		
+		handler.PostCollection(resourceName)(w, req)
+		
+		// Should still work or return 400 depending on implementation
+		t.Logf("POST without Content-Type: status %d", w.Code)
+	})
+	
+	t.Run("POST_WithWrongContentType", func(t *testing.T) {
+		req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBufferString(validJSON))
+		req.Header.Set("Content-Type", "text/plain")
+		w := httptest.NewRecorder()
+		
+		handler.PostCollection(resourceName)(w, req)
+		
+		t.Logf("POST with wrong Content-Type: status %d", w.Code)
+	})
+}
+
+func TestHandler_POST_ValidCreation(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get initial count via cache Get method
+	initialItems, _ := testCache.Get(resourceName, 0)
+	initialCount := len(initialItems)
+	
+	// Generate a valid item
+	items, err := handler.registry.GenerateData(resourceName, 1)
+	if err != nil {
+		t.Fatalf("Failed to generate test data: %v", err)
+	}
+	
+	if len(items) == 0 {
+		t.Fatal("No test data generated")
+	}
+	
+	newItem := items[0]
+	
+	// Remove ID if present (should be auto-generated)
+	delete(newItem, "id")
+	
+	jsonData, err := json.Marshal(newItem)
+	if err != nil {
+		t.Fatalf("Failed to marshal test data: %v", err)
+	}
+	
+	req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	
+	handler.PostCollection(resourceName)(w, req)
+	
+	if w.Code != http.StatusCreated {
+		t.Errorf("Expected status 201, got %d. Body: %s", w.Code, w.Body.String())
+	}
+	
+	// Verify response has ID
+	var created map[string]interface{}
+	if err := json.NewDecoder(w.Body).Decode(&created); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+	
+	if created["id"] == nil {
+		t.Error("Created item should have an ID")
+	}
+	
+	// Verify it was added to cache
+	finalItems, _ := testCache.Get(resourceName, 0)
+	finalCount := len(finalItems)
+	
+	if finalCount != initialCount+1 {
+		t.Errorf("Expected count to increase by 1, was %d, now %d", initialCount, finalCount)
+	}
+	
+	t.Logf("Successfully created item with ID: %v in %s", created["id"], resourceName)
+}
+
+func TestHandler_POST_MaxItemsConstraint(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get max items - set to 100 (default max)
+	maxItems := 100
+	
+	// Generate items and fill to max
+	items, err := handler.registry.GenerateData(resourceName, maxItems)
+	if err != nil {
+		t.Fatalf("Failed to generate data: %v", err)
+	}
+	
+	// Set cache data directly to reach max
+	testCache.Data[resourceName] = items
+	
+	// Try to add one more
+	newItem := map[string]interface{}{
+		"name":  "Should Fail",
+		"email": "fail@example.com",
+	}
+	
+	jsonData, _ := json.Marshal(newItem)
+	req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	
+	handler.PostCollection(resourceName)(w, req)
+	
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected status 400 when exceeding max items, got %d", w.Code)
+	}
+	
+	body := w.Body.String()
+	if !bytes.Contains([]byte(body), []byte("max")) && !bytes.Contains([]byte(body), []byte("limit")) {
+		t.Error("Error message should mention max/limit constraint")
+	}
+}
+
+func TestHandler_PUT_ValidUpdate(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get existing item
+	items, _ := testCache.Get(resourceName, 1)
+	
+	if len(items) == 0 {
+		t.Fatal("No test data available")
+	}
+	
+	originalItem := items[0]
+	id := fmt.Sprintf("%v", originalItem["id"])
+	
+	// Prepare update (modify one field)
+	updates := map[string]interface{}{
+		"name": "Updated Name",
+	}
+	
+	jsonData, _ := json.Marshal(updates)
+	req := httptest.NewRequest("PUT", fmt.Sprintf("/%s/%s", resourceName, id), bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+	w := httptest.NewRecorder()
+	
+	handler.PutSingle(resourceName)(w, req)
+	
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status 200, got %d. Body: %s", w.Code, w.Body.String())
+	}
+	
+	// Verify response
+	var updated map[string]interface{}
+	if err := json.NewDecoder(w.Body).Decode(&updated); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+	
+	if updated["name"] != "Updated Name" {
+		t.Errorf("Expected name to be 'Updated Name', got %v", updated["name"])
+	}
+	
+	// Verify ID didn't change
+	if fmt.Sprintf("%v", updated["id"]) != id {
+		t.Error("ID should not change during update")
+	}
+	
+	t.Logf("Successfully updated item %s in %s", id, resourceName)
+}
+
+func TestHandler_PUT_InvalidID(t *testing.T) {
+	handler, _ := setupTestHandler(t)
+	resourceName := "users"
+	
+	invalidIDs := []string{"99999", "abc", "-1", "0"}
+	
+	for _, id := range invalidIDs {
+		t.Run(fmt.Sprintf("ID_%s", id), func(t *testing.T) {
+			updates := map[string]interface{}{"name": "Test"}
+			jsonData, _ := json.Marshal(updates)
+			
+			req := httptest.NewRequest("PUT", fmt.Sprintf("/%s/%s", resourceName, id), bytes.NewBuffer(jsonData))
+			req.Header.Set("Content-Type", "application/json")
+			req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+			w := httptest.NewRecorder()
+			
+			handler.PutSingle(resourceName)(w, req)
+			
+			if w.Code != http.StatusNotFound {
+				t.Errorf("Expected status 404 for invalid ID %s, got %d", id, w.Code)
+			}
+		})
+	}
+}
+
+func TestHandler_DELETE_ValidDeletion(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get initial count
+	items, _ := testCache.Get(resourceName, 0)
+	initialCount := len(items)
+	
+	if initialCount == 0 {
+		t.Fatal("No test data available")
+	}
+	
+	// Delete first item
+	id := fmt.Sprintf("%v", items[0]["id"])
+	
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/%s/%s", resourceName, id), nil)
+	req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+	w := httptest.NewRecorder()
+	
+	handler.DeleteSingle(resourceName)(w, req)
+	
+	if w.Code != http.StatusNoContent {
+		t.Errorf("Expected status 204, got %d. Body: %s", w.Code, w.Body.String())
+	}
+	
+	// Verify it was removed from cache
+	finalItems, _ := testCache.Get(resourceName, 0)
+	finalCount := len(finalItems)
+	
+	if finalCount != initialCount-1 {
+		t.Errorf("Expected count to decrease by 1, was %d, now %d", initialCount, finalCount)
+	}
+	
+	t.Logf("Successfully deleted item %s from %s", id, resourceName)
+}
+
+func TestHandler_DELETE_InvalidID(t *testing.T) {
+	handler, _ := setupTestHandler(t)
+	resourceName := "users"
+	
+	invalidIDs := []string{"99999", "nonexistent", "-1"}
+	
+	for _, id := range invalidIDs {
+		t.Run(fmt.Sprintf("ID_%s", id), func(t *testing.T) {
+			req := httptest.NewRequest("DELETE", fmt.Sprintf("/%s/%s", resourceName, id), nil)
+			req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+			w := httptest.NewRecorder()
+			
+			handler.DeleteSingle(resourceName)(w, req)
+			
+			if w.Code != http.StatusNotFound {
+				t.Errorf("Expected status 404 for invalid ID %s, got %d", id, w.Code)
+			}
+		})
+	}
+}
+
+func TestHandler_DELETE_MinItemsConstraint(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Set cache to minimum items
+	items, err := handler.registry.GenerateData(resourceName, 1)
+	if err != nil {
+		t.Fatalf("Failed to generate data: %v", err)
+	}
+	testCache.Data[resourceName] = items
+	
+	// Try to delete the only item
+	id := fmt.Sprintf("%v", items[0]["id"])
+	
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("/%s/%s", resourceName, id), nil)
+	req = req.WithContext(createCtxWithParams(map[string]string{"resource": resourceName, "id": id}))
+	w := httptest.NewRecorder()
+	
+	handler.DeleteSingle(resourceName)(w, req)
+	
+	// Should fail due to min constraint
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected status 400 when deleting last item, got %d", w.Code)
+	}
+	
+	body := w.Body.String()
+	if !bytes.Contains([]byte(body), []byte("min")) && !bytes.Contains([]byte(body), []byte("at least")) {
+		t.Error("Error message should mention minimum constraint")
+	}
+}
+
+func TestHandler_POST_ConcurrentCreation(t *testing.T) {
+	handler, testCache := setupTestHandler(t)
+	resourceName := "users"
+	
+	// Get initial count
+	initialItems, _ := testCache.Get(resourceName, 0)
+	initialCount := len(initialItems)
+	
+	// Create items concurrently
+	concurrency := 10
+	var wg sync.WaitGroup
+	errors := make(chan error, concurrency)
+	
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			
+			newItem := map[string]interface{}{
+				"name":  fmt.Sprintf("Concurrent User %d", idx),
+				"email": fmt.Sprintf("user%d@example.com", idx),
+			}
+			
+			jsonData, _ := json.Marshal(newItem)
+			req := httptest.NewRequest("POST", fmt.Sprintf("/%s", resourceName), bytes.NewBuffer(jsonData))
+			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			
+			handler.PostCollection(resourceName)(w, req)
+			
+			if w.Code != http.StatusCreated {
+				errors <- fmt.Errorf("goroutine %d: expected 201, got %d", idx, w.Code)
+			}
+		}(i)
+	}
+	
+	wg.Wait()
+	close(errors)
+	
+	// Check for errors
+	for err := range errors {
+		t.Error(err)
+	}
+	
+	// Verify all were added
+	finalItems, _ := testCache.Get(resourceName, 0)
+	finalCount := len(finalItems)
+	
+	if finalCount != initialCount+concurrency {
+		t.Errorf("Expected count to increase by %d, was %d, now %d", concurrency, initialCount, finalCount)
+	}
+	
+	t.Logf("Successfully created %d items concurrently", concurrency)
 }

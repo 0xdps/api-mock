@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/0xdps/api-mock/go/internal/redisstore"
@@ -39,14 +40,15 @@ type Cache struct {
 }
 
 // CacheMetadata tracks cache statistics
+// Note: Hits and Misses use atomic operations for thread-safety
 type CacheMetadata struct {
 	WarmupTime       time.Duration
 	TotalResources   int
 	TotalItems       int
 	ItemsPerResource int
 	LastRefresh      time.Time
-	Hits             int64
-	Misses           int64
+	Hits             int64 // Use atomic.AddInt64 and atomic.LoadInt64
+	Misses           int64 // Use atomic.AddInt64 and atomic.LoadInt64
 }
 
 // Config holds cache configuration
@@ -254,22 +256,23 @@ func (c *Cache) GetByID(resourceName string, id interface{}) (map[string]interfa
 	if c.mode == CacheModeLocal || c.mode == CacheModeAll {
 		c.mu.RLock()
 		data, exists := c.Data[resourceName]
-		c.mu.RUnlock()
 		
 		if exists {
-			// Find item with matching ID
+			// Find item with matching ID (keep lock during iteration)
 			for _, item := range data {
 				if itemID, ok := item["id"]; ok && fmt.Sprint(itemID) == fmt.Sprint(id) {
-					c.incrementHits()
-					// Return a copy
+					// Make a copy while holding the lock
 					result := make(map[string]interface{})
 					for k, v := range item {
 						result[k] = v
 					}
+					c.mu.RUnlock()
+					c.incrementHits()
 					return result, true
 				}
 			}
 		}
+		c.mu.RUnlock()
 	}
 	
 	// Try Redis if mode includes remote  
@@ -343,9 +346,11 @@ func (c *Cache) Refresh() error {
 	c.mu.Lock()
 	c.Data = make(map[string][]map[string]interface{})
 	c.metaCache = make(map[string]interface{})
-	c.metadata.Hits = 0
-	c.metadata.Misses = 0
 	c.mu.Unlock()
+	
+	// Reset atomic counters
+	atomic.StoreInt64(&c.metadata.Hits, 0)
+	atomic.StoreInt64(&c.metadata.Misses, 0)
 
 	return c.Warmup()
 }
@@ -355,21 +360,21 @@ func (c *Cache) GetMetadata() CacheMetadata {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	// Return a copy
-	return c.metadata
+	// Return a copy with atomic-loaded values
+	metadata := c.metadata
+	metadata.Hits = atomic.LoadInt64(&c.metadata.Hits)
+	metadata.Misses = atomic.LoadInt64(&c.metadata.Misses)
+	return metadata
 }
 
-// incrementHits safely increments hit counter
+// incrementHits safely increments hit counter using atomic operations
 func (c *Cache) incrementHits() {
-	// Note: This is called within RLock, so we need atomic operation
-	// For simplicity, we'll accept potential race condition on stats
-	// In production, use atomic.AddInt64
-	c.metadata.Hits++
+	atomic.AddInt64(&c.metadata.Hits, 1)
 }
 
-// incrementMisses safely increments miss counter
+// incrementMisses safely increments miss counter using atomic operations
 func (c *Cache) incrementMisses() {
-	c.metadata.Misses++
+	atomic.AddInt64(&c.metadata.Misses, 1)
 }
 
 // GetStats returns formatted cache statistics
@@ -377,10 +382,14 @@ func (c *Cache) GetStats() map[string]interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
+	// Use atomic loads for thread-safe reads
+	hits := atomic.LoadInt64(&c.metadata.Hits)
+	misses := atomic.LoadInt64(&c.metadata.Misses)
+
 	hitRate := 0.0
-	total := c.metadata.Hits + c.metadata.Misses
+	total := hits + misses
 	if total > 0 {
-		hitRate = float64(c.metadata.Hits) / float64(total) * 100
+		hitRate = float64(hits) / float64(total) * 100
 	}
 
 	return map[string]interface{}{
@@ -389,8 +398,8 @@ func (c *Cache) GetStats() map[string]interface{} {
 		"total_items":        c.metadata.TotalItems,
 		"items_per_resource": c.metadata.ItemsPerResource,
 		"last_refresh":       c.metadata.LastRefresh.Format(time.RFC3339),
-		"hits":               c.metadata.Hits,
-		"misses":             c.metadata.Misses,
+		"hits":               hits,
+		"misses":             misses,
 		"hit_rate_percent":   fmt.Sprintf("%.2f", hitRate),
 		"seed":               c.seed,
 	}
