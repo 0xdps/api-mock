@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main, trunk ]
+    branches: [ trunk, develop ]
   pull_request:
-    branches: [ main, trunk ]
+    branches: [ trunk, develop ]
 
 jobs:
   generate-types:
@@ -46,8 +46,11 @@ jobs:
       - name: Build
         run: cd backend && make build
       
-      - name: Test
-        run: cd backend && go test ./...
+      - name: Run Tests
+        run: cd backend && go test ./internal/... -v -race -coverprofile=coverage.out
+      
+      - name: Display Test Coverage
+        run: cd backend && go tool cover -func=coverage.out
 
   frontend:
     name: Build Frontend
