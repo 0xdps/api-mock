@@ -1013,6 +1013,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                 <p className="text-sm text-slate-400 mb-2">Search across all text fields:</p>
                 <CodeExample 
+                  title="Basic Search"
                   code={`GET ${API_URL}${directPath}?q=laptop`}
                   language="bash"
                 />
@@ -1024,6 +1025,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                 <p className="text-sm text-slate-400 mb-2">Using alternative parameter name:</p>
                 <CodeExample 
+                  title="Alternative Parameter"
                   code={`GET ${API_URL}${directPath}?search=laptop`}
                   language="bash"
                 />
@@ -1044,6 +1046,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                 <p className="text-sm text-slate-400 mb-2">Narrow search to specific fields:</p>
                 <CodeExample 
+                  title="Field-Specific Search"
                   code={`GET ${API_URL}${directPath}?q=laptop&search_fields=name,description`}
                   language="bash"
                 />
@@ -1055,6 +1058,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
                 <p className="text-sm text-slate-400 mb-2">Search in a single field:</p>
                 <CodeExample 
+                  title="Single Field Search"
                   code={`GET ${API_URL}${directPath}?q=Electronics&search_fields=category`}
                   language="bash"
                 />
@@ -1073,6 +1077,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
             <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
               <p className="text-sm text-slate-400 mb-2">Search + Pagination + Sorting:</p>
               <CodeExample 
+                title="Combined Query"
                 code={`GET ${API_URL}${directPath}?q=laptop&page=1&limit=20&sort=price&order=asc`}
                 language="bash"
               />
@@ -1089,6 +1094,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
             </h3>
             <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
               <CodeExample 
+                title="Search Function"
                 code={`// Search with fetch API
 const searchProducts = async (query, fields = []) => {
   const params = new URLSearchParams({
