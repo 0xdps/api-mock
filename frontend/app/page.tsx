@@ -23,7 +23,7 @@ export default async function Home() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link 
-            href="/docs" 
+            href="/playground" 
             className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold transition"
           >
             Explore & Try API →

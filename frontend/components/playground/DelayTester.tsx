@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { getApiUrl } from '@/lib/api'
+import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
 
@@ -90,17 +91,8 @@ export function DelayTester() {
     setProgress(0)
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Delay & Timeout Testing
-        </h2>
-        <p className="text-slate-400">
-          Test API delays and timeout handling with visual progress indicators
-        </p>
-      </div>
-
+  const requestPanel = (
+    <div className="space-y-4">
       {/* Delay Slider */}
       <div>
         <label className="block text-slate-300 mb-2 font-medium text-sm">
@@ -167,25 +159,31 @@ export function DelayTester() {
         </div>
       </div>
 
-      {/* Control Buttons */}
-      <div className="flex gap-3">
-        <button
-          onClick={handleStart}
-          disabled={isRunning}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
-        >
-          {isRunning ? '⏳ Running...' : '▶ Start Request'}
-        </button>
-        {isRunning && (
-          <button
-            onClick={handleStop}
-            className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
-          >
-            ⏹ Stop
-          </button>
-        )}
-      </div>
+    </div>
+  )
 
+  const actionButton = (
+    <div className="flex gap-3">
+      <button
+        onClick={handleStart}
+        disabled={isRunning}
+        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+      >
+        {isRunning ? '⏳ Running...' : '▶ Start Request'}
+      </button>
+      {isRunning && (
+        <button
+          onClick={handleStop}
+          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
+        >
+          ⏹ Stop
+        </button>
+      )}
+    </div>
+  )
+
+  const responsePanel = (
+    <div className="space-y-4">
       {/* Progress Bar */}
       {isRunning && (
         <div className="space-y-2">
@@ -206,7 +204,7 @@ export function DelayTester() {
 
       {/* Results */}
       {results && (
-        <div className="border-t border-slate-700 pt-6 space-y-4">
+        <div className="border-t border-slate-700 pt-6 space-y-4 flex-1 flex flex-col min-h-0">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-900/50 p-4 rounded border border-slate-700">
               <p className="text-xs text-slate-400 mb-1">Requested Delay</p>
@@ -244,9 +242,9 @@ export function DelayTester() {
             </p>
           </div>
 
-          <div>
+          <div className="flex-1 flex flex-col min-h-0">
             <h3 className="text-lg font-semibold text-white mb-2">Response Data</h3>
-            <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-64">
+            <div className="flex-1 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
               <pre className="text-green-400 text-sm">
                 <code>{JSON.stringify(results.data, null, 2)}</code>
               </pre>
@@ -264,6 +262,21 @@ export function DelayTester() {
           <p className="text-red-300 text-sm">{error}</p>
         </div>
       )}
+
+      {!isRunning && !results && !error && (
+        <div className="text-center py-12 text-slate-400">
+          <p className="text-lg mb-2">No results yet</p>
+          <p className="text-sm">Configure delay and start request</p>
+        </div>
+      )}
     </div>
+  )
+
+  return (
+    <RequestResponseLayout
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+    />
   )
 }

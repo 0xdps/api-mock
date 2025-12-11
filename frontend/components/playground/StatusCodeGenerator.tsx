@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getApiUrl } from '@/lib/api'
+import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
 
@@ -84,17 +85,8 @@ export function StatusCodeGenerator() {
     return 'text-slate-400 border-slate-500 bg-slate-900/20'
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Status Code Generator
-        </h2>
-        <p className="text-slate-400">
-          Generate specific HTTP status codes for testing error handling
-        </p>
-      </div>
-
+  const requestPanel = (
+    <div className="space-y-4">
       {/* Quick Select */}
       <div>
         <label className="block text-slate-300 mb-3 font-medium text-sm">
@@ -203,19 +195,28 @@ export function StatusCodeGenerator() {
           </code>
         </div>
       </div>
+    </div>
+  )
 
-      {/* Generate Button */}
-      <button
-        onClick={handleGenerate}
-        disabled={loading}
-        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
-      >
-        {loading ? 'Generating...' : '▶ Generate Response'}
-      </button>
+  const actionButton = (
+    <button
+      onClick={handleGenerate}
+      disabled={loading}
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+    >
+      {loading ? 'Generating...' : '▶ Generate Response'}
+    </button>
+  )
 
-      {/* Response */}
-      {(response || error) && (
-        <div className="border-t border-slate-700 pt-6 space-y-4">
+  const responsePanel = (
+    <div className="flex flex-col h-full space-y-4">
+      {!response && !error ? (
+        <div className="text-center py-12 text-slate-400">
+          <p className="text-lg mb-2">No response yet</p>
+          <p className="text-sm">Select a status code and generate</p>
+        </div>
+      ) : (
+        <>
           <div className="flex items-center gap-3 flex-wrap">
             <span className={`font-semibold ${
               response?.status >= 200 && response?.status < 300 ? 'text-green-400' :
@@ -242,17 +243,26 @@ export function StatusCodeGenerator() {
           )}
 
           {response?.data && (
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Response Body</h3>
-              <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
+            <div className="flex-1 flex flex-col min-h-0">
+              <h4 className="text-sm font-semibold text-slate-300 mb-2">Response Body</h4>
+              <div className="flex-1 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
                 <pre className={`text-sm ${getColorForCode(response.status).split(' ')[0]}`}>
                   <code>{JSON.stringify(response.data, null, 2)}</code>
                 </pre>
               </div>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
+  )
+
+  return (
+    <RequestResponseLayout
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+      isLoading={loading}
+    />
   )
 }

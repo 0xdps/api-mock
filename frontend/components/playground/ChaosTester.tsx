@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getApiUrl } from '@/lib/api'
+import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
 
@@ -132,17 +133,8 @@ export function ChaosTester() {
   const histogramData = getHistogramData()
   const maxCount = Math.max(...histogramData.map(d => d.count), 1)
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Chaos Testing
-        </h2>
-        <p className="text-slate-400">
-          Run chaos engineering tests with multiple concurrent requests and failure scenarios
-        </p>
-      </div>
-
+  const requestPanel = (
+    <>
       {/* Configuration */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -225,28 +217,32 @@ export function ChaosTester() {
           <option value="articles">Articles</option>
         </select>
       </div>
+    </>
+  )
 
-      {/* Control Buttons */}
-      <div className="flex gap-3">
+  const actionButton = (
+    <div className="flex gap-3">
+      <button
+        onClick={handleStart}
+        disabled={isRunning}
+        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+      >
+        {isRunning ? '🎲 Running...' : '▶ Start Chaos Test'}
+      </button>
+      {isRunning && (
         <button
-          onClick={handleStart}
-          disabled={isRunning}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+          onClick={handleStop}
+          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
         >
-          {isRunning ? '🎲 Running...' : '▶ Start Chaos Test'}
+          ⏹ Stop
         </button>
-        {isRunning && (
-          <button
-            onClick={handleStop}
-            className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
-          >
-            ⏹ Stop
-          </button>
-        )}
-      </div>
+      )}
+    </div>
+  )
 
-      {/* Progress */}
-      {(isRunning || results.length > 0) && (
+  const responsePanel = (
+    <>
+      {(isRunning || results.length > 0) ? (
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
@@ -294,30 +290,54 @@ export function ChaosTester() {
           </div>
 
           {/* Response Time Distribution */}
-          {histogramData.length > 0 && (
-            <div className="bg-slate-900/50 p-4 rounded border border-slate-700">
-              <h3 className="text-sm font-semibold text-white mb-3">Response Time Distribution</h3>
-              <div className="flex items-end gap-1 h-32">
-                {histogramData.map(({ bucket, count }) => (
-                  <div key={bucket} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className="w-full bg-blue-500 rounded-t transition-all"
-                      style={{ height: `${(count / maxCount) * 100}%` }}
-                      title={`${bucket}-${bucket + 500}ms: ${count} requests`}
-                    />
-                    <span className="text-xs text-slate-500 transform -rotate-45 origin-top-left whitespace-nowrap">
-                      {bucket}ms
-                    </span>
-                  </div>
-                ))}
+          <div className="bg-slate-900/50 p-4 rounded border border-slate-700">
+            <h3 className="text-sm font-semibold text-white mb-3">Response Time Distribution</h3>
+            {isRunning ? (
+              <div className="flex items-center justify-center h-32 text-slate-400">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                  <p className="text-sm">Collecting data...</p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : histogramData.length > 0 ? (
+              <div className="flex items-end justify-between gap-2 h-32 px-2">
+                {histogramData.map(({ bucket, count }) => {
+                  const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0
+                  return (
+                    <div key={bucket} className="flex flex-col items-center gap-2 flex-1 max-w-[60px]">
+                      <div className="relative w-full flex items-end justify-center" style={{ height: '100px' }}>
+                        <div
+                          className="w-full bg-blue-500 hover:bg-blue-400 rounded-t transition-all cursor-pointer"
+                          style={{ 
+                            height: `${Math.max(heightPercent, 5)}%`,
+                          }}
+                          title={`${bucket}-${bucket + 500}ms: ${count} requests`}
+                        >
+                          <div className="text-xs text-white font-semibold text-center pt-1">
+                            {count}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs text-slate-400 whitespace-nowrap">
+                        {bucket}ms
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-32 text-slate-400">
+                <p className="text-sm">No data yet</p>
+              </div>
+            )}
+          </div>
 
           {/* Individual Results */}
-          {results.length > 0 && !isRunning && (
+          {results.length > 0 && (
             <div className="bg-slate-900/50 p-4 rounded border border-slate-700">
-              <h3 className="text-sm font-semibold text-white mb-3">Individual Results</h3>
+              <h3 className="text-sm font-semibold text-white mb-3">
+                Individual Results {isRunning && <span className="text-blue-400 text-xs ml-2">(Live)</span>}
+              </h3>
               <div className="max-h-64 overflow-y-auto space-y-1">
                 {results.map((result) => (
                   <div
@@ -340,7 +360,19 @@ export function ChaosTester() {
             </div>
           )}
         </div>
+      ) : (
+        <div className="text-center py-12 text-slate-400">
+          <p>Start a chaos test to see results</p>
+        </div>
       )}
-    </div>
+    </>
+  )
+
+  return (
+    <RequestResponseLayout
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+    />
   )
 }

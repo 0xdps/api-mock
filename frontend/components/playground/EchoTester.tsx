@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getApiUrl } from '@/lib/api'
+import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
 
@@ -133,23 +134,14 @@ export function EchoTester() {
     return curl
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Echo Endpoint Tester
-        </h2>
-        <p className="text-slate-400">
-          Test request/response echoing with various content types and methods
-        </p>
-      </div>
-
+  const requestPanel = (
+    <div className="space-y-4">
       {/* Method Selector */}
       <div>
         <label className="block text-slate-300 mb-2 font-medium text-sm">
           HTTP Method
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as HttpMethod[]).map(m => (
             <button
               key={m}
@@ -326,60 +318,77 @@ export function EchoTester() {
         </div>
       </div>
 
-      {/* Send Button */}
-      <button
-        onClick={handleSend}
-        disabled={loading}
-        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
-      >
-        {loading ? 'Sending...' : '▶ Send Request'}
-      </button>
-
-      {/* Response */}
-      {(response || error) && (
-        <div className="border-t border-slate-700 pt-6 space-y-4">
-          {error ? (
-            <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-red-400 font-semibold">❌ Error</span>
-              </div>
-              <p className="text-red-300 text-sm">{error}</p>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-green-400 font-semibold">✓ Success</span>
-                <span className="text-slate-400 text-sm">
-                  Status: <span className="text-white">{response.status}</span>
-                </span>
-                {requestTime !== null && (
-                  <span className="text-slate-400 text-sm">
-                    Time: <span className="text-white">{requestTime}ms</span>
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Response Body</h3>
-                <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-96">
-                  <pre className="text-green-400 text-sm">
-                    <code>{JSON.stringify(response.data, null, 2)}</code>
-                  </pre>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-2">cURL Command</h3>
-                <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
-                  <pre className="text-slate-400 text-sm">
-                    <code>{generateCurl()}</code>
-                  </pre>
-                </div>
-              </div>
-            </>
-          )}
+      {/* cURL Command */}
+      <div>
+        <label className="block text-slate-300 mb-2 font-medium text-sm">
+          cURL Command
+        </label>
+        <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
+          <pre className="text-slate-400 text-sm">
+            <code>{generateCurl()}</code>
+          </pre>
         </div>
+      </div>
+    </div>
+  )
+
+  const actionButton = (
+    <button
+      onClick={handleSend}
+      disabled={loading}
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+    >
+      {loading ? 'Sending...' : '▶ Send Request'}
+    </button>
+  )
+
+  const responsePanel = (
+    <div className="flex flex-col h-full space-y-4">
+      {!response && !error ? (
+        <div className="text-center py-12 text-slate-400">
+          <p className="text-lg mb-2">No response yet</p>
+          <p className="text-sm">Configure your request and click Send</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-red-400 font-semibold">❌ Error</span>
+          </div>
+          <p className="text-red-300 text-sm">{error}</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-green-400 font-semibold">✓ Success</span>
+            <span className="text-slate-400 text-sm">
+              Status: <span className="text-white">{response.status}</span>
+            </span>
+            {requestTime !== null && (
+              <span className="text-slate-400 text-sm">
+                Time: <span className="text-white">{requestTime}ms</span>
+              </span>
+            )}
+          </div>
+
+          <div className="flex-1 flex flex-col min-h-0">
+            <h4 className="text-sm font-semibold text-slate-300 mb-2">Response Body</h4>
+            <div className="flex-1 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
+              <pre className="text-green-400 text-sm">
+                <code>{JSON.stringify(response.data, null, 2)}</code>
+              </pre>
+            </div>
+          </div>
+        </>
       )}
     </div>
+  )
+
+  return (
+    <RequestResponseLayout
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+      isLoading={loading}
+    />
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getApiUrl } from '@/lib/api'
+import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
 
@@ -127,17 +128,8 @@ export function MiddlewareTester() {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Middleware Testing
-        </h2>
-        <p className="text-slate-400">
-          Test all global middleware parameters and headers in one interface
-        </p>
-      </div>
-
+  const requestPanel = (
+    <>
       {/* Test Resource */}
       <div>
         <label className="block text-slate-300 mb-2 font-medium text-sm">
@@ -369,19 +361,23 @@ export function MiddlewareTester() {
           <code className="text-blue-400 text-xs break-all">{buildUrl()}</code>
         </div>
       </div>
+    </>
+  )
 
-      {/* Test Button */}
-      <button
-        onClick={handleTest}
-        disabled={loading}
-        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
-      >
-        {loading ? 'Testing...' : '▶ Run Test'}
-      </button>
+  const actionButton = (
+    <button
+      onClick={handleTest}
+      disabled={loading}
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+    >
+      {loading ? 'Testing...' : '▶ Run Test'}
+    </button>
+  )
 
-      {/* Response */}
-      {(response || error) && (
-        <div className="border-t border-slate-700 pt-6 space-y-4">
+  const responsePanel = (
+    <>
+      {(response || error) ? (
+        <div className="flex flex-col h-full space-y-4">
           {error ? (
             <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
               <div className="flex items-center gap-2 mb-2">
@@ -419,9 +415,9 @@ export function MiddlewareTester() {
               )}
 
               {/* Response Body */}
-              <div>
+              <div className="flex-1 flex flex-col min-h-0">
                 <h3 className="text-lg font-semibold text-white mb-2">Response Body</h3>
-                <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-96">
+                <div className="flex-1 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto">
                   <pre className="text-green-400 text-sm">
                     <code>{JSON.stringify(response.data, null, 2)}</code>
                   </pre>
@@ -430,7 +426,22 @@ export function MiddlewareTester() {
             </>
           )}
         </div>
+      ) : (
+        <div className="text-center py-12 text-slate-400">
+          <p>Run a test to see the response</p>
+        </div>
       )}
-    </div>
+    </>
+  )
+
+  return (
+    <RequestResponseLayout
+      title="Middleware Testing"
+      description="Test all global middleware parameters and headers in one interface"
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+      isLoading={loading}
+    />
   )
 }

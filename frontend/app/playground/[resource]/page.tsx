@@ -84,7 +84,12 @@ export default async function ResourcePlaygroundPage({
 }) {
   const { resource } = await params
   const schemas = await getSchemas()
-  const schema = schemas.find(s => s.name === resource)
+  
+  // Try exact match first, then try removing 's' for plural
+  let schema = schemas.find(s => s.name === resource)
+  if (!schema && resource.endsWith('s')) {
+    schema = schemas.find(s => s.name === resource.slice(0, -1))
+  }
   
   if (!schema) {
     return (
