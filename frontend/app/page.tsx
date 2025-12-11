@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { CodeExample } from '@/components/CodeExample'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -14,9 +15,18 @@ export default async function Home() {
       
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-6xl font-bold text-white mb-6">
-          Mockly
-        </h1>
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <Image 
+            src="/favicon.svg" 
+            alt="Mockly Logo" 
+            width={64} 
+            height={64}
+            className="w-16 h-16"
+          />
+          <h1 className="text-6xl font-bold text-white">
+            Mockly
+          </h1>
+        </div>
         <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
           Schema-driven mock API service with realistic data. 
           Perfect for prototyping, testing, and demos.

@@ -1,10 +1,18 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Header() {
   return (
     <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-white">
+        <Link href="/" className="flex items-center gap-3 text-2xl font-bold text-white hover:opacity-90 transition">
+          <Image 
+            src="/favicon.svg" 
+            alt="Mockly Logo" 
+            width={32} 
+            height={32}
+            className="w-8 h-8"
+          />
           Mockly
         </Link>
         
