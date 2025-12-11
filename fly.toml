@@ -10,8 +10,23 @@ primary_region = 'bom'
   dockerfile = "Dockerfile"
 
 [env]
+  # Cache Configuration
+  # Mode options: off (no caching), local (in-memory only), remote (Redis only), all (both - DEFAULT)
+  CACHE_MODE = "all"
   CACHE_ITEMS_PER_RESOURCE = "100"
   CACHE_SEED = "42"
+  MAX_ITEMS_PER_RESOURCE = "1000"
+  
+  # Redis Configuration (Upstash)
+  # Using Upstash Redis with TLS connection
+  REDIS_HOST = "fly-cache-mockly.upstash.io"
+  REDIS_PORT = "6380"
+  REDIS_DB = "0"
+  # Note: Set REDIS_PASSWORD as a Fly secret (not in this file)
+  # Run: fly secrets set REDIS_PASSWORD="your_upstash_token"
+  
+  # Server Configuration
+  PORT = "8080"
 
 [http_service]
   internal_port = 8080
