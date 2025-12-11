@@ -2,6 +2,7 @@ package redisstore
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -26,10 +27,16 @@ type Config struct {
 
 // NewStore creates a new Redis store
 func NewStore(config Config) (*Store, error) {
+	// Configure TLS for Upstash Redis
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
+
 	client := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", config.Host, config.Port),
-		Password: config.Password,
-		DB:       config.DB,
+		Addr:      fmt.Sprintf("%s:%d", config.Host, config.Port),
+		Password:  config.Password,
+		DB:        config.DB,
+		TLSConfig: tlsConfig,
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
