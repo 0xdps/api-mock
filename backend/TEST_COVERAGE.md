@@ -4,7 +4,7 @@ This document provides a comprehensive overview of all test cases in the API-Moc
 
 **Last Updated:** December 11, 2025  
 **Test Framework:** Go's built-in `testing` package  
-**Total Coverage:** ~85%
+**Total Coverage:** ~86%
 
 ## Test Statistics
 
@@ -14,10 +14,11 @@ This document provides a comprehensive overview of all test cases in the API-Moc
 | Cache (Redis Mock) | `cache_redis_test.go` | 12 | ~85% | Mock Redis integration, Redis simulation |
 | Filters | `filters_test.go` | 31 | ~92% | Query parameter filtering, operators |
 | Handlers | `handlers_test.go` | 30+ | ~75% | HTTP request handling, CRUD operations |
+| Utility Handlers | `utility_test.go` | 9 | ~90% | Testing utilities (echo, delay, status, flaky, chaos) |
 | Schema Validation | `schema_validation_test.go` | 10 | ~85% | JSON schema validation, constraints |
 | Validation | `validation_test.go` | 6 | ~80% | Input validation, type checking |
 | CORS Middleware | `cors_test.go` | 10 | ~95% | CORS configuration, preflight |
-| **Total** | **7 files** | **~134 tests** | **~85%** | **Full stack coverage** |
+| **Total** | **8 files** | **~143 tests** | **~86%** | **Full stack coverage** |
 
 ---
 
@@ -275,7 +276,118 @@ Tests data consistency across operations.
 
 ---
 
-## 5. Schema Validation Tests (`internal/handlers/schema_validation_test.go`)
+## 5. Utility Handler Tests (`internal/handlers/utility_test.go`)
+
+**Total Tests:** 9 | **Coverage:** ~90%
+
+### 5.1 Echo Endpoint Tests
+Tests request reflection and debugging capabilities.
+
+- ✅ `TestUtility_Echo/GET_request` - Reflects GET request details
+  - Method, headers, query parameters captured correctly
+  - User-Agent and other headers preserved
+  - Query parameters parsed and returned
+
+- ✅ `TestUtility_Echo/POST_request_with_JSON_body` - Reflects POST with body
+  - POST method captured
+  - JSON body parsed and included in response
+  - Content-Type headers respected
+
+### 5.2 Delay Endpoint Tests
+Tests artificial latency simulation.
+
+- ✅ `TestUtility_Delay/valid_delay` - Delays for specified milliseconds
+  - 100ms delay verified with time measurement
+  - Response includes delay confirmation
+  - Status 200 returned after delay
+
+- ✅ `TestUtility_Delay/invalid_delay` - Rejects invalid delay values
+  - Non-numeric values rejected with 400 Bad Request
+  - Clear error message provided
+
+- ✅ `TestUtility_Delay/delay_capped_at_30_seconds` - Maximum delay enforcement
+  - Delays > 30 seconds capped at 30s
+  - Response indicates capped value (30000ms)
+  - Prevents abuse with excessive delays
+
+### 5.3 Random Delay Tests
+Tests random latency between min/max bounds.
+
+- ✅ `TestUtility_DelayRandom/random_delay_with_defaults` - Default range behavior
+  - Default: 100ms-2000ms range
+  - Actual delay falls within expected bounds
+  - Randomness verified over multiple executions
+
+- ✅ `TestUtility_DelayRandom/random_delay_with_custom_range` - Custom min/max
+  - Custom ranges respected (e.g., 50-150ms)
+  - Min and max parameters parsed correctly
+  - Delay always between min and max
+
+### 5.4 Status Code Tests
+Tests returning arbitrary HTTP status codes.
+
+- ✅ `TestUtility_Status/status_*` - Multiple status codes (200, 201, 400, 404, 500, 503)
+  - Each status code returns correctly
+  - Response includes status categorization (2xx, 4xx, 5xx)
+  - Clear message describing the status category
+
+- ✅ `TestUtility_Status/invalid_status_code` - Out of range codes rejected
+  - Codes outside 100-599 range return 400
+  - Error message explains valid range
+
+### 5.5 Validation Error Tests
+Tests sample validation error responses.
+
+- ✅ `TestUtility_ErrorValidation` - Returns 422 validation error
+  - Status 422 Unprocessable Entity
+  - Multiple validation errors in array format
+  - Each error includes: field, message, code
+  - Sample errors: email required, age range, username length
+
+### 5.6 Flaky Endpoint Tests
+Tests probabilistic success/failure.
+
+- ✅ `TestUtility_Flaky/flaky_with_100%_success_rate` - Always succeeds
+  - successRate=1.0 → 200 OK every time
+  - Response includes success=true
+
+- ✅ `TestUtility_Flaky/flaky_with_0%_success_rate` - Always fails
+  - successRate=0.0 → 503 every time
+  - Response includes success=false
+  - Clear error message with retry hint
+
+- ✅ `TestUtility_Flaky/flaky_with_default_rate` - Probabilistic behavior
+  - Default 50% success rate
+  - 20 requests produce mix of successes and failures
+  - Randomness validated (not all success or all failure)
+
+### 5.7 Chaos Engineering Tests
+Tests random status codes and response shapes.
+
+- ✅ `TestUtility_Chaos` - Random status codes
+  - Multiple different status codes generated (200, 400, 401, 403, 404, 500, 502, 503)
+  - 50 requests produce variety (not stuck on one code)
+  - All responses are valid JSON
+
+- ✅ `TestUtility_ChaosResponseShapes` - Random response structures
+  - 5 different response shapes generated
+  - Responses vary between: objects with data/result/nested, arrays, simple key-value
+  - 30 requests produce multiple different shapes
+  - All shapes are valid JSON
+
+### Testing Utilities Purpose
+These endpoints enable developers to:
+- **Echo:** Debug request details and inspect what server receives
+- **Delay:** Test timeout handling and loading states (1-30000ms)
+- **DelayRandom:** Simulate variable network latency
+- **Status:** Test error handling for any HTTP status code (100-599)
+- **ErrorValidation:** Test form validation error handling (422 responses)
+- **Flaky:** Test retry logic and resilience (configurable success rate)
+- **Chaos:** Test error handling with unpredictable responses (chaos engineering)
+
+---
+
+## 6. Schema Validation Tests (`internal/handlers/schema_validation_test.go`)
 
 **Total Tests:** 10 | **Coverage:** ~85%
 
@@ -478,8 +590,9 @@ Tests handling of various origins.
 | `cache` | ~87% | ✅ CRUD, modes, warmup | ✅ 50+ goroutines |
 | `filters` | ~92% | ✅ All operators | ✅ 10K items |
 | `handlers` | ~75% | ✅ HTTP CRUD | ✅ Concurrent POST |
+| `handlers (utility)` | ~90% | ✅ Testing utils | ✅ Probabilistic |
 | `middleware` | ~95% | ✅ CORS | N/A |
-| **Overall** | **~85%** | **Full stack** | **Thread-safe** |
+| **Overall** | **~86%** | **Full stack** | **Thread-safe** |
 
 ### What We Test
 
@@ -719,11 +832,12 @@ Cache tests:           ~1.2s (35 tests)
 Cache Redis tests:     ~0.4s (12 tests)
 Filter tests:          ~0.5s (31 tests)
 Handler tests:         ~2.9s (30+ tests)
+Utility handler tests: ~31.5s (9 tests - includes actual 30s delay test)
 Schema validation:     ~0.3s (10 tests)
 Validation tests:      ~0.2s (6 tests)
 CORS tests:            ~0.2s (10 tests)
 ─────────────────────────────────────
-Total:                 ~5.7s (134 tests)
+Total:                 ~37.2s (143 tests)
 ```
 
 ### Coverage Gaps (Areas for Improvement)
