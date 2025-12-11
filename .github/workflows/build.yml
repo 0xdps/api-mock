@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Generate Types
         run: npm run generate-types
@@ -40,9 +40,6 @@ jobs:
         with:
           go-version: '1.23'
       
-      - name: Sync Schemas
-        run: cd backend && make sync-schemas
-      
       - name: Build
         run: cd backend && make build
       
@@ -62,7 +59,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Generate Types
         run: npm run generate-types
