@@ -269,6 +269,26 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
         <p className="text-lg text-slate-300">
           {schema.description || `Access and manage ${resourceName} data through our RESTful API.`}
         </p>
+        
+        {/* Feature Highlights */}
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="text-green-400">✓</span>
+            <span>Pagination support</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="text-green-400">✓</span>
+            <span>Full-text search</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="text-green-400">✓</span>
+            <span>Field filtering</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="text-green-400">✓</span>
+            <span>Dynamic sorting</span>
+          </div>
+        </div>
       </div>
       
       {/* Interactive Playground */}
@@ -407,75 +427,132 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
           
           {/* Search (Collection only) */}
           {endpointType === 'collection' && (
-            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
-              <h3 className="text-sm font-semibold text-white">Search</h3>
-              <div className="space-y-3">
+            <div className="space-y-4 p-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 rounded-lg border border-slate-700 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🔍</span>
+                  <h3 className="text-sm font-semibold text-white">Search</h3>
+                </div>
+                {searchQuery && (
+                  <span className="text-xs px-2 py-1 bg-primary-500/20 text-primary-400 rounded">
+                    Active
+                  </span>
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                {/* Search Query Input */}
                 <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Query
+                  <label className="block text-slate-300 mb-2 text-xs font-medium">
+                    Search Query
                   </label>
                   <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                      🔎
+                    </span>
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search..."
-                      className="w-full bg-slate-700 text-white px-3 py-2 pr-8 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
+                      placeholder="Enter search term..."
+                      className="w-full bg-slate-800 text-white pl-9 pr-9 py-2.5 rounded-lg border border-slate-600 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none text-sm placeholder-slate-500 transition"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => setSearchQuery('')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+                        title="Clear search"
                       >
                         ✕
                       </button>
                     )}
                   </div>
+                  <p className="text-xs text-slate-400 mt-1.5 flex items-start gap-1">
+                    <span className="mt-0.5">💡</span>
+                    <span>Searches across all text fields by default. Specify fields below to narrow results.</span>
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-300 mb-2 text-xs">
-                      Search in fields
-                    </label>
-                    <select
-                      multiple
-                      value={searchFields}
-                      onChange={(e) => setSearchFields(Array.from(e.target.selectedOptions, option => option.value))}
-                      className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
-                      size={3}
-                    >
-                      {fieldNames.map(field => (
-                        <option key={field} value={field}>{field}</option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-slate-500 mt-1">Cmd/Ctrl+click to select multiple</p>
-                  </div>
-                  <div>
-                    <label className="block text-slate-300 mb-2 text-xs">
-                      Parameter name
-                    </label>
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          checked={searchParam === 'q'}
-                          onChange={() => setSearchParam('q')}
-                          className="text-primary-500"
-                        />
-                        <span className="text-slate-300 text-sm">q</span>
+                
+                {/* Search Configuration */}
+                {searchQuery && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-700/50">
+                    {/* Search Fields */}
+                    <div>
+                      <label className="block text-slate-300 mb-2 text-xs font-medium">
+                        Search in specific fields (optional)
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          checked={searchParam === 'search'}
-                          onChange={() => setSearchParam('search')}
-                          className="text-primary-500"
-                        />
-                        <span className="text-slate-300 text-sm">search</span>
+                      <select
+                        multiple
+                        value={searchFields}
+                        onChange={(e) => setSearchFields(Array.from(e.target.selectedOptions, option => option.value))}
+                        className="w-full bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-600 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none text-sm hover:bg-slate-750 transition"
+                        size={4}
+                      >
+                        {fieldNames.map(field => (
+                          <option key={field} value={field} className="py-1 hover:bg-primary-500/20">
+                            {field}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1.5">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                        <span>Cmd/Ctrl+click to select multiple</span>
+                      </div>
+                      {searchFields.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {searchFields.map(field => (
+                            <span key={field} className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500/20 text-primary-300 text-xs rounded">
+                              {field}
+                              <button
+                                onClick={() => setSearchFields(searchFields.filter(f => f !== field))}
+                                className="hover:text-white"
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Query Parameter */}
+                    <div>
+                      <label className="block text-slate-300 mb-2 text-xs font-medium">
+                        Query parameter name
                       </label>
+                      <div className="space-y-2.5 bg-slate-800/50 p-3 rounded-lg">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="radio"
+                            checked={searchParam === 'q'}
+                            onChange={() => setSearchParam('q')}
+                            className="text-primary-500 focus:ring-primary-500"
+                          />
+                          <div className="flex-1">
+                            <span className="text-slate-200 text-sm font-mono group-hover:text-white transition">?q=</span>
+                            <p className="text-xs text-slate-500 mt-0.5">Short & common (recommended)</p>
+                          </div>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="radio"
+                            checked={searchParam === 'search'}
+                            onChange={() => setSearchParam('search')}
+                            className="text-primary-500 focus:ring-primary-500"
+                          />
+                          <div className="flex-1">
+                            <span className="text-slate-200 text-sm font-mono group-hover:text-white transition">?search=</span>
+                            <p className="text-xs text-slate-500 mt-0.5">More explicit, descriptive</p>
+                          </div>
+                        </label>
+                      </div>
+                      <div className="mt-3 p-2.5 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300">
+                        <strong>Example:</strong> ?{searchParam}=laptop
+                        {searchFields.length > 0 && `&search_fields=${searchFields.join(',')}`}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -907,6 +984,162 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               </div>
             </div>
           )}
+        </div>
+      </section>
+      
+      {/* Search Guide */}
+      <section className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur p-6 rounded-lg border border-blue-700/30">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-2xl">🔍</span>
+          <h2 className="text-2xl font-bold text-white">How to Use Search</h2>
+        </div>
+        
+        <div className="space-y-6">
+          {/* Overview */}
+          <div>
+            <p className="text-slate-300 leading-relaxed">
+              The search feature allows you to filter results by searching for text across all or specific fields. 
+              Choose between <code className="px-2 py-0.5 bg-slate-800 text-blue-300 rounded text-sm">?q=</code> or{' '}
+              <code className="px-2 py-0.5 bg-slate-800 text-blue-300 rounded text-sm">?search=</code> parameter names.
+            </p>
+          </div>
+
+          {/* Basic Examples */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="text-blue-400">1.</span> Basic Search
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+                <p className="text-sm text-slate-400 mb-2">Search across all text fields:</p>
+                <CodeExample 
+                  code={`GET ${API_URL}${directPath}?q=laptop`}
+                  language="bash"
+                />
+                <p className="text-xs text-slate-500 mt-2">
+                  Returns all items where "laptop" appears in any text field (name, description, category, etc.)
+                </p>
+              </div>
+              
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+                <p className="text-sm text-slate-400 mb-2">Using alternative parameter name:</p>
+                <CodeExample 
+                  code={`GET ${API_URL}${directPath}?search=laptop`}
+                  language="bash"
+                />
+                <p className="text-xs text-slate-500 mt-2">
+                  Both <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">q</code> and{' '}
+                  <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">search</code> work identically
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Field-Specific Search */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="text-blue-400">2.</span> Search Specific Fields
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+                <p className="text-sm text-slate-400 mb-2">Narrow search to specific fields:</p>
+                <CodeExample 
+                  code={`GET ${API_URL}${directPath}?q=laptop&search_fields=name,description`}
+                  language="bash"
+                />
+                <p className="text-xs text-slate-500 mt-2">
+                  Only searches in <strong>name</strong> and <strong>description</strong> fields
+                </p>
+              </div>
+              
+              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+                <p className="text-sm text-slate-400 mb-2">Search in a single field:</p>
+                <CodeExample 
+                  code={`GET ${API_URL}${directPath}?q=Electronics&search_fields=category`}
+                  language="bash"
+                />
+                <p className="text-xs text-slate-500 mt-2">
+                  Only searches in the <strong>category</strong> field
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Combined with Other Parameters */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="text-blue-400">3.</span> Combine with Pagination & Sorting
+            </h3>
+            <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+              <p className="text-sm text-slate-400 mb-2">Search + Pagination + Sorting:</p>
+              <CodeExample 
+                code={`GET ${API_URL}${directPath}?q=laptop&page=1&limit=20&sort=price&order=asc`}
+                language="bash"
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                Search for "laptop", get first page (20 items), sorted by price (lowest first)
+              </p>
+            </div>
+          </div>
+
+          {/* JavaScript Example */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="text-blue-400">4.</span> JavaScript Example
+            </h3>
+            <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+              <CodeExample 
+                code={`// Search with fetch API
+const searchProducts = async (query, fields = []) => {
+  const params = new URLSearchParams({
+    q: query,
+    limit: 10
+  });
+  
+  if (fields.length > 0) {
+    params.append('search_fields', fields.join(','));
+  }
+  
+  const response = await fetch(
+    '${API_URL}${directPath}?' + params.toString()
+  );
+  
+  const data = await response.json();
+  console.log(\`Found \${data.pagination.total} results\`);
+  return data;
+};
+
+// Usage
+await searchProducts('laptop', ['name', 'description']);`}
+                language="javascript"
+              />
+            </div>
+          </div>
+
+          {/* Tips */}
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
+              <span>💡</span> Pro Tips
+            </h4>
+            <ul className="space-y-2 text-sm text-slate-300">
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-0.5">•</span>
+                <span>Search is <strong>case-insensitive</strong> and performs partial matching</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-0.5">•</span>
+                <span>Without <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">search_fields</code>, all text fields are searched</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-0.5">•</span>
+                <span>Use field-specific search for faster, more precise results</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-400 mt-0.5">•</span>
+                <span>Combine with pagination to handle large result sets efficiently</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
       
