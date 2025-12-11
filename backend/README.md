@@ -164,13 +164,41 @@ json.NewEncoder(w).Encode(data)
 - Custom routes and aliases support
 - Meta endpoint for each resource
 
+### Advanced Query Features
+- **Pagination:** page, limit, offset parameters (default: page=1, limit=10, max: 100)
+- **Sorting:** Sort by any field with asc/desc order
+- **Search:** Full-text search with optional field targeting (q, search, search_fields)
+- **Filtering:** Filter by exact match, range, contains, startsWith, endsWith
+- **Field Selection:** Return only specific fields to reduce payload size
+
+### Global Middleware (11+)
+- **Delay Simulation:** ?delay=ms (max: 30,000ms)
+- **Chaos Engineering:** ?flakyRate=0.0-1.0 (random failures)
+- **Cache Control:** ?skip_cache=true (bypass cache)
+- **Field Filtering:** ?fields=id,name,email (select fields)
+- **Multi-tenancy:** X-Tenant-ID header
+- **RBAC:** X-Role header (admin, user, guest)
+- **Idempotency:** Idempotency-Key header (24h TTL)
+- **Request Tracing:** X-Request-ID header
+- **Pagination:** Automatic pagination middleware
+- **Sorting:** Automatic sorting middleware
+- **Search:** Automatic search middleware
+
+### Cache System
+- Redis integration with in-memory fallback
+- 10,000 pre-cached items (100 per resource)
+- X-Cache response header (HIT/MISS/BYPASS)
+- Admin endpoints for stats and refresh
+- Consistent data with fixed seed (42)
+
 ### Data Generation
-- 50+ realistic data generators via gofakeit
-- Personal: name, email, username, password
+- 50+ realistic data generators via gofakeit v7
+- Personal: name, email, username, password, avatar
 - Location: address, city, country, coordinates
-- Internet: URL, domain, IP, UUID
-- Dates: past, future, date-time
+- Internet: URL, domain, IP, UUID, MAC address
+- Dates: past, future, date-time, timezone
 - Text: word, sentence, paragraph
+- Numbers: random_int, float, digit
 - And much more!
 
 ### CORS Support
@@ -182,20 +210,55 @@ json.NewEncoder(w).Encode(data)
 
 All resources support these endpoints:
 
-- `GET /{resource}?count=N` - Get collection (max 100)
+- `GET /{resource}` - Get collection with advanced querying
 - `GET /{resource}/{id}` - Get single item by ID
 - `GET /{resource}/meta` - Get schema metadata
 
-### Available Resources
+### Query Parameters
 
-| Resource | Endpoint |
-|----------|----------|
-| Users | `/users` |
-| Posts | `/posts` |
-| Products | `/products` |
-| Comments | `/comments` |
-| Todos | `/todos` |
-| Reviews | `/reviews` |
+**Pagination:**
+- `?page=1&limit=20` - Page and items per page
+- `?offset=40` - Manual offset
+
+**Sorting:**
+- `?sort=price&order=asc` - Sort by field
+- `?sort=created_at&order=desc` - Descending order
+
+**Search:**
+- `?q=laptop` - Search all fields
+- `?search=laptop&search_fields=name,description` - Search specific fields
+
+**Filtering:**
+- `?category=Electronics` - Exact match
+- `?price<1000` - Less than
+- `?name~contains=laptop` - Contains substring
+
+**Field Selection:**
+- `?fields=id,name,price` - Return only specific fields
+
+**Middleware:**
+- `?delay=2000` - Add 2s delay
+- `?flakyRate=0.5` - 50% failure rate
+- `?skip_cache=true` - Bypass cache
+
+**Headers:**
+- `X-Request-ID` - Request tracing
+- `X-Tenant-ID` - Multi-tenancy
+- `X-Role` - RBAC testing
+- `Idempotency-Key` - Idempotent operations
+
+### Available Resources (100+)
+
+📚 **Full API Reference:** [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
+
+14 categories with 100+ resources:
+- 🛒 Commerce (14): products, orders, payments, carts, etc.
+- 💼 Business (12): companies, jobs, meetings, invoices, etc.
+- ✈️ Travel (10): hotels, flights, restaurants, etc.
+- 👥 People (10): users, contacts, employees, etc.
+- 🎬 Media (10): movies, books, albums, videos, etc.
+- 💬 Social (9): comments, reviews, messages, etc.
+- And 8 more categories...
 
 ## Adding New Resources
 

@@ -13,18 +13,38 @@
 
 ## ✨ Features
 
+### API Features
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
-- 🎯 **100 Resources** - From users to weather, stocks to movies
+- 🎯 **100+ Resources** - From users to weather, stocks to movies
 - 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
-- 💡 **Realistic Data** - Powered by gofakeit with 200+ generators
-- ⚡ **Blazing Fast** - In-memory cache with warmup on startup (<1ms responses)
+- 💡 **Realistic Data** - Powered by gofakeit with 50+ generators
+- ⚡ **Blazing Fast** - Redis + in-memory cache (<1ms responses)
 - 🔄 **Consistent Data** - Fixed seed ensures reproducible results
+- 🆓 **Free Forever** - No rate limits, open source and self-hostable
+
+### Advanced Query Features
+- 📄 **Pagination** - page, limit, offset parameters
+- 🔀 **Sorting** - Sort by any field, ascending or descending
+- 🔍 **Search** - Full-text search with field targeting
+- 🎯 **Filtering** - Filter by field values (exact, range, contains)
+- ✂️ **Field Selection** - Return only specific fields
+
+### Middleware & Testing
+- ⏱️ **Delay Simulation** - Test timeouts (max 30s)
+- 🎲 **Chaos Engineering** - Random failures with flakyRate
+- 🚫 **Cache Control** - Bypass cache for fresh data
+- 🏢 **Multi-tenancy** - Tenant isolation via X-Tenant-ID
+- 🔐 **RBAC** - Role-based testing via X-Role
+- 🔄 **Idempotency** - Safe retries with Idempotency-Key
+- 🔍 **Request Tracing** - Track requests with X-Request-ID
+
+### Frontend
+- 🎨 **Modern UI** - Next.js 16 + React 19 with SSR
+- 🎮 **Interactive Playground** - Test all API features
+- 📚 **Comprehensive Docs** - Live examples and code snippets
+- 📊 **Cache Management** - Admin endpoints for stats
+- 🤖 **Automated Build** - TypeScript types auto-generated
 - 🌐 **CORS Enabled** - Ready for frontend development
-- 🎨 **Modern UI** - Next.js 16 + React 19 website with SSR and interactive playground
-- 📊 **Cache Management** - Admin endpoints for stats and refresh
-- 🆓 **Free Forever** - Open source and self-hostable
-- ⚡ **Server-Side Rendering** - Fast page loads with fresh data
-- 🤖 **Automated Build** - TypeScript types auto-generated from schemas
 
 ## 📦 Project Structure
 
@@ -87,28 +107,54 @@ npm run web:dev
 
 ### Using the API
 
+**Basic Usage:**
 ```bash
-# Browse by group (metadata only)
-curl http://localhost:8080/people
+# Get resources with pagination
+curl 'http://localhost:8080/products?page=1&limit=20'
 
-# Get resources via group path
-curl 'http://localhost:8080/people/users?count=10'
-curl http://localhost:8080/people/users/123
-
-# Or access resources directly
-curl 'http://localhost:8080/users?count=10'
-curl http://localhost:8080/users/123
+# Get single item
+curl http://localhost:8080/products/42
 
 # Get resource metadata
-curl http://localhost:8080/users/meta
-
-# Commerce group examples
-curl http://localhost:8080/commerce
-curl 'http://localhost:8080/commerce/products?count=5'
-
-# Use production API
-curl 'https://api.mockly.codes/people/users?count=10'
+curl http://localhost:8080/products/meta
 ```
+
+**Advanced Queries:**
+```bash
+# Search products
+curl 'http://localhost:8080/products?q=laptop&search_fields=name,description'
+
+# Sort products by price
+curl 'http://localhost:8080/products?sort=price&order=asc&limit=10'
+
+# Filter by category and price
+curl 'http://localhost:8080/products?category=Electronics&price<1000'
+
+# Select specific fields
+curl 'http://localhost:8080/products?fields=id,name,price&limit=50'
+```
+
+**Testing with Middleware:**
+```bash
+# Add 2-second delay
+curl 'http://localhost:8080/products?delay=2000'
+
+# Test with 50% failure rate
+curl 'http://localhost:8080/products?flakyRate=0.5'
+
+# Bypass cache for fresh data
+curl 'http://localhost:8080/products?skip_cache=true'
+
+# Multi-tenant request
+curl -H "X-Tenant-ID: tenant-123" http://localhost:8080/products
+```
+
+**Production API:**
+```bash
+curl 'https://api.mockly.codes/products?page=1&limit=20'
+```
+
+📚 **Full API Documentation:** [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
 
 ## 📚 Available Resources (100 Endpoints!)
 
@@ -380,19 +426,29 @@ The deployment process **automatically includes** all schemas:
 ## 📖 Documentation
 
 ### API Documentation
-Visit the `/docs` page for:
-- Quick start guide (4 languages: JavaScript, cURL, Python, Node.js)
-- Complete endpoint reference
-- Schema documentation for all resources
+
+**Comprehensive API Reference:** [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
+- 📋 Complete endpoint reference
+- 🔍 All query parameters (pagination, sorting, search, filtering)
+- 🛠️ All 11 middleware features documented
+- 💻 Code examples (JavaScript, Python, cURL)
+- 📊 Response formats and error handling
+- ✨ Best practices and advanced usage
+
+**Online Documentation:** Visit https://mockly.codes/docs for:
+- Quick start guide (4 languages)
+- Interactive schema explorer
 - Live "Try It" buttons
+- Real-time API status
 
 ### Interactive Playground
-Visit the `/playground` page to:
-- Test endpoints without writing code
-- Select resources and endpoint types
-- Adjust parameters (count, ID)
-- See live JSON responses
-- Copy code examples (cURL, JavaScript, Python)
+Visit https://mockly.codes/playground to:
+- 🎮 Test all API features
+- 📄 Pagination, sorting, search controls
+- 🛠️ Middleware testing (delay, flaky, cache)
+- 🔍 Request/response inspection
+- 📋 Copy code examples
+- 5 utility tools: Echo, Status, Delay, Middleware, Chaos
 
 ## 🤝 Contributing
 
@@ -406,11 +462,12 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 📚 Documentation
 
-- **[QUICK_START.md](./QUICK_START.md)** - Quick start guide
-- **[BUILD_PROCESS.md](./BUILD_PROCESS.md)** - Build automation
+- **[backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)** - Comprehensive API reference
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history
+- **[backend/README.md](./backend/README.md)** - Backend setup
+- **[frontend/README.md](./frontend/README.md)** - Frontend setup
 
 ## � License
 

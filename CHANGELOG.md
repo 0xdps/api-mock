@@ -5,6 +5,88 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-12-12
+
+### Added - Backend API
+- 🎯 **Advanced Query Parameters**
+  - Pagination with page, limit, offset
+  - Sorting by any field with asc/desc order
+  - Full-text search with field targeting (q, search, search_fields)
+  - Field filtering (exact match, range, contains, startsWith, endsWith)
+  - Field selection for response optimization (fields parameter)
+- 🛠️ **Global Middleware Suite** (11+ middleware)
+  - Delay simulation (max 30s) for testing timeouts
+  - Chaos engineering with flakyRate (0.0-1.0)
+  - Cache control with skip_cache parameter
+  - Field filtering middleware
+  - Multi-tenancy support (X-Tenant-ID header)
+  - Role-Based Access Control (X-Role header)
+  - Idempotency for POST/PUT/PATCH (24h TTL)
+  - Request tracing (X-Request-ID header)
+- 📚 **Comprehensive API Documentation**
+  - Complete API_DOCUMENTATION.md (400+ lines)
+  - All query parameters with examples
+  - All middleware features documented
+  - Code examples in JavaScript, Python, cURL
+  - Response format specifications
+  - Error handling guide
+  - Best practices section
+- 🔍 **Enhanced Cache System**
+  - Redis integration with in-memory fallback
+  - 10,000 pre-cached items (100 per resource)
+  - X-Cache header (HIT/MISS/BYPASS)
+  - Cache bypass via query parameter
+  - Admin endpoints (/admin/cache/stats, /admin/cache/refresh)
+
+### Added - Frontend
+- 🎮 **Enhanced Playground**
+  - Middleware tester with all 11 middleware
+  - Pagination controls (page, limit, offset)
+  - Sorting controls (field, order)
+  - Search with field targeting
+  - Field selection with preview
+  - Request/response headers display
+  - Request timing metrics
+- 📄 **Sitemap Updates**
+  - Added playground utility tools to sitemap.xml
+  - Added playground section to sitemap.html
+  - 130+ total URLs indexed
+- 🎨 **UI Improvements**
+  - Search section with comprehensive guide
+  - Favicon in header and homepage
+  - Active middleware indicators
+  - Live query preview
+  - Better responsive design
+- ⚛️ **Framework Upgrades**
+  - Next.js 16 with App Router
+  - React 19 with server components
+  - TypeScript 5.6+ with improved types
+  - Better SSR/ISR performance
+
+### Changed
+- 🔧 **Backend Improvements**
+  - Fixed pagination bug (reserved params no longer treated as filters)
+  - Enhanced filter parser to skip 10+ reserved parameters
+  - Improved middleware ordering and registration
+  - Better error handling and validation
+- 🎨 **Frontend Enhancements**
+  - Updated documentation components with modern styling
+  - Improved code examples with syntax highlighting
+  - Enhanced playground with better UX
+  - Better TypeScript type safety
+- 📊 **Performance**
+  - Faster response times with optimized cache
+  - Better pagination performance
+  - Improved search algorithm
+
+### Fixed
+- ✅ Pagination returning empty results with query params
+- ✅ Search UI styling inconsistencies
+- ✅ TypeScript build errors in components
+- ✅ Missing favicon in navigation
+- ✅ Sitemap missing playground pages
+- ✅ Filter parser treating pagination params as filters
+
 ## [1.1.0] - 2025-11-20
 
 ### Added

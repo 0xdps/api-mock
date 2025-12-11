@@ -6,9 +6,18 @@ Next.js 14 website with landing page, documentation, and interactive playground 
 
 - **Server-Side Rendering (SSR)** - Fast initial page loads with fresh data
 - **Automatic API Detection** - Seamlessly works in dev and production
-- **Interactive Documentation** - Live API info and schema exploration
-- **API Playground** - Test endpoints with real-time responses
+- **Interactive Documentation** - Live API info and schema exploration with search guide
+- **Enhanced Playground** - Test all API features:
+  - Pagination controls (page, limit, offset)
+  - Sorting controls (field, order)
+  - Search with field targeting
+  - Field selection with preview
+  - 11+ middleware options (delay, flaky, cache bypass, etc.)
+  - Request/response headers display
+  - Request timing metrics
+  - 5 utility tools (Echo, Status, Delay, Middleware, Chaos)
 - **Modern UI** - Beautiful, responsive design with Tailwind CSS
+- **Comprehensive Sitemaps** - 130+ URLs indexed (XML + HTML)
 - **Mobile Friendly** - Fully responsive across all devices
 - **Type Safe** - Full TypeScript support with auto-generated types
 
@@ -173,12 +182,14 @@ const fetchData = async () => {
 
 ## 🛠️ Technology Stack
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
+- **Framework:** Next.js 16 (App Router)
+- **UI Library:** React 19 (Server Components + Client Components)
+- **Language:** TypeScript 5.6+
 - **Styling:** Tailwind CSS
-- **Rendering:** React Server Components + Client Components
+- **Rendering:** SSR + ISR (5-minute revalidation)
 - **Deployment:** Vercel
 - **API:** https://api.mockly.codes
+- **Type Generation:** Automated from JSON schemas
 
 ## 📦 Type Safety
 
