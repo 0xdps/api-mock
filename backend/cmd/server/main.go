@@ -27,7 +27,7 @@ func main() {
 
 	log.Printf("Loaded %d schemas: %v", len(registry.Schemas), registry.GetAllResourceNames())
 
-	// Initialize Redis
+	// Initialize Redis (optional - gracefully handle connection failures)
 	redisConfig := redisstore.Config{
 		Host:     getEnvString("REDIS_HOST", "localhost"),
 		Port:     getEnvInt("REDIS_PORT", 6379),
@@ -37,13 +37,22 @@ func main() {
 
 	redisStore, err := redisstore.NewStore(redisConfig)
 	if err != nil {
-		log.Fatalf("Failed to connect to Redis: %v", err)
+		log.Printf("⚠️  Failed to connect to Redis: %v", err)
+		log.Printf("⚠️  Falling back to local-only cache mode")
+		redisStore = nil
+	} else {
+		defer redisStore.Close()
 	}
-	defer redisStore.Close()
 
 	// Initialize cache with configuration from environment
 	cacheModeStr := getEnvString("CACHE_MODE", "all") // off, local, remote, or all
 	cacheMode := cache.CacheMode(cacheModeStr)
+	
+	// If Redis failed to connect, force local-only mode
+	if redisStore == nil && (cacheMode == cache.CacheModeRemote || cacheMode == cache.CacheModeAll) {
+		log.Printf("⚠️  Redis unavailable, switching from '%s' to 'local' cache mode", cacheMode)
+		cacheMode = cache.CacheModeLocal
+	}
 	
 	// Validate cache mode
 	validModes := map[string]bool{
@@ -68,11 +77,15 @@ func main() {
 
 	apiCache := cache.NewCache(registry, cacheConfig, redisStore)
 
-	// Check if Redis already has data
+	// Check if Redis already has data (only if Redis is available)
 	resourceNames := registry.GetAllResourceNames()
-	hasData, err := redisStore.HasResources(resourceNames)
-	if err != nil {
-		log.Fatalf("Failed to check Redis: %v", err)
+	hasData := false
+	if redisStore != nil {
+		hasData, err = redisStore.HasResources(resourceNames)
+		if err != nil {
+			log.Printf("⚠️  Failed to check Redis: %v", err)
+			hasData = false
+		}
 	}
 
 	if hasData {
