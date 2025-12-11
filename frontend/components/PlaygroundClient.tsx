@@ -397,7 +397,7 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
           
           {/* URL Preview - Reference section */}
           <div className="border-t border-slate-700 pt-6">
-            <label className="block text-slate-300 mb-3 font-medium flex items-center gap-2">
+            <label className="text-slate-300 mb-3 font-medium flex items-center gap-2">
               <span>📋</span>
               Request URL
             </label>
