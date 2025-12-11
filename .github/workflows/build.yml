@@ -35,13 +35,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Setup Go
+      - name: Build Docker Image
+        run: docker build -t api-mockly:test .
+      
+      - name: Setup Go (for tests)
         uses: actions/setup-go@v4
         with:
           go-version: '1.23'
-      
-      - name: Build
-        run: cd backend && make build
       
       - name: Run Tests
         run: cd backend && go test ./internal/... -v -race -coverprofile=coverage.out
