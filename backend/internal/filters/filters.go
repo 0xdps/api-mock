@@ -39,8 +39,12 @@ func ParseFilters(queryParams map[string][]string) []Filter {
 			continue
 		}
 
-		// Skip reserved parameters
-		if key == "count" || key == "nocache" || key == "fresh" {
+		// Skip reserved parameters (middleware and system params)
+		if key == "count" || key == "nocache" || key == "fresh" ||
+			key == "page" || key == "limit" || key == "offset" || // Pagination
+			key == "sort" || key == "order" || // Sorting
+			key == "q" || key == "search" || // Search
+			key == "fields" { // Field filtering
 			continue
 		}
 
