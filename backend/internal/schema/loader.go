@@ -532,27 +532,41 @@ func (r *Registry) propertyToField(name string, prop PropertySchema) Field {
 		genType = r.inferGeneratorType(prop)
 	}
 
+	// Start with generator params if provided
+	args := make(map[string]interface{})
+	if prop.GeneratorParams != nil {
+		for k, v := range prop.GeneratorParams {
+			args[k] = v
+		}
+	}
+
+	// For numeric types, add min/max from schema constraints if not already in params
+	if prop.Type == "integer" || prop.Type == "number" {
+		if _, hasMin := args["min"]; !hasMin && prop.Minimum != nil {
+			args["min"] = *prop.Minimum
+		}
+		if _, hasMax := args["max"]; !hasMax && prop.Maximum != nil {
+			args["max"] = *prop.Maximum
+		}
+	}
+
 	// Handle special case: autoincrement should use random_int for now
 	// (actual autoincrement would need to track state)
 	if genType == "autoincrement" {
 		genType = "random_int"
 		// Set reasonable range for IDs if not specified
-		if prop.GeneratorParams == nil {
-			return Field{
-				Name:      name,
-				Generator: genType,
-				Args: map[string]interface{}{
-					"min": 1,
-					"max": 10000,
-				},
-			}
+		if _, hasMin := args["min"]; !hasMin {
+			args["min"] = float64(1)
+		}
+		if _, hasMax := args["max"]; !hasMax {
+			args["max"] = float64(10000)
 		}
 	}
 
 	return Field{
 		Name:      name,
 		Generator: genType,
-		Args:      prop.GeneratorParams,
+		Args:      args,
 	}
 }
 
@@ -831,6 +845,19 @@ func (r *Registry) generateValue(field Field, faker *gofakeit.Faker) interface{}
 		return faker.Password(true, true, true, false, false, 12)
 	case "gender":
 		return faker.Gender()
+	case "age":
+		// Use min/max from generator params or default to reasonable range
+		min := 0
+		max := 100
+		if field.Args != nil {
+			if m, ok := field.Args["min"].(float64); ok {
+				min = int(m)
+			}
+			if m, ok := field.Args["max"].(float64); ok {
+				max = int(m)
+			}
+		}
+		return faker.IntRange(min, max)
 
 	// Address & Location
 	case "address":

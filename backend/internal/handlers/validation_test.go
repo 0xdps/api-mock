@@ -13,12 +13,12 @@ import (
 func TestPostCollectionValidatesRequiredFields(t *testing.T) {
 	handler, _ := setupTestHandler(t)
 	
-	// Use "user" resource which typically has required fields like id, name, email
-	resource := "user"
+	// Use "users" resource which has required fields: id, username, email
+	resource := "users"
 	
 	// Try to create item without required fields
 	invalidItem := map[string]interface{}{
-		// Missing required fields - just a partial item
+		// Missing required fields (username and email) - just a partial item
 		"city": "New York",
 	}
 

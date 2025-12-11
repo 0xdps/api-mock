@@ -21,9 +21,9 @@
     },
     "age": {
       "type": "integer",
-      "minimum": 0,
-      "maximum": 150,
-      "description": "User's age in years",
+      "minimum": 18,
+      "maximum": 100,
+      "description": "User's age in years (must be 18+ for account registration)",
       "x-generator": "age"
     },
     "username": {

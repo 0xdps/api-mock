@@ -660,8 +660,8 @@ func TestHandler_POST_ValidCreation(t *testing.T) {
 	handler, testCache := setupTestHandler(t)
 	resourceName := "users"
 	
-	// Get initial count via cache Get method
-	initialItems, _ := testCache.Get(resourceName, 0)
+	// Get initial count - use large number to get all items
+	initialItems, _ := testCache.Get(resourceName, 1000)
 	initialCount := len(initialItems)
 	
 	// Generate a valid item
@@ -705,7 +705,7 @@ func TestHandler_POST_ValidCreation(t *testing.T) {
 	}
 	
 	// Verify it was added to cache
-	finalItems, _ := testCache.Get(resourceName, 0)
+	finalItems, _ := testCache.Get(resourceName, 1000)
 	finalCount := len(finalItems)
 	
 	if finalCount != initialCount+1 {
@@ -731,10 +731,10 @@ func TestHandler_POST_MaxItemsConstraint(t *testing.T) {
 	// Set cache data directly to reach max
 	testCache.Data[resourceName] = items
 	
-	// Try to add one more
+	// Try to add one more with valid user fields
 	newItem := map[string]interface{}{
-		"name":  "Should Fail",
-		"email": "fail@example.com",
+		"username": "shouldfail",
+		"email":    "fail@example.com",
 	}
 	
 	jsonData, _ := json.Marshal(newItem)
@@ -768,9 +768,9 @@ func TestHandler_PUT_ValidUpdate(t *testing.T) {
 	originalItem := items[0]
 	id := fmt.Sprintf("%v", originalItem["id"])
 	
-	// Prepare update (modify one field)
+	// Prepare update (modify one field that exists in user schema)
 	updates := map[string]interface{}{
-		"name": "Updated Name",
+		"username": "updated_username",
 	}
 	
 	jsonData, _ := json.Marshal(updates)
@@ -791,8 +791,8 @@ func TestHandler_PUT_ValidUpdate(t *testing.T) {
 		t.Fatalf("Failed to decode response: %v", err)
 	}
 	
-	if updated["name"] != "Updated Name" {
-		t.Errorf("Expected name to be 'Updated Name', got %v", updated["name"])
+	if updated["username"] != "updated_username" {
+		t.Errorf("Expected username to be 'updated_username', got %v", updated["username"])
 	}
 	
 	// Verify ID didn't change
@@ -832,8 +832,8 @@ func TestHandler_DELETE_ValidDeletion(t *testing.T) {
 	handler, testCache := setupTestHandler(t)
 	resourceName := "users"
 	
-	// Get initial count
-	items, _ := testCache.Get(resourceName, 0)
+	// Get initial count - use large number to get all items
+	items, _ := testCache.Get(resourceName, 1000)
 	initialCount := len(items)
 	
 	if initialCount == 0 {
@@ -854,7 +854,7 @@ func TestHandler_DELETE_ValidDeletion(t *testing.T) {
 	}
 	
 	// Verify it was removed from cache
-	finalItems, _ := testCache.Get(resourceName, 0)
+	finalItems, _ := testCache.Get(resourceName, 1000)
 	finalCount := len(finalItems)
 	
 	if finalCount != initialCount-1 {
@@ -921,7 +921,7 @@ func TestHandler_POST_ConcurrentCreation(t *testing.T) {
 	resourceName := "users"
 	
 	// Get initial count
-	initialItems, _ := testCache.Get(resourceName, 0)
+	initialItems, _ := testCache.Get(resourceName, 1000)
 	initialCount := len(initialItems)
 	
 	// Create items concurrently
@@ -935,8 +935,8 @@ func TestHandler_POST_ConcurrentCreation(t *testing.T) {
 			defer wg.Done()
 			
 			newItem := map[string]interface{}{
-				"name":  fmt.Sprintf("Concurrent User %d", idx),
-				"email": fmt.Sprintf("user%d@example.com", idx),
+				"username": fmt.Sprintf("concurrent_user_%d", idx),
+				"email":    fmt.Sprintf("user%d@example.com", idx),
 			}
 			
 			jsonData, _ := json.Marshal(newItem)
@@ -961,7 +961,7 @@ func TestHandler_POST_ConcurrentCreation(t *testing.T) {
 	}
 	
 	// Verify all were added
-	finalItems, _ := testCache.Get(resourceName, 0)
+	finalItems, _ := testCache.Get(resourceName, 1000)
 	finalCount := len(finalItems)
 	
 	if finalCount != initialCount+concurrency {

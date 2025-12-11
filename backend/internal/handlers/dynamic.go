@@ -457,6 +457,14 @@ func (h *DynamicHandler) PutSingle(resourceName string) http.HandlerFunc {
 			return
 		}
 
+		// Check if updates is nil or empty (e.g., body was "null" or {})
+		if len(updates) == 0 {
+			respondJSON(w, http.StatusBadRequest, map[string]string{
+				"error": "Request body must contain fields to update",
+			})
+			return
+		}
+
 		// Get existing item to merge with updates for validation
 		existingItem, found := h.cache.GetByID(resourceName, id)
 		if !found {
@@ -514,6 +522,13 @@ func (h *DynamicHandler) DeleteSingle(resourceName string) http.HandlerFunc {
 
 		// Delete item from cache (includes constraint validation)
 		if err := h.cache.DeleteItemByID(resourceName, id); err != nil {
+			// Check if error is "item not found"
+			if err.Error() == "item not found" {
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": err.Error(),
+				})
+				return
+			}
 			respondJSON(w, http.StatusBadRequest, map[string]string{
 				"error": err.Error(),
 			})
