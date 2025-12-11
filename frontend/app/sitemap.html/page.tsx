@@ -36,6 +36,16 @@ export default function SitemapPage() {
   const staticPages = [
     { path: '/', label: 'Home', description: 'Mockly homepage' },
     { path: '/docs', label: 'Documentation', description: 'API documentation index' },
+    { path: '/playground', label: 'Playground', description: 'Interactive API testing tools' },
+  ]
+  
+  // Playground utility pages
+  const playgroundPages = [
+    { path: '/playground/echo', label: 'Echo Tester', description: 'Inspect request headers and body' },
+    { path: '/playground/status', label: 'Status Code Generator', description: 'Test HTTP status codes' },
+    { path: '/playground/delay', label: 'Delay Tester', description: 'Test API latency and timeouts' },
+    { path: '/playground/middleware', label: 'Middleware Testing', description: 'Test global middleware parameters' },
+    { path: '/playground/chaos', label: 'Chaos Engineering', description: 'Test fault tolerance and error handling' },
   ]
   
   // Resource pages grouped by group
@@ -67,6 +77,31 @@ export default function SitemapPage() {
                 <p className="text-slate-400 text-sm">{page.description}</p>
                 <p className="text-blue-400 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   Visit →
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+        
+        {/* Playground Pages */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-6">Playground Tools</h2>
+          <p className="text-slate-400 mb-4">
+            Interactive testing tools for exploring API features
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {playgroundPages.map((page) => (
+              <Link
+                key={page.path}
+                href={page.path}
+                className="block p-6 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-blue-500/50 transition-colors group"
+              >
+                <h3 className="text-white font-semibold mb-2 group-hover:text-blue-400 transition-colors">
+                  {page.label}
+                </h3>
+                <p className="text-slate-400 text-sm">{page.description}</p>
+                <p className="text-blue-400 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Try it →
                 </p>
               </Link>
             ))}
@@ -222,7 +257,7 @@ export default function SitemapPage() {
             </Link>
           </p>
           <p className="text-slate-500 text-sm">
-            Total: {staticPages.length + resources.length} pages
+            Total: {staticPages.length + playgroundPages.length + resources.length} pages
           </p>
         </div>
       </div>
