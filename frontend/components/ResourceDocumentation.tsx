@@ -56,6 +56,29 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   const [selectedPathType, setSelectedPathType] = useState<'direct' | 'group'>('direct')
   const responseRef = useRef<HTMLDivElement>(null)
   
+  // Pagination state
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [offset, setOffset] = useState('')
+  
+  // Sorting state
+  const [sortField, setSortField] = useState('')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchFields, setSearchFields] = useState<string[]>([])
+  const [searchParam, setSearchParam] = useState<'q' | 'search'>('q')
+  
+  // Field filtering state
+  const [selectedFields, setSelectedFields] = useState<string[]>([])
+  
+  // Advanced options state
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [delay, setDelay] = useState(0)
+  const [flakyRate, setFlakyRate] = useState(0)
+  const [skipCache, setSkipCache] = useState(false)
+  
   // Build URL based on endpoint type
   const buildUrl = (usePath?: string) => {
     const routes = schema['x-resource']?.routes || {}
@@ -71,9 +94,54 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
     }
     
     const params = new URLSearchParams()
+    
     if (endpointType === 'collection') {
+      // Add pagination params
+      if (offset) {
+        params.append('offset', offset)
+      } else {
+        params.append('page', page.toString())
+      }
+      params.append('limit', limit.toString())
+      
+      // Add sorting params
+      if (sortField) {
+        params.append('sort', sortField)
+        params.append('order', sortOrder)
+      }
+      
+      // Add search params
+      if (searchQuery) {
+        params.append(searchParam, searchQuery)
+        if (searchFields.length > 0) {
+          params.append('search_fields', searchFields.join(','))
+        }
+      }
+      
+      // Add field filtering
+      if (selectedFields.length > 0) {
+        params.append('fields', selectedFields.join(','))
+      }
+      
+      // Add delay
+      if (delay > 0) {
+        params.append('delay', delay.toString())
+      }
+      
+      // Add flaky rate
+      if (flakyRate > 0) {
+        params.append('flakyRate', (flakyRate / 100).toString())
+      }
+      
+      // Add skip cache
+      if (skipCache) {
+        params.append('skip_cache', 'true')
+      }
+      
+      // Legacy count param (for old behavior)
       params.append('count', count.toString())
     }
+    
     if (noCache && endpointType !== 'meta') {
       params.append('nocache', 'true')
     }
@@ -120,10 +188,17 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
       
       const data = await res.json()
       const cacheHeader = res.headers.get('X-Cache')
+      const requestIdHeader = res.headers.get('X-Request-ID')
+      
       setResponse({
         data,
         status: res.status,
-        cacheStatus: cacheHeader || (endpointType === 'meta' ? 'N/A' : 'MISS')
+        cacheStatus: cacheHeader || (endpointType === 'meta' ? 'N/A' : 'MISS'),
+        requestId: requestIdHeader || null,
+        headers: {
+          cache: cacheHeader,
+          requestId: requestIdHeader,
+        }
       })
     } catch (err: any) {
       setError(err.message)
@@ -136,6 +211,27 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   const properties = schema.properties || {}
   const requiredFields = schema.required || []
   const resourceName = schema['x-resource']?.name || pluralize(resource)
+  
+  // Get field names for dropdowns
+  const fieldNames = Object.keys(properties)
+  
+  // Toggle field selection
+  const toggleField = (field: string) => {
+    if (selectedFields.includes(field)) {
+      setSelectedFields(selectedFields.filter(f => f !== field))
+    } else {
+      setSelectedFields([...selectedFields, field])
+    }
+  }
+  
+  // Toggle all fields
+  const toggleAllFields = () => {
+    if (selectedFields.length === fieldNames.length) {
+      setSelectedFields([])
+    } else {
+      setSelectedFields(fieldNames)
+    }
+  }
   
   const getGroupIcon = (group: string): string => {
     const icons: Record<string, string> = {
@@ -219,6 +315,277 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
               </button>
             </div>
           </div>
+          
+          {/* Pagination (Collection only) */}
+          {endpointType === 'collection' && (
+            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
+              <h3 className="text-sm font-semibold text-white">Pagination</h3>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Page
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={page}
+                    onChange={(e) => setPage(parseInt(e.target.value) || 1)}
+                    disabled={!!offset}
+                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Limit
+                  </label>
+                  <select
+                    value={limit}
+                    onChange={(e) => setLimit(parseInt(e.target.value))}
+                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                  >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Offset (optional)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={offset}
+                    onChange={(e) => setOffset(e.target.value)}
+                    placeholder="Auto"
+                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Sorting (Collection only) */}
+          {endpointType === 'collection' && (
+            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
+              <h3 className="text-sm font-semibold text-white">Sorting</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Sort by
+                  </label>
+                  <select
+                    value={sortField}
+                    onChange={(e) => setSortField(e.target.value)}
+                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                  >
+                    <option value="">None</option>
+                    {fieldNames.map(field => (
+                      <option key={field} value={field}>{field}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Order
+                  </label>
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                    disabled={!sortField}
+                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
+                  >
+                    <option value="asc">↑ Ascending</option>
+                    <option value="desc">↓ Descending</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Search (Collection only) */}
+          {endpointType === 'collection' && (
+            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
+              <h3 className="text-sm font-semibold text-white">Search</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-slate-300 mb-2 text-xs">
+                    Query
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search..."
+                      className="w-full bg-slate-700 text-white px-3 py-2 pr-8 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 mb-2 text-xs">
+                      Search in fields
+                    </label>
+                    <select
+                      multiple
+                      value={searchFields}
+                      onChange={(e) => setSearchFields(Array.from(e.target.selectedOptions, option => option.value))}
+                      className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                      size={3}
+                    >
+                      {fieldNames.map(field => (
+                        <option key={field} value={field}>{field}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-slate-500 mt-1">Cmd/Ctrl+click to select multiple</p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-300 mb-2 text-xs">
+                      Parameter name
+                    </label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          checked={searchParam === 'q'}
+                          onChange={() => setSearchParam('q')}
+                          className="text-primary-500"
+                        />
+                        <span className="text-slate-300 text-sm">q</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          checked={searchParam === 'search'}
+                          onChange={() => setSearchParam('search')}
+                          className="text-primary-500"
+                        />
+                        <span className="text-slate-300 text-sm">search</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Field Filtering (Collection only) */}
+          {endpointType === 'collection' && (
+            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-white">Field Filtering</h3>
+                <button
+                  onClick={toggleAllFields}
+                  className="text-xs text-primary-400 hover:text-primary-300"
+                >
+                  {selectedFields.length === fieldNames.length ? 'Deselect All' : 'Select All'}
+                </button>
+              </div>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+                {fieldNames.map(field => (
+                  <label key={field} className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      checked={selectedFields.includes(field)}
+                      onChange={() => toggleField(field)}
+                      className="rounded border-slate-600 text-primary-500 focus:ring-primary-500"
+                    />
+                    <span className="text-slate-300 text-xs truncate">{field}</span>
+                  </label>
+                ))}
+              </div>
+              {selectedFields.length > 0 && (
+                <p className="text-xs text-slate-400">
+                  Selected: {selectedFields.join(', ')}
+                </p>
+              )}
+            </div>
+          )}
+          
+          {/* Advanced Options (Collection only) */}
+          {endpointType === 'collection' && (
+            <div className="border border-slate-700 rounded">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="w-full flex items-center justify-between p-4 bg-slate-900/30 hover:bg-slate-900/50 transition"
+              >
+                <h3 className="text-sm font-semibold text-white">
+                  {showAdvanced ? '▼' : '▶'} Advanced Options
+                </h3>
+                <span className="text-xs text-slate-400">
+                  Middleware parameters
+                </span>
+              </button>
+              
+              {showAdvanced && (
+                <div className="p-4 space-y-4 border-t border-slate-700">
+                  {/* Delay */}
+                  <div>
+                    <label className="block text-slate-300 mb-2 text-xs">
+                      Delay: {delay}ms {delay >= 5000 && '⚠️'}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="5000"
+                      step="100"
+                      value={delay}
+                      onChange={(e) => setDelay(parseInt(e.target.value))}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                      <span>0ms</span>
+                      <span>5000ms</span>
+                    </div>
+                  </div>
+                  
+                  {/* Flaky Rate */}
+                  <div>
+                    <label className="block text-slate-300 mb-2 text-xs">
+                      Flaky Rate: {flakyRate}% {flakyRate > 50 && '⚠️ High failure rate!'}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      value={flakyRate}
+                      onChange={(e) => setFlakyRate(parseInt(e.target.value))}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                      <span>0%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
+                  
+                  {/* Cache Controls */}
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={skipCache}
+                        onChange={(e) => setSkipCache(e.target.checked)}
+                        className="rounded border-slate-600 text-primary-500"
+                      />
+                      <span className="text-slate-300 text-xs">Skip Cache</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           
           {/* Options */}
           <div className="flex gap-4 items-end">
@@ -367,8 +734,8 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                 </div>
               ) : (
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <span className="text-green-400 font-semibold">✓ Success</span>
                       <span className="text-slate-400 text-sm">
                         Status: <span className="text-white">{response.status}</span>
@@ -389,8 +756,82 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                           Time: <span className="text-white">{requestTime}ms</span>
                         </span>
                       )}
+                      {response.requestId && (
+                        <span className="text-slate-400 text-sm">
+                          ID: <span className="text-slate-300 font-mono text-xs">{response.requestId}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
+                  
+                  {/* Applied Middleware Indicators */}
+                  {endpointType === 'collection' && (delay > 0 || flakyRate > 0 || skipCache || selectedFields.length > 0 || sortField || searchQuery) && (
+                    <div className="mb-3 p-3 bg-blue-900/20 border border-blue-500/30 rounded">
+                      <p className="text-xs text-blue-300 font-semibold mb-2">Applied Middleware:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {delay > 0 && (
+                          <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-500/30">
+                            ⏱️ Delayed {delay}ms
+                          </span>
+                        )}
+                        {flakyRate > 0 && (
+                          <span className="text-xs bg-yellow-900/50 text-yellow-200 px-2 py-1 rounded border border-yellow-500/30">
+                            🎲 Flaky {flakyRate}%
+                          </span>
+                        )}
+                        {skipCache && (
+                          <span className="text-xs bg-purple-900/50 text-purple-200 px-2 py-1 rounded border border-purple-500/30">
+                            🚫 Cache Bypassed
+                          </span>
+                        )}
+                        {selectedFields.length > 0 && (
+                          <span className="text-xs bg-green-900/50 text-green-200 px-2 py-1 rounded border border-green-500/30">
+                            🔍 Fields: {selectedFields.join(', ')}
+                          </span>
+                        )}
+                        {sortField && (
+                          <span className="text-xs bg-indigo-900/50 text-indigo-200 px-2 py-1 rounded border border-indigo-500/30">
+                            🔀 Sort: {sortField} ({sortOrder})
+                          </span>
+                        )}
+                        {searchQuery && (
+                          <span className="text-xs bg-pink-900/50 text-pink-200 px-2 py-1 rounded border border-pink-500/30">
+                            🔎 Search: "{searchQuery}"
+                            {searchFields.length > 0 && ` in ${searchFields.join(', ')}`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Pagination Metadata */}
+                  {response.data?.pagination && (
+                    <div className="mb-3 p-3 bg-slate-900 border border-slate-600 rounded">
+                      <p className="text-xs text-slate-400 font-semibold mb-2">Pagination:</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <div>
+                          <span className="text-slate-500">Page:</span>{' '}
+                          <span className="text-white">{response.data.pagination.page}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Limit:</span>{' '}
+                          <span className="text-white">{response.data.pagination.limit}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Total:</span>{' '}
+                          <span className="text-white">{response.data.pagination.total}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Pages:</span>{' '}
+                          <span className="text-white">{response.data.pagination.total_pages}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-2">
+                        Showing {((response.data.pagination.page - 1) * response.data.pagination.limit) + 1}-
+                        {Math.min(response.data.pagination.page * response.data.pagination.limit, response.data.pagination.total)} of {response.data.pagination.total} items
+                      </p>
+                    </div>
+                  )}
                   
                   <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-96">
                     <pre className="text-green-400 text-sm">

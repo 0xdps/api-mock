@@ -159,33 +159,20 @@ func main() {
 	// Utility handlers for testing
 	utilityHandler := handlers.NewUtilityHandlers()
 
-	// Testing utility routes (Phase 1)
-	r.Route("/test", func(r chi.Router) {
-		// Echo & Inspect
-		r.Post("/echo", utilityHandler.Echo)
-		r.Get("/echo", utilityHandler.Echo)
-		
-		// Delay & Timeout Simulation
-		r.Get("/delay/{ms}", utilityHandler.Delay)
-		r.Get("/delay-random", utilityHandler.DelayRandom)
-		
-		// Status & Errors
-		r.Get("/status/{code}", utilityHandler.Status)
-		r.Get("/error/validation", utilityHandler.ErrorValidation)
-		
-		// Chaos Testing
-		r.Get("/flaky", utilityHandler.Flaky)
-		r.Get("/chaos", utilityHandler.Chaos)
-	})
+	// Testing utility routes - at root level
+	// Echo endpoint (all HTTP methods)
+	r.HandleFunc("/echo", utilityHandler.Echo)
+	
+	// Delay endpoint
+	r.Get("/delay/{ms}", utilityHandler.Delay)
+	
+	// Status code endpoint
+	r.Get("/status/{code}", utilityHandler.Status)
 
 	log.Printf("🧪 Testing utility routes:")
-	log.Printf("   POST/GET /test/echo            - Echo request details")
-	log.Printf("   GET      /test/delay/:ms       - Delay response by N milliseconds")
-	log.Printf("   GET      /test/delay-random    - Random delay (min/max params)")
-	log.Printf("   GET      /test/status/:code    - Return specific HTTP status")
-	log.Printf("   GET      /test/error/validation - Return 422 validation error")
-	log.Printf("   GET      /test/flaky            - Randomly succeed/fail")
-	log.Printf("   GET      /test/chaos            - Random status/response shape")
+	log.Printf("   ALL      /echo            - Echo request details")
+	log.Printf("   GET      /delay/:ms       - Delay response by N milliseconds")
+	log.Printf("   GET      /status/:code    - Return specific HTTP status")
 
 	// Group routes (must come before dynamic resource routes to avoid conflicts)
 	groups := registry.GetAllGroups()

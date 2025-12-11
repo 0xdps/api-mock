@@ -7,10 +7,16 @@ import (
 // SetupCORS configures CORS for the API
 func SetupCORS() *cors.Cors {
 	return cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Origin", "Content-Type", "Accept", "Authorization", "X-No-Cache", "Cache-Control"},
-		ExposedHeaders:   []string{"Link", "X-Cache"},
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+		ExposedHeaders: []string{
+			"Link",
+			"X-Cache",
+			"X-Request-ID",
+			"X-Tenant-ID",
+			"X-Role",
+		},
 		AllowCredentials: false,
 		MaxAge:           300,
 	})

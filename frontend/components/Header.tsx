@@ -9,6 +9,9 @@ export function Header() {
         </Link>
         
         <div className="flex items-center gap-6">
+          <Link href="/playground" className="text-slate-300 hover:text-white transition">
+            Playground
+          </Link>
           <Link href="/docs" className="text-slate-300 hover:text-white transition">
             Documentation
           </Link>
