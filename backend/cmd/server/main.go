@@ -104,10 +104,36 @@ func main() {
 
 	r := chi.NewRouter()
 
-	// Middleware
+	// Core middleware
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.SetupCORS().Handler)
+
+	// Global parameter middleware
+	r.Use(middleware.RequestIDMiddleware)
+	r.Use(middleware.TenantMiddleware)
+	r.Use(middleware.RBACMiddleware)
+	r.Use(middleware.DelayMiddleware)
+	r.Use(middleware.FlakyMiddleware)
+	r.Use(middleware.CacheBypassMiddleware)
+	r.Use(middleware.FieldFilterMiddleware)
+
+	// Query parameter middleware (pagination, sorting, search)
+	r.Use(middleware.PaginationMiddleware)
+	r.Use(middleware.SortingMiddleware)
+	r.Use(middleware.SearchMiddleware)
+
+	// Idempotency middleware (with simple in-memory cache)
+	idempotencyCache := middleware.NewSimpleIdempotencyCache()
+	r.Use(middleware.IdempotencyMiddleware(idempotencyCache))
+
+	log.Printf("🔌 Global middleware registered:")
+	log.Printf("   ✓ Request ID, Tenant, RBAC")
+	log.Printf("   ✓ Delay, Flaky, Cache Bypass, Field Filtering")
+	log.Printf("   ✓ Pagination (page, limit, offset)")
+	log.Printf("   ✓ Sorting (sort, order)")
+	log.Printf("   ✓ Search (q, search)")
+	log.Printf("   ✓ Idempotency (Idempotency-Key)")
 
 	// Health check
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {

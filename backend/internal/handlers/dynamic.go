@@ -9,6 +9,7 @@ import (
 
 	"github.com/0xdps/api-mock/go/internal/cache"
 	"github.com/0xdps/api-mock/go/internal/filters"
+	"github.com/0xdps/api-mock/go/internal/middleware"
 	"github.com/0xdps/api-mock/go/internal/schema"
 	"github.com/go-chi/chi/v5"
 )
@@ -30,11 +31,24 @@ func NewDynamicHandler(registry *schema.Registry, c *cache.Cache) *DynamicHandle
 // GetCollection returns a collection of items for a resource
 func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get count parameter
-		count := getCountParam(r, 10)
+		// Get context values
+		ctx := r.Context()
+		
+		// Check if cache should be bypassed from middleware
+		skipCache := middleware.ShouldSkipCache(ctx)
 
-		// Check if cache should be bypassed
-		skipCache := shouldSkipCache(r)
+		// Get pagination params (defaults: page=1, limit=10)
+		pagination, hasPagination := middleware.GetPagination(ctx)
+		count := pagination.Limit
+		if !hasPagination {
+			count = getCountParam(r, 10)
+		}
+
+		// Get sorting params
+		sorting, _ := middleware.GetSorting(ctx)
+
+		// Get search params
+		search, _ := middleware.GetSearch(ctx)
 
 		// Parse filters from query parameters
 		filterList := filters.ParseFilters(r.URL.Query())
@@ -42,9 +56,16 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		var data []map[string]interface{}
 		var err error
 
+		// Generate more data to handle pagination properly
+		// For production, you'd fetch from DB with proper LIMIT/OFFSET
+		generateCount := count * 10 // Generate extra for pagination/search
+		if hasPagination && pagination.Page > 1 {
+			generateCount = pagination.Offset + count
+		}
+
 		if skipCache {
 			// Generate fresh data (bypass cache)
-			data, err = h.registry.GenerateData(resourceName, count)
+			data, err = h.registry.GenerateData(resourceName, generateCount)
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),
@@ -55,10 +76,10 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		} else {
 			// Try to get data from cache
 			var found bool
-			data, found = h.cache.Get(resourceName, count)
+			data, found = h.cache.Get(resourceName, generateCount)
 			if !found {
 				// Fallback: generate data on the fly (shouldn't happen after warmup)
-				data, err = h.registry.GenerateData(resourceName, count)
+				data, err = h.registry.GenerateData(resourceName, generateCount)
 				if err != nil {
 					respondJSON(w, http.StatusInternalServerError, map[string]string{
 						"error": err.Error(),
@@ -71,11 +92,40 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 			}
 		}
 
+		// Apply search if present
+		if search != nil && search.Query != "" {
+			data = middleware.ApplySearch(data, search)
+		}
+
 		// Apply filters if present
 		if len(filterList) > 0 {
 			data = filters.ApplyFilters(data, filterList)
 		}
 
+		// Apply sorting if present
+		if sorting != nil && sorting.Field != "" {
+			data = middleware.ApplySorting(data, sorting)
+		}
+
+		// Store total after filtering for pagination
+		total := len(data)
+
+		// Apply field filtering if present
+		if fields, ok := middleware.GetFields(ctx); ok {
+			data = middleware.FilterFieldsSlice(data, fields)
+		}
+
+		// Apply pagination if present
+		if hasPagination {
+			data = middleware.ApplyPagination(data, pagination)
+			
+			// Return paginated response with metadata
+			response := middleware.NewPaginatedResponse(data, pagination, total)
+			respondJSON(w, http.StatusOK, response)
+			return
+		}
+
+		// Return simple response if no pagination
 		respondJSON(w, http.StatusOK, data)
 	}
 }
