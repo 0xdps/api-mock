@@ -734,8 +734,10 @@ func TestCache_MixedConcurrentOperations(t *testing.T) {
 			case <-stopCh:
 				return
 			default:
-				if len(cache.Data[resource]) > 0 {
-					item := cache.Data[resource][0]
+				// Get items to find one to update
+				items, found := cache.Get(resource, 1)
+				if found && len(items) > 0 {
+					item := items[0]
 					if id, ok := item["id"]; ok {
 						updates := map[string]interface{}{
 							"updated_at": time.Now().Unix(),
@@ -757,8 +759,10 @@ func TestCache_MixedConcurrentOperations(t *testing.T) {
 			case <-stopCh:
 				return
 			default:
-				if len(cache.Data[resource]) > 0 {
-					item := cache.Data[resource][0]
+				// Get items to find one to query
+				items, found := cache.Get(resource, 1)
+				if found && len(items) > 0 {
+					item := items[0]
 					if id, ok := item["id"]; ok {
 						cache.GetByID(resource, id)
 					}

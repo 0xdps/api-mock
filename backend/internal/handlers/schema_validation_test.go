@@ -276,7 +276,7 @@ func TestValidation_NumericConstraints(t *testing.T) {
 	}{
 		{
 			name:           "valid age - minimum boundary",
-			age:            0,
+			age:            18,
 			expectedStatus: http.StatusCreated,
 		},
 		{
@@ -286,18 +286,18 @@ func TestValidation_NumericConstraints(t *testing.T) {
 		},
 		{
 			name:           "valid age - maximum boundary",
-			age:            150,
+			age:            100,
 			expectedStatus: http.StatusCreated,
 		},
 		{
 			name:           "invalid age - below minimum",
-			age:            -1,
+			age:            17,
 			expectedStatus: http.StatusBadRequest,
 			errorContains:  "age",
 		},
 		{
 			name:           "invalid age - above maximum",
-			age:            151,
+			age:            101,
 			expectedStatus: http.StatusBadRequest,
 			errorContains:  "age",
 		},
