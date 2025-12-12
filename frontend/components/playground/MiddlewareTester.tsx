@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -102,19 +102,16 @@ export function MiddlewareTester() {
       if (role) headers['X-Role'] = role
       if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey
 
-      const res = await fetch(url, { headers })
+      const res = await apiClient.get(url, { headers })
       const endTime = performance.now()
       setRequestTime(Math.round(endTime - startTime))
 
-      if (!res.ok) {
+      if (res.isError()) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`)
       }
 
-      const data = await res.json()
-      const responseHeaders: Record<string, string> = {}
-      res.headers.forEach((value, key) => {
-        responseHeaders[key] = value
-      })
+      const data = res.json()
+      const responseHeaders = res.getHeaders()
 
       setResponse({
         data,

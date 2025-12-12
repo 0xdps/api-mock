@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 
 const API_URL = getApiUrl()
 
@@ -109,11 +109,15 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
     
     try {
       // Always use direct URL for the actual API call
-      const res = await fetch(directUrl)
-      const data = await res.json()
+      const res = await apiClient.get(directUrl)
       const endTime = performance.now()
       const duration = Math.round(endTime - startTime)
       
+      if (res.isError()) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+      
+      const data = res.json()
       setResponse(data)
       setRequestTime(duration)
     } catch (err: any) {

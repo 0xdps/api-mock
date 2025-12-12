@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -75,12 +75,12 @@ export function ChaosTester() {
             const startTime = performance.now()
             try {
               const url = `${API_URL}/${resource}?count=5&delay=${randomDelay}&flakyRate=${flakyRate / 100}`
-              const res = await fetch(url)
+              const res = await apiClient.get(url)
               const endTime = performance.now()
               
               return {
                 index: requestIndex + 1,
-                success: res.ok,
+                success: res.ok(),
                 status: res.status,
                 time: Math.round(endTime - startTime),
               }

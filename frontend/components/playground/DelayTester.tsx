@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -49,15 +49,15 @@ export function DelayTester() {
         ? `${API_URL}/echo?delay=${delay}`
         : `${API_URL}/delay/${delay}`
 
-      const res = await fetch(url, { signal: abortControllerRef.current.signal })
+      const res = await apiClient.get(url, { signal: abortControllerRef.current.signal })
       const endTime = performance.now()
       const actualTime = Math.round(endTime - startTimeRef.current)
 
-      if (!res.ok) {
+      if (res.isError()) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`)
       }
 
-      const data = await res.json()
+      const data = res.json()
       
       setResults({
         requested: delay,

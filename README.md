@@ -419,6 +419,7 @@ The deployment process **automatically includes** all schemas:
 - **Language:** TypeScript
 - **UI Library:** React 19
 - **Styling:** Tailwind CSS
+- **HTTP Client:** pingpong-fetch (universal, fast, type-safe)
 - **Rendering:** Server-Side with ISR (5-minute cache)
 - **Deployment:** Vercel
 - **API Integration:** https://api.mockly.codes

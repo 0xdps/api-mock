@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { CodeExample } from './CodeExample'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 
 const API_URL = getApiUrl()
 
@@ -178,17 +178,18 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
     const startTime = performance.now()
     
     try {
-      const res = await fetch(url)
+      const res = await apiClient.get(url)
       const endTime = performance.now()
       setRequestTime(Math.round(endTime - startTime))
-      
-      if (!res.ok) {
+
+      if (res.isError()) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`)
       }
-      
-      const data = await res.json()
-      const cacheHeader = res.headers.get('X-Cache')
-      const requestIdHeader = res.headers.get('X-Request-ID')
+
+      const data = res.json()
+      const headers = res.getHeaders()
+      const cacheHeader = headers['x-cache'] || headers['X-Cache']
+      const requestIdHeader = headers['x-request-id'] || headers['X-Request-ID']
       
       setResponse({
         data,

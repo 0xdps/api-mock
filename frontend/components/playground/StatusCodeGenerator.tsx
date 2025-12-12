@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { getApiUrl } from '@/lib/api'
+import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -57,11 +57,11 @@ export function StatusCodeGenerator() {
         url += `?message=${encodeURIComponent(customMessage)}`
       }
 
-      const res = await fetch(url)
+      const res = await apiClient.get(url)
       const endTime = performance.now()
       setRequestTime(Math.round(endTime - startTime))
 
-      const data = await res.json().catch(() => null)
+      const data = res.json().catch(() => null)
       
       setResponse({
         data,

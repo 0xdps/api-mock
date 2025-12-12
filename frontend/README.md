@@ -186,6 +186,7 @@ const fetchData = async () => {
 - **UI Library:** React 19 (Server Components + Client Components)
 - **Language:** TypeScript 5.6+
 - **Styling:** Tailwind CSS
+- **HTTP Client:** pingpong-fetch (Universal HTTP client)
 - **Rendering:** SSR + ISR (5-minute revalidation)
 - **Deployment:** Vercel
 - **API:** https://api.mockly.codes
@@ -296,25 +297,64 @@ export function MyComponent() {
 
 ### Using API in Components
 
-Server component:
+We use **pingpong-fetch**, a universal HTTP client that works in both browser and Node.js environments.
+
+#### Server Components (SSR)
+
 ```typescript
-// Fetch on server
+import { createApiClient } from '@/lib/api'
+
 async function getData() {
-  const res = await fetch('https://api.mockly.codes/users', {
-    next: { revalidate: 300 }
-  })
+  const client = createApiClient()
+  const res = await client.get('/users')
   return res.json()
+}
+
+export default async function Page() {
+  const data = await getData()
+  return <div>{JSON.stringify(data)}</div>
 }
 ```
 
-Client component:
+#### Client Components
+
 ```typescript
 'use client'
-import { getApiUrl } from '@/lib/api'
+import { apiClient } from '@/lib/api'
 
-const apiUrl = getApiUrl()
-// Use apiUrl for fetching
+const MyComponent = () => {
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await apiClient.get('/users')
+      setData(res.json())
+    }
+    fetchData()
+  }, [])
+
+  return <div>{JSON.stringify(data)}</div>
+}
 ```
+
+#### Benefits of pingpong-fetch
+
+- ✅ **Universal** - Works in Node.js (SSR) and browsers
+- ✅ **Fast** - Uses undici in Node.js, native fetch in browsers
+- ✅ **Type-Safe** - Full TypeScript support
+- ✅ **Retry Logic** - Automatic retry with exponential backoff
+- ✅ **Chainable** - `.json()`, `.text()`, `.ok()`, `.isError()` methods
+- ✅ **Small** - ~5-6KB gzipped
+
+#### API Client Configuration
+
+The `apiClient` is pre-configured with:
+- Base URL (auto-detected: production or localhost)
+- 30-second timeout
+- Automatic JSON content-type
+- Retry logic (2 retries with exponential backoff)
+
+See [lib/api.ts](lib/api.ts) for configuration.
 
 ## 📚 Related Documentation
 
