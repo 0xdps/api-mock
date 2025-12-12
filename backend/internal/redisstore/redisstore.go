@@ -19,17 +19,21 @@ type Store struct {
 
 // Config holds Redis connection configuration
 type Config struct {
-	Host     string
-	Port     int
-	Password string
-	DB       int
+	Host       string
+	Port       int
+	Password   string
+	DB         int
+	TLSEnabled bool
 }
 
 // NewStore creates a new Redis store
 func NewStore(config Config) (*Store, error) {
-	// Configure TLS for Upstash Redis
-	tlsConfig := &tls.Config{
-		MinVersion: tls.VersionTLS12,
+	// Configure TLS only if enabled (for Upstash Redis with TLS)
+	var tlsConfig *tls.Config
+	if config.TLSEnabled {
+		tlsConfig = &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		}
 	}
 
 	client := redis.NewClient(&redis.Options{

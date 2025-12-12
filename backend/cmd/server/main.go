@@ -29,10 +29,11 @@ func main() {
 
 	// Initialize Redis (optional - gracefully handle connection failures)
 	redisConfig := redisstore.Config{
-		Host:     getEnvString("REDIS_HOST", "localhost"),
-		Port:     getEnvInt("REDIS_PORT", 6379),
-		Password: getEnvString("REDIS_PASSWORD", ""),
-		DB:       getEnvInt("REDIS_DB", 0),
+		Host:       getEnvString("REDIS_HOST", "localhost"),
+		Port:       getEnvInt("REDIS_PORT", 6379),
+		Password:   getEnvString("REDIS_PASSWORD", ""),
+		DB:         getEnvInt("REDIS_DB", 0),
+		TLSEnabled: getEnvBool("REDIS_TLS_ENABLED", false),
 	}
 
 	redisStore, err := redisstore.NewStore(redisConfig)
@@ -459,4 +460,18 @@ func getEnvInt64(key string, defaultValue int64) int64 {
 		return defaultValue
 	}
 	return intValue
+}
+
+// getEnvBool reads a boolean from environment variable with default
+func getEnvBool(key string, defaultValue bool) bool {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	boolValue, err := strconv.ParseBool(value)
+	if err != nil {
+		log.Printf("Warning: Invalid %s value '%s', using default %t", key, value, defaultValue)
+		return defaultValue
+	}
+	return boolValue
 }

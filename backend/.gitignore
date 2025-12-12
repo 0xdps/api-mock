@@ -17,3 +17,6 @@ go.work
 # Build artifacts
 dist/
 build/
+
+# Environment variables
+.env

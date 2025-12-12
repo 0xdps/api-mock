@@ -20,8 +20,16 @@ generate-types: ## Generate TypeScript types from schemas
 # Backend
 api-dev: sync-schemas ## Run backend development server
 	@echo "Starting backend development server..."
-	@echo "Cache config: ITEMS_PER_RESOURCE=$${CACHE_ITEMS_PER_RESOURCE:-100}, SEED=$${CACHE_SEED:-42}"
-	@cd backend && go run cmd/server/main.go
+	@if [ -f backend/.env ]; then \
+		echo "Loading environment variables from backend/.env"; \
+		export $$(cat backend/.env | grep -v '^#' | xargs) && \
+		echo "Cache config: ITEMS_PER_RESOURCE=$${CACHE_ITEMS_PER_RESOURCE:-100}, SEED=$${CACHE_SEED:-42}" && \
+		cd backend && go run cmd/server/main.go; \
+	else \
+		echo "No .env file found, using defaults"; \
+		echo "Cache config: ITEMS_PER_RESOURCE=$${CACHE_ITEMS_PER_RESOURCE:-100}, SEED=$${CACHE_SEED:-42}" && \
+		cd backend && go run cmd/server/main.go; \
+	fi
 
 api-build: sync-schemas ## Build backend binary
 	@echo "Building backend binary..."

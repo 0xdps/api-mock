@@ -18,10 +18,11 @@ primary_region = 'bom'
   MAX_ITEMS_PER_RESOURCE = "1000"
   
   # Redis Configuration (Upstash)
-  # Using Upstash Redis with TLS connection
+  # Using Upstash Redis WITHOUT TLS connection
   REDIS_HOST = "fly-cache-mockly.upstash.io"
-  REDIS_PORT = "6380"
+  REDIS_PORT = "6379"
   REDIS_DB = "0"
+  REDIS_TLS_ENABLED = "false"
   # Note: Set REDIS_PASSWORD as a Fly secret (not in this file)
   # Run: fly secrets set REDIS_PASSWORD="your_upstash_token"
   
