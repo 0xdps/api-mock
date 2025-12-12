@@ -37,9 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - X-Cache header (HIT/MISS/BYPASS)
   - Cache bypass via query parameter
   - Admin endpoints (/admin/cache/stats, /admin/cache/refresh)
+- ⚙️ **Environment Configuration**
+  - .env file support for backend development
+  - Configurable Redis TLS (REDIS_TLS_ENABLED)
+  - Local cache mode for development (CACHE_MODE=local)
 
 ### Added - Frontend
-- 🎮 **Enhanced Playground**
+- 🎮 **Enhanced Playground - Major UX Redesign**
+  - **50/50 split-screen layout**: Request builder (left) and response viewer (right)
+  - **Tabbed navigation**: Quick, Pagination, Filters, Middleware, Path tabs
+  - **Compact header**: Reduced from text-4xl to text-2xl for more screen space
+  - **Full-width layout**: Removed max-width constraints for wider content area
+  - **Independent scrolling**: Both panels scroll independently with matching heights
   - Middleware tester with all 11 middleware
   - Pagination controls (page, limit, offset)
   - Sorting controls (field, order)
@@ -47,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Field selection with preview
   - Request/response headers display
   - Request timing metrics
+  - Real-time URL preview with path options
 - 📄 **Sitemap Updates**
   - Added playground utility tools to sitemap.xml
   - Added playground section to sitemap.html

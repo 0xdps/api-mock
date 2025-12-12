@@ -40,7 +40,7 @@
 
 ### Frontend
 - 🎨 **Modern UI** - Next.js 16 + React 19 with SSR
-- 🎮 **Interactive Playground** - Test all API features
+- 🎮 **Interactive Playground** - 50/50 split-screen with tabbed navigation
 - 📚 **Comprehensive Docs** - Live examples and code snippets
 - 📊 **Cache Management** - Admin endpoints for stats
 - 🤖 **Automated Build** - TypeScript types auto-generated

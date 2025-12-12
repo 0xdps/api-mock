@@ -7,15 +7,17 @@ Next.js 14 website with landing page, documentation, and interactive playground 
 - **Server-Side Rendering (SSR)** - Fast initial page loads with fresh data
 - **Automatic API Detection** - Seamlessly works in dev and production
 - **Interactive Documentation** - Live API info and schema exploration with search guide
-- **Enhanced Playground** - Test all API features:
-  - Pagination controls (page, limit, offset)
-  - Sorting controls (field, order)
-  - Search with field targeting
-  - Field selection with preview
-  - 11+ middleware options (delay, flaky, cache bypass, etc.)
-  - Request/response headers display
-  - Request timing metrics
-  - 5 utility tools (Echo, Status, Delay, Middleware, Chaos)
+- **Enhanced Playground** - Modern 50/50 split-screen layout:
+  - **Tabbed Navigation**: Quick, Pagination, Filters, Middleware, Path
+  - **Request Builder** (left): Endpoint type selector, all controls organized in tabs
+  - **Response Viewer** (right): Live JSON response with syntax highlighting
+  - **Pagination controls**: Page, limit, offset with visual feedback
+  - **Sorting controls**: Field selector with asc/desc order
+  - **Search**: Full-text search with field targeting
+  - **Field selection**: Multi-select with preview
+  - **Middleware**: 11+ options (delay, flaky, cache bypass, etc.)
+  - **Headers & Metrics**: Request timing, cache status, request ID
+  - **5 utility tools**: Echo, Status, Delay, Middleware, Chaos
 - **Modern UI** - Beautiful, responsive design with Tailwind CSS
 - **Comprehensive Sitemaps** - 130+ URLs indexed (XML + HTML)
 - **Mobile Friendly** - Fully responsive across all devices
@@ -176,9 +178,14 @@ const fetchData = async () => {
 
 ### Playground (`/playground`)
 - Client-side rendered for full interactivity
+- **50/50 split layout**: Request builder (left) and response viewer (right)
+- **Tabbed navigation**: Quick, Pagination, Filters, Middleware, Path tabs
+- **Compact header**: Reduced size for more screen space
+- **Full-width layout**: No max-width constraints for wider content area
 - Test any endpoint with custom parameters
-- Live JSON response viewer
-- Code examples in cURL, JavaScript, and Python
+- Live JSON response viewer with syntax highlighting
+- Real-time URL preview with path options (direct/group)
+- Code examples dropdown with cURL, JavaScript, and Python
 
 ## 🛠️ Technology Stack
 
