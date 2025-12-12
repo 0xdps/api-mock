@@ -88,7 +88,7 @@ export default async function ResourcePage({
   
   if (!schema) {
     return (
-      <div className="max-w-5xl mx-auto p-8">
+      <div className="mx-auto p-4">
         <div className="text-center text-slate-400 mt-20">
           <p className="text-xl">Resource not found</p>
         </div>
@@ -97,7 +97,7 @@ export default async function ResourcePage({
   }
   
   return (
-    <div className="max-w-5xl mx-auto p-8">
+    <div className="mx-auto p-4">
       <ResourceDocumentation 
         resource={schema.name}
         schema={schema.schema}

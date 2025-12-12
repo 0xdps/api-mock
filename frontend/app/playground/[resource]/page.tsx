@@ -108,9 +108,9 @@ export default async function ResourcePlaygroundPage({
   }
   
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto py-8">
       {/* Breadcrumb */}
-      <div className="mb-4 flex items-center gap-2 text-sm text-slate-400">
+      <div className="mb-4 flex items-center gap-2 text-sm text-slate-400 px-3 sm:px-4 lg:px-6">
         <a href="/playground" className="hover:text-slate-300">
           Playground
         </a>

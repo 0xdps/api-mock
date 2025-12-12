@@ -56,6 +56,9 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   const [selectedPathType, setSelectedPathType] = useState<'direct' | 'group'>('direct')
   const responseRef = useRef<HTMLDivElement>(null)
   
+  // Active tab for options
+  const [activeTab, setActiveTab] = useState<'quick' | 'pagination' | 'filters' | 'middleware' | 'path'>('quick')
+  
   // Pagination state
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -74,10 +77,15 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   const [selectedFields, setSelectedFields] = useState<string[]>([])
   
   // Advanced options state
-  const [showAdvanced, setShowAdvanced] = useState(false)
   const [delay, setDelay] = useState(0)
   const [flakyRate, setFlakyRate] = useState(0)
   const [skipCache, setSkipCache] = useState(false)
+  
+  // Code examples dropdown
+  const [showExamples, setShowExamples] = useState(false)
+  
+  // Advanced options collapse state
+  const [showAdvanced, setShowAdvanced] = useState(false)
   
   // Build URL based on endpoint type
   const buildUrl = (usePath?: string) => {
@@ -255,554 +263,476 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   }
   
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-3xl">{getGroupIcon(group)}</span>
-          <div>
-            <h1 className="text-4xl font-bold text-white capitalize">{resourceName}</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              <span className="capitalize">{group}</span> resource
-            </p>
-          </div>
-        </div>
-        <p className="text-lg text-slate-300">
-          {schema.description || `Access and manage ${resourceName} data through our RESTful API.`}
-        </p>
-        
-        {/* Feature Highlights */}
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="text-green-400">✓</span>
-            <span>Pagination support</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="text-green-400">✓</span>
-            <span>Full-text search</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="text-green-400">✓</span>
-            <span>Field filtering</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span className="text-green-400">✓</span>
-            <span>Dynamic sorting</span>
-          </div>
+    <div className="space-y-4 px-3 sm:px-4 lg:px-6">
+      {/* Compact Header */}
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">{getGroupIcon(group)}</span>
+        <div>
+          <h1 className="text-2xl font-bold text-white capitalize">{resourceName}</h1>
+          <p className="text-slate-400 text-xs">
+            {schema.description || `Access and manage ${resourceName} data through our RESTful API.`}
+          </p>
         </div>
       </div>
       
-      {/* Interactive Playground */}
-      <section className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-white mb-4">🎮 Try it Now</h2>
-        
-        {/* Request Builder */}
-        <div className="space-y-4">
-          {/* Endpoint Type */}
-          <div>
-            <label className="block text-slate-300 mb-2 font-medium text-sm">
-              Endpoint Type
-            </label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setEndpointType('collection')}
-                className={`flex-1 px-4 py-2 rounded transition text-sm ${
-                  endpointType === 'collection'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
-              >
-                Collection
-              </button>
-              <button
-                onClick={() => setEndpointType('single')}
-                className={`flex-1 px-4 py-2 rounded transition text-sm ${
-                  endpointType === 'single'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
-              >
-                Single Item
-              </button>
-              <button
-                onClick={() => setEndpointType('meta')}
-                className={`flex-1 px-4 py-2 rounded transition text-sm ${
-                  endpointType === 'meta'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
-              >
-                Schema
-              </button>
-            </div>
-          </div>
-          
-          {/* Pagination (Collection only) */}
-          {endpointType === 'collection' && (
-            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
-              <h3 className="text-sm font-semibold text-white">Pagination</h3>
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Page
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={page}
-                    onChange={(e) => setPage(parseInt(e.target.value) || 1)}
-                    disabled={!!offset}
-                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Limit
-                  </label>
-                  <select
-                    value={limit}
-                    onChange={(e) => setLimit(parseInt(e.target.value))}
-                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+      {/* Two-Column Layout: Request Builder (50%) + Response (50%) */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* LEFT COLUMN: Request Builder (50%) */}
+        <div>
+            <div className="bg-slate-800/50 backdrop-blur p-4 rounded-lg border border-slate-700 h-[calc(100vh-10rem)] overflow-y-auto">
+              <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+                <span>🎯</span> Request Builder
+              </h2>
+              
+              {/* Endpoint Type Selector */}
+              <div className="mb-3">
+                <label className="block text-slate-300 mb-2 text-xs font-medium">
+                  Endpoint Type
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setEndpointType('collection')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition ${
+                      endpointType === 'collection'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
                   >
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Offset (optional)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={offset}
-                    onChange={(e) => setOffset(e.target.value)}
-                    placeholder="Auto"
-                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Sorting (Collection only) */}
-          {endpointType === 'collection' && (
-            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
-              <h3 className="text-sm font-semibold text-white">Sorting</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Sort by
-                  </label>
-                  <select
-                    value={sortField}
-                    onChange={(e) => setSortField(e.target.value)}
-                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                    Collection
+                  </button>
+                  <button
+                    onClick={() => setEndpointType('single')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition ${
+                      endpointType === 'single'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
                   >
-                    <option value="">None</option>
-                    {fieldNames.map(field => (
-                      <option key={field} value={field}>{field}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs">
-                    Order
-                  </label>
-                  <select
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                    disabled={!sortField}
-                    className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
+                    Single
+                  </button>
+                  <button
+                    onClick={() => setEndpointType('meta')}
+                    className={`px-3 py-2 rounded text-sm font-medium transition ${
+                      endpointType === 'meta'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
                   >
-                    <option value="asc">↑ Ascending</option>
-                    <option value="desc">↓ Descending</option>
-                  </select>
+                    Schema
+                  </button>
                 </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Search (Collection only) */}
-          {endpointType === 'collection' && (
-            <div className="space-y-4 p-5 bg-gradient-to-br from-slate-900/80 to-slate-900/40 rounded-lg border border-slate-700 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🔍</span>
-                  <h3 className="text-sm font-semibold text-white">Search</h3>
-                </div>
-                {searchQuery && (
-                  <span className="text-xs px-2 py-1 bg-primary-500/20 text-primary-400 rounded">
-                    Active
-                  </span>
-                )}
               </div>
               
-              <div className="space-y-4">
-                {/* Search Query Input */}
-                <div>
-                  <label className="block text-slate-300 mb-2 text-xs font-medium">
-                    Search Query
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                      🔎
-                    </span>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Enter search term..."
-                      className="w-full bg-slate-800 text-white pl-9 pr-9 py-2.5 rounded-lg border border-slate-600 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none text-sm placeholder-slate-500 transition"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
-                        title="Clear search"
-                      >
-                        ✕
-                      </button>
-                    )}
+              {/* Tab Navigation */}
+              {endpointType === 'collection' && (
+                <div className="mb-3">
+                  <div className="flex flex-wrap gap-1 bg-slate-900/50 p-1 rounded">
+                    <button
+                      onClick={() => setActiveTab('quick')}
+                      className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                        activeTab === 'quick'
+                          ? 'bg-slate-700 text-white'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Quick
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('pagination')}
+                      className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                        activeTab === 'pagination'
+                          ? 'bg-slate-700 text-white'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Pagination
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('filters')}
+                      className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                        activeTab === 'filters'
+                          ? 'bg-slate-700 text-white'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Filters
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('middleware')}
+                      className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                        activeTab === 'middleware'
+                          ? 'bg-slate-700 text-white'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Middleware
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('path')}
+                      className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                        activeTab === 'path'
+                          ? 'bg-slate-700 text-white'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      Path
+                    </button>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1.5 flex items-start gap-1">
-                    <span className="mt-0.5">💡</span>
-                    <span>Searches across all text fields by default. Specify fields below to narrow results.</span>
-                  </p>
                 </div>
-                
-                {/* Search Configuration */}
-                {searchQuery && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-700/50">
-                    {/* Search Fields */}
-                    <div>
-                      <label className="block text-slate-300 mb-2 text-xs font-medium">
-                        Search in specific fields (optional)
-                      </label>
-                      <select
-                        multiple
-                        value={searchFields}
-                        onChange={(e) => setSearchFields(Array.from(e.target.selectedOptions, option => option.value))}
-                        className="w-full bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-600 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none text-sm hover:bg-slate-750 transition"
-                        size={4}
-                      >
-                        {fieldNames.map(field => (
-                          <option key={field} value={field} className="py-1 hover:bg-primary-500/20">
-                            {field}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1.5">
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                        <span>Cmd/Ctrl+click to select multiple</span>
-                      </div>
-                      {searchFields.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {searchFields.map(field => (
-                            <span key={field} className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500/20 text-primary-300 text-xs rounded">
-                              {field}
-                              <button
-                                onClick={() => setSearchFields(searchFields.filter(f => f !== field))}
-                                className="hover:text-white"
-                              >
-                                ✕
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Query Parameter */}
-                    <div>
-                      <label className="block text-slate-300 mb-2 text-xs font-medium">
-                        Query parameter name
-                      </label>
-                      <div className="space-y-2.5 bg-slate-800/50 p-3 rounded-lg">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="radio"
-                            checked={searchParam === 'q'}
-                            onChange={() => setSearchParam('q')}
-                            className="text-primary-500 focus:ring-primary-500"
-                          />
-                          <div className="flex-1">
-                            <span className="text-slate-200 text-sm font-mono group-hover:text-white transition">?q=</span>
-                            <p className="text-xs text-slate-500 mt-0.5">Short & common (recommended)</p>
-                          </div>
-                        </label>
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="radio"
-                            checked={searchParam === 'search'}
-                            onChange={() => setSearchParam('search')}
-                            className="text-primary-500 focus:ring-primary-500"
-                          />
-                          <div className="flex-1">
-                            <span className="text-slate-200 text-sm font-mono group-hover:text-white transition">?search=</span>
-                            <p className="text-xs text-slate-500 mt-0.5">More explicit, descriptive</p>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="mt-3 p-2.5 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300">
-                        <strong>Example:</strong> ?{searchParam}=laptop
-                        {searchFields.length > 0 && `&search_fields=${searchFields.join(',')}`}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          
-          {/* Field Filtering (Collection only) */}
-          {endpointType === 'collection' && (
-            <div className="space-y-4 p-4 bg-slate-900/50 rounded border border-slate-700">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-white">Field Filtering</h3>
-                <button
-                  onClick={toggleAllFields}
-                  className="text-xs text-primary-400 hover:text-primary-300"
-                >
-                  {selectedFields.length === fieldNames.length ? 'Deselect All' : 'Select All'}
-                </button>
-              </div>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-32 overflow-y-auto">
-                {fieldNames.map(field => (
-                  <label key={field} className="flex items-center gap-2 cursor-pointer text-sm">
-                    <input
-                      type="checkbox"
-                      checked={selectedFields.includes(field)}
-                      onChange={() => toggleField(field)}
-                      className="rounded border-slate-600 text-primary-500 focus:ring-primary-500"
-                    />
-                    <span className="text-slate-300 text-xs truncate">{field}</span>
-                  </label>
-                ))}
-              </div>
-              {selectedFields.length > 0 && (
-                <p className="text-xs text-slate-400">
-                  Selected: {selectedFields.join(', ')}
-                </p>
               )}
-            </div>
-          )}
-          
-          {/* Advanced Options (Collection only) */}
-          {endpointType === 'collection' && (
-            <div className="border border-slate-700 rounded">
-              <button
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="w-full flex items-center justify-between p-4 bg-slate-900/30 hover:bg-slate-900/50 transition"
-              >
-                <h3 className="text-sm font-semibold text-white">
-                  {showAdvanced ? '▼' : '▶'} Advanced Options
-                </h3>
-                <span className="text-xs text-slate-400">
-                  Middleware parameters
-                </span>
-              </button>
               
-              {showAdvanced && (
-                <div className="p-4 space-y-4 border-t border-slate-700">
-                  {/* Delay */}
-                  <div>
-                    <label className="block text-slate-300 mb-2 text-xs">
-                      Delay: {delay}ms {delay >= 5000 && '⚠️'}
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="5000"
-                      step="100"
-                      value={delay}
-                      onChange={(e) => setDelay(parseInt(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
-                      <span>0ms</span>
-                      <span>5000ms</span>
+              {/* Tab Content */}
+              <div className="space-y-3">
+                {/* QUICK TAB */}
+                {endpointType === 'collection' && activeTab === 'quick' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div>
+                      <label className="block text-slate-300 mb-1.5 text-xs font-medium">
+                        Count <span className="text-slate-500">(1-100)</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="100"
+                        value={count}
+                        onChange={(e) => setCount(parseInt(e.target.value) || 1)}
+                        className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
                     </div>
-                  </div>
-                  
-                  {/* Flaky Rate */}
-                  <div>
-                    <label className="block text-slate-300 mb-2 text-xs">
-                      Flaky Rate: {flakyRate}% {flakyRate > 50 && '⚠️ High failure rate!'}
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      step="5"
-                      value={flakyRate}
-                      onChange={(e) => setFlakyRate(parseInt(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
-                      <span>0%</span>
-                      <span>100%</span>
-                    </div>
-                  </div>
-                  
-                  {/* Cache Controls */}
-                  <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={skipCache}
                         onChange={(e) => setSkipCache(e.target.checked)}
-                        className="rounded border-slate-600 text-primary-500"
+                        className="rounded border-slate-600 text-primary-500 focus:ring-primary-500"
                       />
                       <span className="text-slate-300 text-xs">Skip Cache</span>
                     </label>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Options */}
-          <div className="flex gap-4 items-end">
-            {/* Item ID (for single) or Count (for collection) */}
-            {endpointType === 'single' && (
-              <div className="flex-1">
-                <label className="block text-slate-300 mb-2 font-medium text-sm">
-                  Item ID
-                </label>
-                <input
-                  type="text"
-                  value={itemId}
-                  onChange={(e) => setItemId(e.target.value)}
-                  placeholder="1"
-                  className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
-                />
-              </div>
-            )}
-            
-            {endpointType === 'collection' && (
-              <div className="flex-1">
-                <label className="block text-slate-300 mb-2 font-medium text-sm">
-                  Count <span className="text-slate-500 text-xs">(1-100)</span>
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={count}
-                  onChange={(e) => setCount(parseInt(e.target.value) || 1)}
-                  className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
-                />
-              </div>
-            )}
-            
-            {/* Cache Toggle */}
-            {endpointType !== 'meta' && (
-              <div className="flex-1">
-                <label className="block text-slate-300 mb-2 font-medium text-sm">
-                  Cache
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-700 px-3 py-2 rounded border border-slate-600 hover:bg-slate-600 transition">
-                  <input
-                    type="checkbox"
-                    checked={noCache}
-                    onChange={(e) => setNoCache(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-600 text-primary-500 focus:ring-primary-500 focus:ring-offset-slate-900"
-                  />
-                  <span className="text-slate-200 text-sm">
-                    Bypass
-                  </span>
-                </label>
-              </div>
-            )}
-          </div>
-          
-          {/* URL Preview with Selection */}
-          <div className="space-y-3">
-            <div>
-              <label className="block text-slate-300 mb-2 font-medium text-sm">
-                Request URL
-              </label>
-              
-              <div className="space-y-2">
-                {/* Direct Path - Clickable Box */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedPathType('direct')}
-                  className={`w-full text-left p-3 rounded transition cursor-pointer ${
-                    selectedPathType === 'direct'
-                      ? 'bg-slate-900 border-2 border-primary-500'
-                      : 'bg-slate-900 border border-slate-600 hover:border-slate-500'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-slate-400">Direct Access</span>
-                    {selectedPathType === 'direct' && (
-                      <span className="text-xs text-primary-400 font-medium">✓ Active</span>
-                    )}
-                  </div>
-                  <code className={`text-sm break-all ${
-                    selectedPathType === 'direct' ? 'text-primary-400' : 'text-slate-500'
-                  }`}>
-                    {directUrl}
-                  </code>
-                </button>
+                )}
                 
-                {/* Group Path - Clickable Box */}
-                <button
-                  type="button"
-                  onClick={() => setSelectedPathType('group')}
-                  className={`w-full text-left p-3 rounded transition cursor-pointer ${
-                    selectedPathType === 'group'
-                      ? 'bg-slate-900 border-2 border-primary-500'
-                      : 'bg-slate-900 border border-slate-600 hover:border-slate-500'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-slate-400">Via Group Path</span>
-                    {selectedPathType === 'group' && (
-                      <span className="text-xs text-primary-400 font-medium">✓ Active</span>
+                {/* SINGLE ITEM ID */}
+                {endpointType === 'single' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div>
+                      <label className="block text-slate-300 mb-1.5 text-xs font-medium">
+                        Item ID
+                      </label>
+                      <input
+                        type="text"
+                        value={itemId}
+                        onChange={(e) => setItemId(e.target.value)}
+                        placeholder="1"
+                        className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={noCache}
+                        onChange={(e) => setNoCache(e.target.checked)}
+                        className="rounded border-slate-600 text-primary-500 focus:ring-primary-500"
+                      />
+                      <span className="text-slate-300 text-xs">Bypass Cache</span>
+                    </label>
+                  </div>
+                )}
+                
+                {/* PAGINATION TAB */}
+                {endpointType === 'collection' && activeTab === 'pagination' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs">
+                          Page
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={page}
+                          onChange={(e) => setPage(parseInt(e.target.value) || 1)}
+                          disabled={!!offset}
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs">
+                          Limit
+                        </label>
+                        <select
+                          value={limit}
+                          onChange={(e) => setLimit(parseInt(e.target.value))}
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                        >
+                          <option value="5">5</option>
+                          <option value="10">10</option>
+                          <option value="25">25</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs">
+                          Offset
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={offset}
+                          onChange={(e) => setOffset(e.target.value)}
+                          placeholder="Auto"
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* FILTERS TAB */}
+                {endpointType === 'collection' && activeTab === 'filters' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700 max-h-96 overflow-y-auto">
+                    {/* Search */}
+                    <div>
+                      <label className="block text-slate-300 mb-1.5 text-xs font-medium">
+                        Search Query
+                      </label>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search..."
+                        className="w-full bg-slate-700 text-white px-3 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm placeholder-slate-500"
+                      />
+                    </div>
+                    
+                    {searchQuery && (
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs font-medium">
+                          Search Fields (optional)
+                        </label>
+                        <select
+                          multiple
+                          value={searchFields}
+                          onChange={(e) => setSearchFields(Array.from(e.target.selectedOptions, option => option.value))}
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-xs"
+                          size={3}
+                        >
+                          {fieldNames.map(field => (
+                            <option key={field} value={field}>
+                              {field}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    
+                    {/* Sort */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs">
+                          Sort by
+                        </label>
+                        <select
+                          value={sortField}
+                          onChange={(e) => setSortField(e.target.value)}
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm"
+                        >
+                          <option value="">None</option>
+                          {fieldNames.map(field => (
+                            <option key={field} value={field}>{field}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-slate-300 mb-1.5 text-xs">
+                          Order
+                        </label>
+                        <select
+                          value={sortOrder}
+                          onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                          disabled={!sortField}
+                          className="w-full bg-slate-700 text-white px-2 py-1.5 rounded border border-slate-600 focus:border-primary-500 focus:outline-none text-sm disabled:opacity-50"
+                        >
+                          <option value="asc">↑ Asc</option>
+                          <option value="desc">↓ Desc</option>
+                        </select>
+                      </div>
+                    </div>
+{/* 
+bg-slate-800/50 backdrop-blur p-8 rounded-lg border border-slate-700 text-center h-full flex items-center justify-center              
+
+bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
+
+*/}
+                    {/* Select Fields */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-slate-300 text-xs font-medium">
+                          Select Fields
+                        </label>
+                        <button
+                          onClick={toggleAllFields}
+                          className="text-xs text-primary-400 hover:text-primary-300"
+                        >
+                          {selectedFields.length === fieldNames.length ? 'None' : 'All'}
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 max-h-32 overflow-y-auto p-2 bg-slate-800 rounded">
+                        {fieldNames.map(field => (
+                          <label key={field} className="flex items-center gap-1.5 cursor-pointer text-xs">
+                            <input
+                              type="checkbox"
+                              checked={selectedFields.includes(field)}
+                              onChange={() => toggleField(field)}
+                              className="rounded border-slate-600 text-primary-500 focus:ring-primary-500 w-3 h-3"
+                            />
+                            <span className="text-slate-300 truncate">{field}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* MIDDLEWARE TAB */}
+                {endpointType === 'collection' && activeTab === 'middleware' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div>
+                      <label className="block text-slate-300 mb-1.5 text-xs">
+                        Delay: {delay}ms
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="5000"
+                        step="100"
+                        value={delay}
+                        onChange={(e) => setDelay(parseInt(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-slate-500 mt-0.5">
+                        <span>0ms</span>
+                        <span>5000ms</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-slate-300 mb-1.5 text-xs">
+                        Flaky Rate: {flakyRate}%
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={flakyRate}
+                        onChange={(e) => setFlakyRate(parseInt(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-slate-500 mt-0.5">
+                        <span>0%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                    
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={skipCache}
+                        onChange={(e) => setSkipCache(e.target.checked)}
+                        className="rounded border-slate-600 text-primary-500 focus:ring-primary-500"
+                      />
+                      <span className="text-slate-300 text-xs">Skip Cache</span>
+                    </label>
+                  </div>
+                )}
+                
+                {/* PATH TAB */}
+                {endpointType === 'collection' && activeTab === 'path' && (
+                  <div className="space-y-3 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div className="space-y-2">
+                      <label className="flex items-start gap-2 cursor-pointer p-2 bg-slate-800 rounded hover:bg-slate-750">
+                        <input
+                          type="radio"
+                          checked={selectedPathType === 'direct'}
+                          onChange={() => setSelectedPathType('direct')}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1">
+                          <div className="text-slate-300 text-xs font-medium mb-1">Direct Access</div>
+                          <code className="text-xs text-slate-500 break-all">{directPath}</code>
+                        </div>
+                      </label>
+                      
+                      <label className="flex items-start gap-2 cursor-pointer p-2 bg-slate-800 rounded hover:bg-slate-750">
+                        <input
+                          type="radio"
+                          checked={selectedPathType === 'group'}
+                          onChange={() => setSelectedPathType('group')}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1">
+                          <div className="text-slate-300 text-xs font-medium mb-1">Via Group</div>
+                          <code className="text-xs text-slate-500 break-all">{groupPath}</code>
+                        </div>
+                      </label>
+                    </div>
+                    
+                    {aliases.length > 0 && (
+                      <div className="pt-2 border-t border-slate-700">
+                        <div className="text-xs text-slate-400 mb-1.5">Aliases:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {aliases.map((alias: string) => (
+                            <code key={alias} className="text-xs bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">
+                              {alias}
+                            </code>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
-                  <code className={`text-sm break-all ${
-                    selectedPathType === 'group' ? 'text-primary-400' : 'text-slate-500'
-                  }`}>
-                    {groupUrl}
-                  </code>
-                </button>
+                )}
               </div>
               
-              {/* Aliases */}
-              {aliases.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-slate-700">
-                  <div className="text-xs text-slate-400 mb-2">Additional aliases:</div>
-                  <div className="flex flex-wrap gap-2">
-                    {aliases.map((alias: string) => (
-                      <code key={alias} className="text-xs bg-slate-900 text-slate-500 px-2 py-1 rounded border border-slate-700">
-                        {alias}
-                      </code>
-                    ))}
-                  </div>
+              {/* Request URL Preview */}
+              <div className="mt-3 pt-3 border-t border-slate-700">
+                <label className="block text-slate-300 mb-1.5 text-xs font-medium">
+                  Request URL
+                </label>
+                <div className="flex items-start gap-2">
+                  <code className="flex-1 bg-slate-900 text-primary-400 px-3 py-2 rounded border border-slate-600 text-xs break-all">
+                    {url}
+                  </code>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(url)}
+                    className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded border border-slate-600 text-xs transition"
+                    title="Copy URL"
+                  >
+                    📋
+                  </button>
                 </div>
-              )}
+              </div>
+              
+              {/* Send Request Button */}
+              <button
+                onClick={handleFetch}
+                disabled={loading}
+                className="w-full mt-3 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded font-semibold transition text-sm"
+              >
+                {loading ? 'Loading...' : '▶ Send Request'}
+              </button>
             </div>
           </div>
-          
-          {/* Send Button */}
-          <button
-            onClick={handleFetch}
-            disabled={loading}
-            className="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
-          >
-            {loading ? 'Loading...' : '▶ Send Request'}
-          </button>
-          
-          {/* Response */}
-          {(response || error) && (
-            <div ref={responseRef} className="border-t border-slate-700 pt-4 mt-4">
+        
+        {/* RIGHT COLUMN: Response (50%) */}
+        <div>
+          <div className="h-[calc(100vh-10rem)] overflow-y-auto">
+          {(response || error) ? (
+            <div ref={responseRef} className="bg-slate-800/50 backdrop-blur p-4 rounded-lg border border-slate-700">
+              <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+                <span>📊</span> Response
+              </h2>
+              
               {error ? (
                 <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
                   <div className="flex items-center gap-2 mb-2">
@@ -811,15 +741,13 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                   <p className="text-red-300 text-sm">{error}</p>
                 </div>
               ) : (
-                <div>
-                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-green-400 font-semibold">✓ Success</span>
-                      <span className="text-slate-400 text-sm">
-                        Status: <span className="text-white">{response.status}</span>
-                      </span>
+                <div className="space-y-3">
+                  {/* Response Headers */}
+                  <div className="flex items-center justify-between flex-wrap gap-2 p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div className="flex items-center gap-3 flex-wrap text-xs">
+                      <span className="text-green-400 font-semibold">✓ {response.status}</span>
                       {response.cacheStatus !== 'N/A' && (
-                        <span className="text-slate-400 text-sm">
+                        <span className="text-slate-400">
                           Cache: <span className={
                             response.cacheStatus === 'HIT' ? 'text-green-400' : 
                             response.cacheStatus === 'BYPASS' ? 'text-yellow-400' : 
@@ -830,13 +758,8 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                         </span>
                       )}
                       {requestTime !== null && (
-                        <span className="text-slate-400 text-sm">
+                        <span className="text-slate-400">
                           Time: <span className="text-white">{requestTime}ms</span>
-                        </span>
-                      )}
-                      {response.requestId && (
-                        <span className="text-slate-400 text-sm">
-                          ID: <span className="text-slate-300 font-mono text-xs">{response.requestId}</span>
                         </span>
                       )}
                     </div>
@@ -844,38 +767,37 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                   
                   {/* Applied Middleware Indicators */}
                   {endpointType === 'collection' && (delay > 0 || flakyRate > 0 || skipCache || selectedFields.length > 0 || sortField || searchQuery) && (
-                    <div className="mb-3 p-3 bg-blue-900/20 border border-blue-500/30 rounded">
+                    <div className="p-3 bg-blue-900/20 border border-blue-500/30 rounded">
                       <p className="text-xs text-blue-300 font-semibold mb-2">Applied Middleware:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {delay > 0 && (
-                          <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded border border-blue-500/30">
-                            ⏱️ Delayed {delay}ms
+                          <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-0.5 rounded">
+                            ⏱️ {delay}ms
                           </span>
                         )}
                         {flakyRate > 0 && (
-                          <span className="text-xs bg-yellow-900/50 text-yellow-200 px-2 py-1 rounded border border-yellow-500/30">
-                            🎲 Flaky {flakyRate}%
+                          <span className="text-xs bg-yellow-900/50 text-yellow-200 px-2 py-0.5 rounded">
+                            🎲 {flakyRate}%
                           </span>
                         )}
                         {skipCache && (
-                          <span className="text-xs bg-purple-900/50 text-purple-200 px-2 py-1 rounded border border-purple-500/30">
-                            🚫 Cache Bypassed
+                          <span className="text-xs bg-purple-900/50 text-purple-200 px-2 py-0.5 rounded">
+                            🚫 Cache
                           </span>
                         )}
                         {selectedFields.length > 0 && (
-                          <span className="text-xs bg-green-900/50 text-green-200 px-2 py-1 rounded border border-green-500/30">
-                            🔍 Fields: {selectedFields.join(', ')}
+                          <span className="text-xs bg-green-900/50 text-green-200 px-2 py-0.5 rounded">
+                            🔍 {selectedFields.length} fields
                           </span>
                         )}
                         {sortField && (
-                          <span className="text-xs bg-indigo-900/50 text-indigo-200 px-2 py-1 rounded border border-indigo-500/30">
-                            🔀 Sort: {sortField} ({sortOrder})
+                          <span className="text-xs bg-indigo-900/50 text-indigo-200 px-2 py-0.5 rounded">
+                            🔀 {sortField}
                           </span>
                         )}
                         {searchQuery && (
-                          <span className="text-xs bg-pink-900/50 text-pink-200 px-2 py-1 rounded border border-pink-500/30">
-                            🔎 Search: "{searchQuery}"
-                            {searchFields.length > 0 && ` in ${searchFields.join(', ')}`}
+                          <span className="text-xs bg-pink-900/50 text-pink-200 px-2 py-0.5 rounded">
+                            🔎 "{searchQuery}"
                           </span>
                         )}
                       </div>
@@ -884,9 +806,9 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                   
                   {/* Pagination Metadata */}
                   {response.data?.pagination && (
-                    <div className="mb-3 p-3 bg-slate-900 border border-slate-600 rounded">
+                    <div className="p-3 bg-slate-900/50 border border-slate-600 rounded">
                       <p className="text-xs text-slate-400 font-semibold mb-2">Pagination:</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                      <div className="grid grid-cols-4 gap-2 text-xs">
                         <div>
                           <span className="text-slate-500">Page:</span>{' '}
                           <span className="text-white">{response.data.pagination.page}</span>
@@ -904,79 +826,78 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
                           <span className="text-white">{response.data.pagination.total_pages}</span>
                         </div>
                       </div>
-                      <p className="text-xs text-slate-400 mt-2">
-                        Showing {((response.data.pagination.page - 1) * response.data.pagination.limit) + 1}-
-                        {Math.min(response.data.pagination.page * response.data.pagination.limit, response.data.pagination.total)} of {response.data.pagination.total} items
-                      </p>
                     </div>
                   )}
                   
-                  <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-96">
-                    <pre className="text-green-400 text-sm">
+                  {/* Response Body */}
+                  <div className="bg-slate-900 p-4 rounded border border-slate-600 overflow-auto" style={{ maxHeight: 'calc(100vh - 362px)' }}>
+                    <pre className="text-green-400 text-xs">
                       <code>{JSON.stringify(response.data, null, 2)}</code>
                     </pre>
                   </div>
                 </div>
               )}
             </div>
+          ) : (
+            <div className="bg-slate-800/50 backdrop-blur p-8 rounded-lg border border-slate-700 text-center h-full flex items-center justify-center">
+              <div>
+                <div className="text-6xl mb-4">📡</div>
+                <p className="text-slate-400 text-sm">
+                  Configure your request and click <strong className="text-white">Send Request</strong> to see the response here.
+                </p>
+              </div>
+            </div>
           )}
+          </div>
         </div>
-      </section>
+      </div>
       
-      {/* Endpoints */}
-      <section className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-white mb-4">Endpoints</h2>
+      {/* Endpoints Section */}
+      <section className="bg-slate-800/50 backdrop-blur p-5 rounded-lg border border-slate-700">
+        <h2 className="text-xl font-bold text-white mb-3">Endpoints</h2>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Collection Endpoint */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">GET</span>
-              <code className="text-primary-500">{directPath}</code>
+              <code className="text-primary-500 text-sm">{directPath}</code>
             </div>
-            <p className="text-slate-400 text-sm mb-2">Get a collection of {resourceName}</p>
-            <div className="text-xs text-slate-500 mb-1">
-              <span className="font-semibold">Parameters:</span> count, seed, nocache
-            </div>
-            <div className="text-xs text-slate-400">
+            <p className="text-slate-400 text-xs mb-1">Get a collection of {resourceName}</p>
+            <div className="text-xs text-slate-500">
               Alternative: <code className="text-slate-500">{groupPath}</code>
             </div>
           </div>
           
           {/* Single Item Endpoint */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">GET</span>
-              <code className="text-primary-500">{directPath}/:id</code>
+              <code className="text-primary-500 text-sm">{directPath}/:id</code>
             </div>
-            <p className="text-slate-400 text-sm mb-2">Get a single {resource} by ID</p>
-            <div className="text-xs text-slate-500 mb-1">
-              <span className="font-semibold">Parameters:</span> nocache
-            </div>
-            <div className="text-xs text-slate-400">
+            <p className="text-slate-400 text-xs mb-1">Get a single {resource} by ID</p>
+            <div className="text-xs text-slate-500">
               Alternative: <code className="text-slate-500">{groupPath}/:id</code>
             </div>
           </div>
           
           {/* Meta Endpoint */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">GET</span>
-              <code className="text-primary-500">{directPath}/meta</code>
+              <code className="text-primary-500 text-sm">{directPath}/meta</code>
             </div>
-            <p className="text-slate-400 text-sm mb-1">Get resource metadata and schema</p>
-            <div className="text-xs text-slate-400">
+            <p className="text-slate-400 text-xs mb-1">Get resource metadata and schema</p>
+            <div className="text-xs text-slate-500">
               Alternative: <code className="text-slate-500">{groupPath}/meta</code>
             </div>
           </div>
           
           {/* Aliases */}
           {aliases.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-700">
-              <p className="text-sm text-slate-400 mb-2">
-                <span className="font-semibold">Additional aliases:</span>
-              </p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-3 pt-3 border-t border-slate-700">
+              <p className="text-xs text-slate-400 mb-2 font-semibold">Additional aliases:</p>
+              <div className="flex flex-wrap gap-1.5">
                 {aliases.map((alias: string) => (
                   <code key={alias} className="text-xs bg-slate-900 text-slate-400 px-2 py-1 rounded">
                     {alias}
@@ -989,160 +910,69 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
       </section>
       
       {/* Search Guide */}
-      <section className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur p-6 rounded-lg border border-blue-700/30">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl">🔍</span>
-          <h2 className="text-2xl font-bold text-white">How to Use Search</h2>
+      <section className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur p-5 rounded-lg border border-blue-700/30">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xl">🔍</span>
+          <h2 className="text-xl font-bold text-white">How to Use Search</h2>
         </div>
         
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Overview */}
           <div>
-            <p className="text-slate-300 leading-relaxed">
+            <p className="text-slate-300 text-sm leading-relaxed">
               The search feature allows you to filter results by searching for text across all or specific fields. 
-              Choose between <code className="px-2 py-0.5 bg-slate-800 text-blue-300 rounded text-sm">?q=</code> or{' '}
-              <code className="px-2 py-0.5 bg-slate-800 text-blue-300 rounded text-sm">?search=</code> parameter names.
+              Choose between <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded text-xs">?q=</code> or{' '}
+              <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded text-xs">?search=</code> parameter names.
             </p>
           </div>
 
           {/* Basic Examples */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <h3 className="text-base font-semibold text-white mb-2 flex items-center gap-2">
               <span className="text-blue-400">1.</span> Basic Search
             </h3>
-            <div className="space-y-3">
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                <p className="text-sm text-slate-400 mb-2">Search across all text fields:</p>
+            <div className="space-y-2">
+              <div className="bg-slate-900/50 p-3 rounded border border-slate-700">
+                <p className="text-xs text-slate-400 mb-2">Search across all text fields:</p>
                 <CodeExample 
                   title="Basic Search"
                   code={`GET ${API_URL}${directPath}?q=laptop`}
                   language="bash"
                 />
-                <p className="text-xs text-slate-500 mt-2">
-                  Returns all items where "laptop" appears in any text field (name, description, category, etc.)
-                </p>
-              </div>
-              
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                <p className="text-sm text-slate-400 mb-2">Using alternative parameter name:</p>
-                <CodeExample 
-                  title="Alternative Parameter"
-                  code={`GET ${API_URL}${directPath}?search=laptop`}
-                  language="bash"
-                />
-                <p className="text-xs text-slate-500 mt-2">
-                  Both <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">q</code> and{' '}
-                  <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">search</code> work identically
-                </p>
               </div>
             </div>
           </div>
 
           {/* Field-Specific Search */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <h3 className="text-base font-semibold text-white mb-2 flex items-center gap-2">
               <span className="text-blue-400">2.</span> Search Specific Fields
             </h3>
-            <div className="space-y-3">
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                <p className="text-sm text-slate-400 mb-2">Narrow search to specific fields:</p>
-                <CodeExample 
-                  title="Field-Specific Search"
-                  code={`GET ${API_URL}${directPath}?q=laptop&search_fields=name,description`}
-                  language="bash"
-                />
-                <p className="text-xs text-slate-500 mt-2">
-                  Only searches in <strong>name</strong> and <strong>description</strong> fields
-                </p>
-              </div>
-              
-              <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-                <p className="text-sm text-slate-400 mb-2">Search in a single field:</p>
-                <CodeExample 
-                  title="Single Field Search"
-                  code={`GET ${API_URL}${directPath}?q=Electronics&search_fields=category`}
-                  language="bash"
-                />
-                <p className="text-xs text-slate-500 mt-2">
-                  Only searches in the <strong>category</strong> field
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Combined with Other Parameters */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-400">3.</span> Combine with Pagination & Sorting
-            </h3>
-            <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-              <p className="text-sm text-slate-400 mb-2">Search + Pagination + Sorting:</p>
+            <div className="bg-slate-900/50 p-3 rounded border border-slate-700">
               <CodeExample 
-                title="Combined Query"
-                code={`GET ${API_URL}${directPath}?q=laptop&page=1&limit=20&sort=price&order=asc`}
+                title="Field-Specific Search"
+                code={`GET ${API_URL}${directPath}?q=laptop&search_fields=name,description`}
                 language="bash"
-              />
-              <p className="text-xs text-slate-500 mt-2">
-                Search for "laptop", get first page (20 items), sorted by price (lowest first)
-              </p>
-            </div>
-          </div>
-
-          {/* JavaScript Example */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-400">4.</span> JavaScript Example
-            </h3>
-            <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
-              <CodeExample 
-                title="Search Function"
-                code={`// Search with fetch API
-const searchProducts = async (query, fields = []) => {
-  const params = new URLSearchParams({
-    q: query,
-    limit: 10
-  });
-  
-  if (fields.length > 0) {
-    params.append('search_fields', fields.join(','));
-  }
-  
-  const response = await fetch(
-    '${API_URL}${directPath}?' + params.toString()
-  );
-  
-  const data = await response.json();
-  console.log(\`Found \${data.pagination.total} results\`);
-  return data;
-};
-
-// Usage
-await searchProducts('laptop', ['name', 'description']);`}
-                language="javascript"
               />
             </div>
           </div>
 
           {/* Tips */}
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded p-3">
+            <h4 className="text-xs font-semibold text-blue-300 mb-2 flex items-center gap-2">
               <span>💡</span> Pro Tips
             </h4>
-            <ul className="space-y-2 text-sm text-slate-300">
+            <ul className="space-y-1 text-xs text-slate-300">
               <li className="flex items-start gap-2">
-                <span className="text-blue-400 mt-0.5">•</span>
+                <span className="text-blue-400">•</span>
                 <span>Search is <strong>case-insensitive</strong> and performs partial matching</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-400 mt-0.5">•</span>
-                <span>Without <code className="px-1.5 py-0.5 bg-slate-800 text-blue-300 rounded">search_fields</code>, all text fields are searched</span>
+                <span className="text-blue-400">•</span>
+                <span>Without <code className="px-1 py-0.5 bg-slate-800 text-blue-300 rounded">search_fields</code>, all text fields are searched</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-400 mt-0.5">•</span>
-                <span>Use field-specific search for faster, more precise results</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-400 mt-0.5">•</span>
+                <span className="text-blue-400">•</span>
                 <span>Combine with pagination to handle large result sets efficiently</span>
               </li>
             </ul>
@@ -1152,21 +982,16 @@ await searchProducts('laptop', ['name', 'description']);`}
       
       {/* Code Examples */}
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">Code Examples</h2>
+        <h2 className="text-xl font-bold text-white mb-3">Code Examples</h2>
         
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-3">
           {/* JavaScript */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3">JavaScript</h3>
+            <h3 className="text-base font-semibold text-white mb-2">JavaScript</h3>
             <CodeExample 
               title="Fetch Collection"
               code={`// Get 10 ${resourceName}
 fetch('${API_URL}${directPath}?count=10')
-  .then(res => res.json())
-  .then(data => console.log(data));
-
-// Get single item
-fetch('${API_URL}${directPath}/1')
   .then(res => res.json())
   .then(data => console.log(data));`}
               language="javascript"
@@ -1175,54 +1000,35 @@ fetch('${API_URL}${directPath}/1')
           
           {/* Python */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Python</h3>
+            <h3 className="text-base font-semibold text-white mb-2">Python</h3>
             <CodeExample 
               title="Fetch with Requests"
               code={`import requests
 
-# Get collection
 response = requests.get(
     '${API_URL}${directPath}?count=10'
 )
-data = response.json()
-
-# Get single item
-item = requests.get(
-    '${API_URL}${directPath}/1'
-).json()`}
+data = response.json()`}
               language="python"
             />
           </div>
           
           {/* cURL */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3">cURL</h3>
+            <h3 className="text-base font-semibold text-white mb-2">cURL</h3>
             <CodeExample 
               title="Command Line"
-              code={`# Get collection
-curl "${API_URL}${directPath}?count=10"
-
-# Get single item
-curl "${API_URL}${directPath}/1"
-
-# Get schema
-curl "${API_URL}${directPath}/meta"`}
+              code={`curl "${API_URL}${directPath}?count=10"`}
               language="bash"
             />
           </div>
           
           {/* Fresh Data */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Bypass Cache</h3>
+            <h3 className="text-base font-semibold text-white mb-2">Bypass Cache</h3>
             <CodeExample 
               title="Get Fresh Data"
-              code={`// Bypass cache for fresh data
-fetch('${API_URL}${directPath}?count=10&nocache=true')
-  .then(res => {
-    console.log('Cache:', res.headers.get('X-Cache'));
-    return res.json();
-  })
-  .then(data => console.log(data));`}
+              code={`fetch('${API_URL}${directPath}?nocache=true')`}
               language="javascript"
             />
           </div>
@@ -1230,18 +1036,18 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
       </section>
       
       {/* Schema Properties */}
-      <section className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-white">Schema Properties</h2>
+      <section className="bg-slate-800/50 backdrop-blur p-5 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xl font-bold text-white">Schema Properties</h2>
         </div>
         
         {Object.keys(properties).length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Object.entries(properties).map(([key, value]: [string, any]) => (
-              <div key={key} className="bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+              <div key={key} className="bg-slate-900/50 p-3 rounded border border-slate-700">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <code className="text-primary-500 font-semibold text-base">{key}</code>
+                    <code className="text-primary-500 font-semibold text-sm">{key}</code>
                     <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded uppercase font-medium">
                       {value.type || 'any'}
                     </span>
@@ -1254,64 +1060,19 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
                 </div>
                 
                 {value.description && (
-                  <p className="text-sm text-slate-400 mb-2">{value.description}</p>
+                  <p className="text-xs text-slate-400 mb-2">{value.description}</p>
                 )}
                 
-                <div className="flex flex-wrap gap-2 text-xs">
+                <div className="flex flex-wrap gap-1.5 text-xs">
                   {(value['x-generator'] || value['x-faker']) && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Generator:</span>
+                    <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="text-slate-500">Gen:</span>
                       <code className="text-primary-400">{value['x-generator'] || value['x-faker']}</code>
                     </span>
                   )}
-                  {value['x-generator-params'] && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Params:</span>
-                      <code className="text-primary-400 text-xs">{JSON.stringify(value['x-generator-params'])}</code>
-                    </span>
-                  )}
                   {value.format && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Format:</span>
-                      <code className="text-primary-400">{value.format}</code>
-                    </span>
-                  )}
-                  {value.enum && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Enum:</span>
-                      <code className="text-primary-400">{value.enum.join(', ')}</code>
-                    </span>
-                  )}
-                  {value.minimum !== undefined && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded">
-                      Min: {value.minimum}
-                    </span>
-                  )}
-                  {value.maximum !== undefined && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded">
-                      Max: {value.maximum}
-                    </span>
-                  )}
-                  {value.minLength !== undefined && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded">
-                      Min Length: {value.minLength}
-                    </span>
-                  )}
-                  {value.maxLength !== undefined && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded">
-                      Max Length: {value.maxLength}
-                    </span>
-                  )}
-                  {value.pattern && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Pattern:</span>
-                      <code className="text-primary-400 text-xs">{value.pattern}</code>
-                    </span>
-                  )}
-                  {value.example !== undefined && (
-                    <span className="bg-slate-800 text-slate-400 px-2 py-1 rounded flex items-center gap-1">
-                      <span className="text-slate-500">Example:</span>
-                      <code className="text-primary-400">{JSON.stringify(value.example)}</code>
+                    <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                      {value.format}
                     </span>
                   )}
                 </div>
@@ -1319,11 +1080,11 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
             ))}
           </div>
         ) : (
-          <div className="bg-slate-900/50 p-8 rounded-lg border border-slate-700 text-center">
-            <p className="text-slate-400 mb-4">No properties defined in schema</p>
+          <div className="bg-slate-900/50 p-6 rounded border border-slate-700 text-center">
+            <p className="text-slate-400 text-sm mb-3">No properties defined in schema</p>
             <button
               onClick={() => setShowRawSchema(true)}
-              className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded text-sm transition"
+              className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded text-sm transition"
             >
               View Raw Schema
             </button>
@@ -1331,14 +1092,14 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
         )}
         
         {/* Raw Schema Toggle */}
-        <div className="mt-4 pt-4 border-t border-slate-700">
-          <div className="flex items-center justify-between mb-3">
+        <div className="mt-3 pt-3 border-t border-slate-700">
+          <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => setShowRawSchema(!showRawSchema)}
-              className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition"
+              className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition"
             >
               <svg 
-                className={`w-4 h-4 transition-transform ${showRawSchema ? 'rotate-90' : ''}`}
+                className={`w-3 h-3 transition-transform ${showRawSchema ? 'rotate-90' : ''}`}
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -1354,13 +1115,13 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
                 }}
                 className="text-xs text-primary-500 hover:text-primary-400 transition"
               >
-                Copy Schema
+                Copy
               </button>
             )}
           </div>
           
           {showRawSchema && (
-            <div className="mt-3 bg-slate-900 p-4 rounded border border-slate-600 overflow-auto max-h-[600px]">
+            <div className="mt-2 bg-slate-900 p-3 rounded border border-slate-600 overflow-auto max-h-96">
               <pre className="text-green-400 text-xs">
                 <code>{JSON.stringify(schema, null, 2)}</code>
               </pre>
@@ -1370,31 +1131,31 @@ fetch('${API_URL}${directPath}?count=10&nocache=true')
       </section>
       
       {/* Query Parameters */}
-      <section className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-white mb-4">Query Parameters</h2>
+      <section className="bg-slate-800/50 backdrop-blur p-5 rounded-lg border border-slate-700">
+        <h2 className="text-xl font-bold text-white mb-3">Query Parameters</h2>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
-            <code className="text-primary-500 font-semibold">count</code>
+            <code className="text-primary-500 font-semibold text-sm">count</code>
             <span className="text-xs text-slate-500 ml-2">integer</span>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Number of items to return (default: 10, max: 100)
             </p>
           </div>
           
           <div>
-            <code className="text-primary-500 font-semibold">seed</code>
+            <code className="text-primary-500 font-semibold text-sm">seed</code>
             <span className="text-xs text-slate-500 ml-2">integer</span>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Seed for reproducible data generation
             </p>
           </div>
           
           <div>
-            <code className="text-primary-500 font-semibold">nocache</code>
+            <code className="text-primary-500 font-semibold text-sm">nocache</code>
             <span className="text-xs text-slate-500 ml-2">boolean</span>
-            <p className="text-sm text-slate-400 mt-1">
-              Bypass cache and generate fresh data on every request (aliases: fresh, _nocache)
+            <p className="text-xs text-slate-400 mt-1">
+              Bypass cache and generate fresh data on every request
             </p>
           </div>
         </div>
