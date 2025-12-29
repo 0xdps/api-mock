@@ -1,6 +1,109 @@
 # Deployment Guide
 
-## 🚀 Backend Deployment (Fly.io)
+## 🚀 Backend Deployment
+
+### Platform Options
+
+Choose your deployment platform:
+
+- **[Railway](#railway-deployment-recommended)** - Modern platform with built-in Redis, simpler configuration
+- **[Fly.io](#flyio-deployment)** - Global edge network, multi-region support
+
+> 📖 **Migrating from Fly.io to Railway?** See [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
+
+---
+
+## Railway Deployment (Recommended)
+
+### Prerequisites
+
+1. **Install Railway CLI:**
+```bash
+# macOS (Homebrew)
+brew install railway
+
+# npm
+npm install -g @railway/cli
+```
+
+2. **Login to Railway:**
+```bash
+railway login
+```
+
+### Quick Start
+
+```bash
+# From repository root
+railway init
+
+# Add Redis (automatically configures connection)
+railway add redis
+
+# Set environment variables
+railway variables set REDIS_DB=0
+railway variables set REDIS_TLS_ENABLED=false
+railway variables set CACHE_MODE=all
+railway variables set CACHE_ITEMS_PER_RESOURCE=100
+railway variables set CACHE_SEED=42
+railway variables set MAX_ITEMS_PER_RESOURCE=1000
+
+# Deploy
+railway up
+```
+
+### GitHub Integration (Auto-deploy)
+
+1. Connect your GitHub repository to Railway
+2. Railway auto-deploys on every push to main/trunk
+3. Redis connection variables are automatically injected
+
+### Configuration
+
+Railway uses the existing `Dockerfile` and automatically:
+- ✅ Builds from repository root
+- ✅ Copies schemas from `shared/schemas/`
+- ✅ Provisions Redis on internal network (no TLS needed)
+- ✅ Injects environment variables
+- ✅ Assigns public URL with SSL
+
+### Environment Variables
+
+**Automatically set by Railway:**
+- `PORT` - Service port (auto)
+- `REDIS_HOST` - From Redis plugin (auto)
+- `REDIS_PORT` - From Redis plugin (auto)
+- `REDIS_PASSWORD` - From Redis plugin (auto)
+
+**Set manually:**
+- `REDIS_DB=0`
+- `REDIS_TLS_ENABLED=false`
+- `CACHE_MODE=all`
+- `CACHE_ITEMS_PER_RESOURCE=100`
+- `CACHE_SEED=42`
+- `MAX_ITEMS_PER_RESOURCE=1000`
+
+### Verification
+
+```bash
+# Get deployment URL
+railway domain
+
+# Test API
+curl https://your-app.up.railway.app/
+
+# View logs
+railway logs
+
+# Check status
+railway status
+```
+
+📖 **Full migration guide:** [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
+
+---
+
+## Fly.io Deployment
 
 ### Prerequisites
 

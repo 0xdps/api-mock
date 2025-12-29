@@ -62,6 +62,7 @@ mockly/
 ├── shared/           # Source of truth for schemas & scripts
 │   ├── schemas/      # Resource definitions (user, post, etc.)
 │   └── scripts/      # Build scripts (generate-types.js)
+├── railway.toml      # Railway deployment config (optional)
 └── package.json      # Root scripts for dev workflow
 ```
 
@@ -376,7 +377,14 @@ All responses include `X-Cache` header:
 
 ### Quick Deploy
 
-**Backend (Fly.io):**
+**Backend (Railway - Recommended):**
+```bash
+railway init
+railway add redis  # Automatically configures Redis
+railway up         # Deploys with schemas
+```
+
+**Backend (Fly.io - Alternative):**
 ```bash
 cd backend
 make deploy  # Auto-syncs schemas and deploys
@@ -396,7 +404,17 @@ The deployment process **automatically includes** all schemas:
 - ✅ Frontend: Types auto-generated via `prebuild` hook
 - ✅ No manual steps required!
 
-**See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.**
+**Platform Options:**
+- **Railway** - Built-in Redis, simpler setup. See [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
+- **Fly.io** - Global edge network, multi-region support. See [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+**📚 Complete Documentation:**
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Full deployment guide (both platforms)
+- [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md) - Step-by-step Railway migration
+- [RAILWAY_QUICKSTART.md](./RAILWAY_QUICKSTART.md) - Quick Railway reference
+- [PLATFORM_COMPARISON.md](./PLATFORM_COMPARISON.md) - Railway vs Fly.io comparison
+- [RAILWAY_TROUBLESHOOTING.md](./RAILWAY_TROUBLESHOOTING.md) - Common issues & solutions
+- [MIGRATION_SUMMARY.md](./MIGRATION_SUMMARY.md) - Migration overview & checklist
 
 ### Production URLs
 

@@ -75,12 +75,38 @@ deploy-api: ## Deploy backend to Fly.io
 	@flyctl deploy
 	@echo "✓ Deployed to Fly.io"
 
+deploy-railway: ## Deploy backend to Railway
+	@echo "Deploying backend to Railway..."
+	@railway up
+	@echo "✓ Deployed to Railway"
+
+railway-init: ## Initialize Railway project and add Redis
+	@echo "Initializing Railway project..."
+	@railway init
+	@echo "Adding Redis service..."
+	@railway add redis
+	@echo "Setting environment variables..."
+	@railway variables set REDIS_DB=0
+	@railway variables set REDIS_TLS_ENABLED=false
+	@railway variables set CACHE_MODE=all
+	@railway variables set CACHE_ITEMS_PER_RESOURCE=100
+	@railway variables set CACHE_SEED=42
+	@railway variables set MAX_ITEMS_PER_RESOURCE=1000
+	@echo "✓ Railway project initialized"
+	@echo "Deploy with: make deploy-railway"
+
+railway-logs: ## View Railway deployment logs
+	@railway logs
+
+railway-status: ## Check Railway deployment status
+	@railway status
+
 deploy-web: ## Deploy frontend to Vercel
 	@echo "Deploying frontend to Vercel..."
 	@cd frontend && vercel --prod
 	@echo "✓ Deployed to Vercel"
 
-deploy: deploy-api deploy-web ## Deploy both backend and frontend
+deploy: deploy-api deploy-web ## Deploy both backend (Fly.io) and frontend
 
 # Build
 build: api-build web-build ## Build both backend and frontend
