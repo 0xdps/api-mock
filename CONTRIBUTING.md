@@ -67,6 +67,7 @@ The easiest way to contribute is by adding new resource schemas. All endpoints a
 ### 2. Report Bugs 🐛
 
 If you find a bug, please create an issue with:
+
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
@@ -75,6 +76,7 @@ If you find a bug, please create an issue with:
 ### 3. Suggest Features 💡
 
 Have an idea? Open an issue with:
+
 - Clear description of the feature
 - Use case / why it's needed
 - Possible implementation approach
@@ -82,6 +84,7 @@ Have an idea? Open an issue with:
 ### 4. Improve Documentation 📚
 
 Help improve:
+
 - README clarity
 - Code comments
 - API documentation
@@ -90,6 +93,7 @@ Help improve:
 ### 5. Fix Issues 🔧
 
 Look for issues labeled:
+
 - `good first issue` - Great for beginners
 - `help wanted` - We need help with these
 - `bug` - Something isn't working
@@ -100,31 +104,34 @@ Look for issues labeled:
 
 - Go 1.22+
 - Node.js 18+
-- npm or yarn
+- pnpm 9.0+
 
 ### Local Setup
 
 1. **Clone your fork:**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/api-mockly.git
    cd api-mockly
    ```
 
 2. **Install dependencies:**
+
    ```bash
-   npm install          # Root dependencies
-   npm run web:install  # Web dependencies
+   pnpm install  # All workspace dependencies
    ```
 
 3. **Start development servers:**
+
    ```bash
-   npm run dev  # Starts both API and website
+   pnpm run dev  # Starts both API and website
    ```
 
    Or run separately:
+
    ```bash
-   npm run api:dev  # API only (port 8080)
-   npm run web:dev  # Website only (port 3000)
+   make api-dev              # API only (port 8080)
+   pnpm --filter frontend dev  # Website only (port 3000)
    ```
 
 ### Project Structure
@@ -177,6 +184,7 @@ api-mockly/
 ## Pull Request Process
 
 1. **Create a feature branch:**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -187,13 +195,14 @@ api-mockly/
    - Update documentation
 
 3. **Test your changes:**
+
    ```bash
    # Start both servers
    npm run dev
-   
+
    # Test in browser or with curl
    curl 'http://localhost:8080/users?count=5'
-   
+
    # Or test production API
    curl 'https://api.mockly.codes/users?count=5'
    ```
@@ -216,6 +225,7 @@ refactor: simplify schema loader
 ```
 
 Prefixes:
+
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `docs:` - Documentation
@@ -228,27 +238,35 @@ Prefixes:
 When creating schemas, you can use these generators:
 
 **Personal:**
+
 - `name`, `first_name`, `last_name`, `email`, `username`, `password`
 
 **Address:**
+
 - `address`, `city`, `state`, `country`, `zip_code`, `latitude`, `longitude`
 
 **Company:**
+
 - `company`, `job`, `catch_phrase`
 
 **Internet:**
+
 - `url`, `domain_name`, `ipv4`, `ipv6`, `uuid`, `mac_address`
 
 **Dates:**
+
 - `date`, `date_time`, `past_date`, `future_date`
 
 **Text:**
+
 - `word`, `sentence`, `paragraph`, `text`
 
 **Numbers:**
+
 - `random_int`, `random_digit`, `random_number`
 
 **Other:**
+
 - `phone_number`, `boolean`, `user_agent`
 
 See [gofakeit documentation](https://github.com/brianvoe/gofakeit) for more.
@@ -258,6 +276,7 @@ See [gofakeit documentation](https://github.com/brianvoe/gofakeit) for more.
 Before submitting:
 
 1. **Test the API endpoint:**
+
    ```bash
    curl 'http://localhost:8080/your-resource?count=5'
    ```
@@ -268,6 +287,7 @@ Before submitting:
    - Generators work as expected
 
 3. **Test metadata endpoint:**
+
    ```bash
    curl http://localhost:8080/your-resource/meta
    ```

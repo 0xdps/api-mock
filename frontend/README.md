@@ -28,8 +28,8 @@ Next.js 14 website with landing page, documentation, and interactive playground 
 ### Development
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Website runs on **http://localhost:3000**
@@ -37,14 +37,14 @@ Website runs on **http://localhost:3000**
 ### Production Build
 
 ```bash
-npm run build
-npm start
+pnpm run build
+pnpm start
 ```
 
 ### Type Checking
 
 ```bash
-npm run type-check
+pnpm run type-check
 ```
 
 ## 📁 Project Structure
@@ -74,10 +74,10 @@ frontend/
 
 Environment variables are **optional**. The app automatically detects the API URL:
 
-| Environment | API URL |
-|-------------|---------|
-| Production | `https://api.mockly.codes` |
-| Development | `http://localhost:8080` |
+| Environment | API URL                    |
+| ----------- | -------------------------- |
+| Production  | `https://api.mockly.codes` |
+| Development | `http://localhost:8080`    |
 
 #### Override Default Behavior
 
@@ -94,89 +94,98 @@ The `lib/api.ts` file automatically detects the environment:
 ```typescript
 export const getApiUrl = () => {
   // Browser
-  if (typeof window !== 'undefined') {
-    return window.location.hostname !== 'localhost'
-      ? 'https://api.mockly.codes'
-      : 'http://localhost:8080'
+  if (typeof window !== "undefined") {
+    return window.location.hostname !== "localhost"
+      ? "https://api.mockly.codes"
+      : "http://localhost:8080";
   }
-  
+
   // Server-side
-  return process.env.NEXT_PUBLIC_API_URL || 
-    (process.env.NODE_ENV === 'production' 
-      ? 'https://api.mockly.codes' 
-      : 'http://localhost:8080')
-}
+  return (
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://api.mockly.codes"
+      : "http://localhost:8080")
+  );
+};
 ```
 
 ## 🎯 Server-Side Rendering Strategy
 
 ### Pages Using SSR (Server Components)
 
-| Page | Rendering | Cache | Purpose |
-|------|-----------|-------|---------|
-| `/` (Home) | SSR + ISR | 5 min | Fresh resources list |
-| `/docs` | SSR + ISR | 5 min | Live API info + schemas |
+| Page       | Rendering | Cache | Purpose                 |
+| ---------- | --------- | ----- | ----------------------- |
+| `/` (Home) | SSR + ISR | 5 min | Fresh resources list    |
+| `/docs`    | SSR + ISR | 5 min | Live API info + schemas |
 
 **Benefits:**
+
 - ⚡ Faster initial page load
 - 🔍 Better SEO (search engine indexable)
 - 📊 Fresh data on each visit
 - 🌐 Works without JavaScript
 
 **Example:**
+
 ```typescript
 // app/page.tsx
 async function getResources() {
-  const res = await fetch('https://api.mockly.codes/', {
-    next: { revalidate: 300 } // ISR: 5 minutes
-  })
-  return res.json()
+  const res = await fetch("https://api.mockly.codes/", {
+    next: { revalidate: 300 }, // ISR: 5 minutes
+  });
+  return res.json();
 }
 
 export default async function Home() {
-  const resources = await getResources()
+  const resources = await getResources();
   // Server-rendered with fresh data
 }
 ```
 
 ### Pages Using CSR (Client Components)
 
-| Page | Rendering | Purpose |
-|------|-----------|---------|
+| Page          | Rendering   | Purpose                 |
+| ------------- | ----------- | ----------------------- |
 | `/playground` | Client-Side | Interactive API testing |
 
 **Benefits:**
+
 - 🎮 Full interactivity
 - 📡 Dynamic data fetching
 - ⚙️ User-driven actions
 
 **Example:**
-```typescript
-'use client' // Client component
 
-const [data, setData] = useState(null)
+```typescript
+"use client"; // Client component
+
+const [data, setData] = useState(null);
 
 const fetchData = async () => {
-  const res = await fetch('https://api.mockly.codes/users')
-  setData(await res.json())
-}
+  const res = await fetch("https://api.mockly.codes/users");
+  setData(await res.json());
+};
 ```
 
 ## 📊 Pages Overview
 
 ### Home Page (`/`)
+
 - Server-side rendered with ISR
 - Fetches available resources from API
 - Displays feature cards and quick examples
 - Falls back to static resources if API unavailable
 
 ### Documentation (`/docs`)
+
 - Server-side rendered with ISR
 - Shows live API status, version, and resource count
 - Displays all resource schemas with properties
 - Interactive "Try It" buttons for each endpoint
 
 ### Playground (`/playground`)
+
 - Client-side rendered for full interactivity
 - **50/50 split layout**: Request builder (left) and response viewer (right)
 - **Tabbed navigation**: Quick, Pagination, Filters, Middleware, Path tabs
@@ -206,29 +215,29 @@ TypeScript types are auto-generated from JSON schemas in `types/api.ts`:
 ```typescript
 // Resource interfaces
 export interface User {
-  id: number
-  username: string
-  email: string
+  id: number;
+  username: string;
+  email: string;
   // ... more fields
 }
 
 export interface Post {
-  id: number
-  user_id: number
-  title: string
+  id: number;
+  user_id: number;
+  title: string;
   // ... more fields
 }
 
 // API response types
-export type CollectionResponse<T extends ResourceName> = ResourceMap[T][]
-export type SingleResponse<T extends ResourceName> = ResourceMap[T]
+export type CollectionResponse<T extends ResourceName> = ResourceMap[T][];
+export type SingleResponse<T extends ResourceName> = ResourceMap[T];
 
 // Root API response
 export interface ApiRootResponse {
-  message: string
-  version: string
-  resources: string[]
-  docs: string
+  message: string;
+  version: string;
+  resources: string[];
+  docs: string;
 }
 ```
 
@@ -246,8 +255,8 @@ This project is a monorepo with backend and frontend. The frontend is deployed s
 2. Under **Root Directory**, click **Edit**
 3. Set to: `frontend`
 4. Under **Build & Development Settings**:
-   - **Build Command**: Auto-detect (Next.js) or `npm run build`
-   - **Install Command**: Auto-detect or `npm install`  
+   - **Build Command**: Auto-detect (Next.js) or `pnpm run build`
+   - **Install Command**: Auto-detect or `pnpm install`
    - **Output Directory**: `.next` (auto-detected)
 5. Redeploy
 
@@ -356,6 +365,7 @@ const MyComponent = () => {
 #### API Client Configuration
 
 The `apiClient` is pre-configured with:
+
 - Base URL (auto-detected: production or localhost)
 - 30-second timeout
 - Automatic JSON content-type
@@ -390,25 +400,26 @@ npm run type-check
 ### API Connection Issues
 
 Check that:
+
 1. Backend is running on http://localhost:8080 (dev)
 2. Production API is accessible: https://api.mockly.codes
 3. CORS is enabled on the API
 
 ## 📝 Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run type-check` | TypeScript type checking |
+| Command               | Description              |
+| --------------------- | ------------------------ |
+| `pnpm run dev`        | Start development server |
+| `pnpm run build`      | Build for production     |
+| `pnpm start`          | Start production server  |
+| `pnpm run lint`       | Run ESLint               |
+| `pnpm run type-check` | TypeScript type checking |
 
 ## 🤝 Contributing
 
 1. Create a new branch
 2. Make your changes
-3. Run `npm run type-check`
+3. Run `pnpm run type-check`
 4. Submit a pull request
 
 See [../CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.

@@ -195,7 +195,7 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
       }
 
       const data = res.json()
-      const headers = res.getHeaders()
+      const headers = res.headers
       const cacheHeader = headers['x-cache'] || headers['X-Cache']
       const requestIdHeader = headers['x-request-id'] || headers['X-Request-ID']
       

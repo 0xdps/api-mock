@@ -84,17 +84,14 @@ cd api-mockly
 **2. Install dependencies:**
 
 ```bash
-# Install root dependencies (concurrently)
-npm install
-
-# Install web dependencies
-npm run web:install
+# Install all workspace dependencies
+pnpm install
 ```
 
 **3. Start both API and website:**
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 This automatically:

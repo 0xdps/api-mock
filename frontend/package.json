@@ -1,11 +1,11 @@
 {
-  "name": "apimock-web",
+  "name": "@api-mockly/frontend",
   "version": "1.0.0",
   "description": "Mockly frontend - Modern UI for 100+ mock API resources across 14 categories",
   "private": true,
   "scripts": {
-    "predev": "node ../shared/scripts/generate-types.js",
-    "prebuild": "node ../shared/scripts/generate-types.js",
+    "predev": "pnpm --filter @api-mockly/shared generate-types",
+    "prebuild": "pnpm --filter @api-mockly/shared generate-types",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -13,9 +13,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@api-mockly/shared": "workspace:*",
+    "@pingpong-js/fetch": "^1.0.2",
     "clsx": "^2.1.1",
     "next": "16.0.7",
-    "pingpong-fetch": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

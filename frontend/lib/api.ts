@@ -1,4 +1,4 @@
-import { HttpClient } from 'pingpong-fetch';
+import { HttpClient } from '@pingpong-js/fetch';
 
 export const getApiUrl = () => {
   // In browser
@@ -10,13 +10,13 @@ export const getApiUrl = () => {
     // Local dev: use separate API server
     return 'http://localhost:8080';
   }
-  
+
   // Server-side: use env var or defaults
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  
-  return process.env.NODE_ENV === 'production' 
+
+  return process.env.NODE_ENV === 'production'
     ? 'https://api.mockly.codes' // Production backend
     : 'http://localhost:8080'; // Local dev API server
 };

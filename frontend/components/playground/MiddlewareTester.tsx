@@ -111,7 +111,7 @@ export function MiddlewareTester() {
       }
 
       const data = res.json()
-      const responseHeaders = res.getHeaders()
+      const responseHeaders = res.headers
 
       setResponse({
         data,

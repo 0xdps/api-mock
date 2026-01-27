@@ -1,0 +1,10 @@
+{
+  "name": "@api-mockly/backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API Mockly Go backend",
+  "scripts": {
+    "dev": "make -C .. api-dev",
+    "build": "make -C .. build-api"
+  }
+}
