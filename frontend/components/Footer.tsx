@@ -29,10 +29,10 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link 
-                  href="/docs" 
+                  href="/resources" 
                   className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
                 >
-                  <span className="group-hover:translate-x-0.5 transition-transform">Documentation</span>
+                  <span className="group-hover:translate-x-0.5 transition-transform">API Resources</span>
                 </Link>
               </li>
               <li>

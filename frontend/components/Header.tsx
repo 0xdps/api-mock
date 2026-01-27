@@ -21,8 +21,8 @@ export function Header() {
           <Link href="/playground" className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2">
             <Activity className="w-4 h-4" /> Playground
           </Link>
-          <Link href="/docs" className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2">
-            <BookOpen className="w-4 h-4" /> Documentation
+          <Link href="/resources" className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2">
+            <BookOpen className="w-4 h-4" /> Resources
           </Link>
           <a 
             href="https://github.com/0xdps/fake-stack" 

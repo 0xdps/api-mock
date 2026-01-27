@@ -9,7 +9,7 @@ export async function GET() {
   // Static pages
   const staticPages = [
     { loc: '', changefreq: 'daily', priority: 1.0 },
-    { loc: '/docs', changefreq: 'weekly', priority: 0.9 },
+    { loc: '/resources', changefreq: 'weekly', priority: 0.9 },
     { loc: '/playground', changefreq: 'weekly', priority: 0.9 },
     { loc: '/playground/echo', changefreq: 'monthly', priority: 0.8 },
     { loc: '/playground/status', changefreq: 'monthly', priority: 0.8 },
@@ -20,7 +20,7 @@ export async function GET() {
   
   // Resource documentation pages
   const resourcePages = resources.map(resource => ({
-    loc: `/docs/${resource.name}`,
+    loc: `/resources/${resource.name}`,
     changefreq: 'monthly' as const,
     priority: 0.7,
   }))

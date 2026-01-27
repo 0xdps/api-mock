@@ -36,7 +36,7 @@ export default function SitemapPage() {
   // Static pages
   const staticPages = [
     { path: '/', label: 'Home', description: 'Mockly homepage' },
-    { path: '/docs', label: 'Documentation', description: 'API documentation index' },
+    { path: '/resources', label: 'Resources', description: 'API resources index' },
     { path: '/playground', label: 'Playground', description: 'Interactive API testing tools' },
   ]
   
@@ -111,7 +111,7 @@ export default function SitemapPage() {
         
         {/* Resource Documentation Pages */}
         <section>
-          <h2 className="text-2xl font-bold text-white mb-6">Resource Documentation</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">API Resources</h2>
           <div className="space-y-8">
             {resourcesByGroup.map(([group, groupResources]) => (
               <div key={group}>
@@ -131,7 +131,7 @@ export default function SitemapPage() {
                   {groupResources.sort().map((resource) => (
                     <Link
                       key={resource}
-                      href={`/docs/${resource}`}
+                      href={`/resources/${resource}`}
                       className="block p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-blue-500/50 transition-colors group"
                     >
                       <span className="text-slate-300 font-medium group-hover:text-blue-400 transition-colors">

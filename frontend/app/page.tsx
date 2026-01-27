@@ -183,8 +183,8 @@ fetch('${API_URL}/people/users?count=5')
         
         <p className="text-center text-slate-400 mt-12">
           Check the{' '}
-          <Link href="/docs" className="text-primary-500 hover:underline">
-            documentation
+          <Link href="/resources" className="text-primary-500 hover:underline">
+            resources
           </Link>
           {' '}for detailed API usage and examples.
         </p>

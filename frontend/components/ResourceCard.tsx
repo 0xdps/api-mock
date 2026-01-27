@@ -29,7 +29,7 @@ export function ResourceCard({ name, apiUrl, group }: ResourceCardProps) {
       </div>
       
       <Link 
-        href={`/docs#${name}`}
+        href={`/resources#${name}`}
         className="mt-6 inline-flex items-center text-primary-500 hover:text-primary-400 text-sm font-semibold transition-colors"
       >
         View Schema <span className="ml-1 opacity-70">→</span>

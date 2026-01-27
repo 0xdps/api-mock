@@ -10,8 +10,8 @@ interface DocsSidebarWrapperProps {
 export function DocsSidebarWrapper({ groups }: DocsSidebarWrapperProps) {
   const pathname = usePathname()
   
-  // Extract resource from pathname: /docs/users -> users
-  const currentResource = pathname?.startsWith('/docs/') 
+  // Extract resource from pathname: /resources/users -> users
+  const currentResource = pathname?.startsWith('/resources/') 
     ? pathname.split('/').pop() || ''
     : ''
   

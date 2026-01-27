@@ -14,5 +14,5 @@ export default function DocsPage() {
   const randomResource = resources[Math.floor(Math.random() * resources.length)]
   
   // Redirect to random resource
-  redirect(`/docs/${randomResource.name}`)
+  redirect(`/resources/${randomResource.name}`)
 }
