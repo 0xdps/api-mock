@@ -2,16 +2,25 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { 
+  Volume2, 
+  BarChart3, 
+  Clock, 
+  Layers, 
+  Zap, 
+  Package,
+  Activity
+} from 'lucide-react'
 
 type TabType = 'echo' | 'status' | 'delay' | 'middleware' | 'chaos'
 
-const tabs: { id: TabType; label: string; icon: string; description: string; path: string }[] = [
-  { id: 'echo', label: 'Echo', icon: '🔊', description: 'Test request/response echoing', path: '/playground/echo' },
-  { id: 'status', label: 'Status', icon: '📊', description: 'Generate HTTP status codes', path: '/playground/status' },
-  { id: 'delay', label: 'Delay', icon: '⏱️', description: 'Test response delays', path: '/playground/delay' },
-  { id: 'middleware', label: 'Middleware', icon: '⚙️', description: 'Test middleware parameters', path: '/playground/middleware' },
-  { id: 'chaos', label: 'Chaos', icon: '🎲', description: 'Chaos engineering tests', path: '/playground/chaos' },
-]
+const tabs = [
+  { id: 'echo', label: 'Echo', icon: Volume2, description: 'Test request/response echoing', path: '/playground/echo' },
+  { id: 'status', label: 'Status', icon: BarChart3, description: 'Generate HTTP status codes', path: '/playground/status' },
+  { id: 'delay', label: 'Delay', icon: Clock, description: 'Test response delays', path: '/playground/delay' },
+  { id: 'middleware', label: 'Middleware', icon: Layers, description: 'Test middleware parameters', path: '/playground/middleware' },
+  { id: 'chaos', label: 'Chaos', icon: Zap, description: 'Chaos engineering tests', path: '/playground/chaos' },
+] as const
 
 export function PlaygroundSidebar() {
   const pathname = usePathname()
@@ -34,18 +43,18 @@ export function PlaygroundSidebar() {
                 key={tab.id}
                 href={tab.path}
                 className={`
-                  w-full flex items-start gap-3 px-3 py-2.5 rounded-lg transition-all text-left
+                  w-full flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all text-left group
                   ${
                     pathname === tab.path
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
+                      ? 'bg-primary-500/10 text-primary-400 border border-primary-500/20 shadow-lg shadow-primary-500/5'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
                   }
                 `}
               >
-                <span className="text-xl flex-shrink-0">{tab.icon}</span>
+                <tab.icon className={`w-5 h-5 flex-shrink-0 mt-0.5 transition-colors ${pathname === tab.path ? 'text-primary-400' : 'text-slate-500 group-hover:text-primary-400'}`} />
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm">{tab.label}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{tab.description}</div>
+                  <div className="font-bold text-sm tracking-tight">{tab.label}</div>
+                  <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">{tab.description}</div>
                 </div>
               </Link>
             ))}
@@ -58,12 +67,12 @@ export function PlaygroundSidebar() {
             </div>
             <Link
               href="/docs"
-              className="w-full flex items-start gap-3 px-3 py-2.5 rounded-lg transition-all text-left text-slate-400 hover:text-slate-300 hover:bg-slate-800/50"
+              className="w-full flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all text-left text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent group"
             >
-              <span className="text-xl flex-shrink-0">📦</span>
+              <Package className="w-5 h-5 flex-shrink-0 mt-0.5 text-slate-500 group-hover:text-primary-400 transition-colors" />
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">Browse Resources</div>
-                <div className="text-xs text-slate-500 mt-0.5">Test 100+ API endpoints</div>
+                <div className="font-bold text-sm tracking-tight">Browse Resources</div>
+                <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">Test 100+ API endpoints</div>
               </div>
             </Link>
           </div>
@@ -74,12 +83,14 @@ export function PlaygroundSidebar() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Content Header */}
         {activeTab && (
-          <div className="bg-slate-900/30 border-b border-slate-700 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{activeTab.icon}</span>
+          <div className="bg-slate-900/40 backdrop-blur-md border-b border-white/5 px-8 py-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary-500/10 rounded-xl border border-primary-500/20 shadow-lg shadow-primary-500/5">
+                <activeTab.icon className="w-8 h-8 text-primary-400" />
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-white">{activeTab.label}</h1>
-                <p className="text-sm text-slate-400">{activeTab.description}</p>
+                <h1 className="text-2xl font-bold text-white tracking-tight">{activeTab.label}</h1>
+                <p className="text-sm text-slate-400 font-medium mt-0.5">{activeTab.description}</p>
               </div>
             </div>
           </div>

@@ -1,30 +1,31 @@
 import Link from 'next/link'
 import { getAllResources, getAllGroups, getBaseUrl } from '@/lib/sitemap'
 import { Metadata } from 'next'
+import { Users, Briefcase, ShoppingCart, FileText, MessageCircle, Film, Plane, Globe, DollarSign, UtensilsCrossed, GraduationCap, Trophy, CheckSquare, Book, Package, LucideIcon } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Sitemap | Mockly',
   description: 'Complete sitemap of all pages and resources available on Mockly.',
 }
 
-function getGroupIcon(group: string): string {
-  const icons: Record<string, string> = {
-    people: '👥',
-    business: '💼',
-    commerce: '🛒',
-    content: '📝',
-    social: '💬',
-    media: '🎬',
-    travel: '✈️',
-    location: '🌍',
-    finance: '💰',
-    food: '🍔',
-    education: '🎓',
-    sports: '⚽',
-    productivity: '✅',
-    reference: '📚',
+function getGroupIcon(group: string): LucideIcon {
+  const icons: Record<string, LucideIcon> = {
+    people: Users,
+    business: Briefcase,
+    commerce: ShoppingCart,
+    content: FileText,
+    social: MessageCircle,
+    media: Film,
+    travel: Plane,
+    location: Globe,
+    finance: DollarSign,
+    food: UtensilsCrossed,
+    education: GraduationCap,
+    sports: Trophy,
+    productivity: CheckSquare,
+    reference: Book,
   }
-  return icons[group] || '📦'
+  return icons[group] || Package
 }
 
 export default function SitemapPage() {
@@ -115,8 +116,12 @@ export default function SitemapPage() {
             {resourcesByGroup.map(([group, groupResources]) => (
               <div key={group}>
                 <div className="flex items-center gap-3 mb-4">
-                  <h3 className="text-xl font-semibold text-white">
-                    {getGroupIcon(group)} {group.charAt(0).toUpperCase() + group.slice(1)}
+                  <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                    {(() => {
+                      const Icon = getGroupIcon(group)
+                      return <Icon className="w-5 h-5" />
+                    })()}
+                    {group.charAt(0).toUpperCase() + group.slice(1)}
                   </h3>
                   <span className="text-sm text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
                     {groupResources.length} resources

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Play, RefreshCw, CheckCircle2, AlertCircle, Zap, Terminal, ClipboardList, X } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
@@ -210,7 +211,7 @@ export function EchoTester() {
                 onClick={() => removeQueryParam(index)}
                 className="px-3 py-2 bg-red-900/30 text-red-400 hover:bg-red-900/50 rounded text-sm"
               >
-                ×
+                <X className="w-4 h-4" />
               </button>
             </div>
           ))}
@@ -251,7 +252,7 @@ export function EchoTester() {
                 onClick={() => removeHeader(index)}
                 className="px-3 py-2 bg-red-900/30 text-red-400 hover:bg-red-900/50 rounded text-sm"
               >
-                ×
+                <X className="w-4 h-4" />
               </button>
             </div>
           ))}
@@ -293,7 +294,7 @@ export function EchoTester() {
                     onClick={() => removeFormField(index)}
                     className="px-3 py-2 bg-red-900/30 text-red-400 hover:bg-red-900/50 rounded text-sm"
                   >
-                    ×
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               ))}
@@ -336,9 +337,10 @@ export function EchoTester() {
     <button
       onClick={handleSend}
       disabled={loading}
-      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition flex items-center justify-center gap-3"
     >
-      {loading ? 'Sending...' : '▶ Send Request'}
+      {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+      {loading ? 'Sending...' : 'Send Request'}
     </button>
   )
 
@@ -352,21 +354,27 @@ export function EchoTester() {
       ) : error ? (
         <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-red-400 font-semibold">❌ Error</span>
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <span className="text-red-400 font-bold uppercase tracking-wider text-xs">Error</span>
           </div>
           <p className="text-red-300 text-sm">{error}</p>
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-green-400 font-semibold">✓ Success</span>
-            <span className="text-slate-400 text-sm">
-              Status: <span className="text-white">{response.status}</span>
-            </span>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-400 font-bold uppercase tracking-wider text-xs">Success</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Status:</span>
+              <span className="text-white font-mono text-xs bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">{response.status}</span>
+            </div>
             {requestTime !== null && (
-              <span className="text-slate-400 text-sm">
-                Time: <span className="text-white">{requestTime}ms</span>
-              </span>
+              <div className="flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-white font-mono text-xs">{requestTime}ms</span>
+              </div>
             )}
           </div>
 

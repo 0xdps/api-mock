@@ -1,6 +1,17 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { 
+  Play, 
+  Square, 
+  RefreshCw, 
+  CheckCircle2, 
+  AlertCircle, 
+  AlertTriangle, 
+  Zap, 
+  Clock,
+  Check
+} from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
@@ -96,7 +107,7 @@ export function DelayTester() {
       {/* Delay Slider */}
       <div>
         <label className="block text-slate-300 mb-2 font-medium text-sm">
-          Delay Duration: {delay}ms {delay >= 30000 && '⚠️ Capped at 30s'}
+          Delay Duration: {delay}ms {delay >= 30000 && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 inline-block ml-1 mb-0.5" />}
         </label>
         <input
           type="range"
@@ -115,7 +126,8 @@ export function DelayTester() {
         </div>
         {delay >= 30000 && (
           <p className="text-xs text-yellow-400 mt-2">
-            ⚠️ Maximum delay is capped at 30 seconds by the server
+            <AlertTriangle className="w-4 h-4 text-amber-500 inline-block mr-1" />
+            Maximum delay is capped at 30 seconds by the server
           </p>
         )}
       </div>
@@ -167,16 +179,17 @@ export function DelayTester() {
       <button
         onClick={handleStart}
         disabled={isRunning}
-        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition flex items-center justify-center gap-3"
       >
-        {isRunning ? '⏳ Running...' : '▶ Start Request'}
+        {isRunning ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+        {isRunning ? 'Running Request...' : 'Start Request'}
       </button>
       {isRunning && (
         <button
           onClick={handleStop}
-          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
+          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-xl font-bold transition flex items-center gap-2"
         >
-          ⏹ Stop
+          <Square className="w-5 h-5 fill-current" /> Stop
         </button>
       )}
     </div>
@@ -188,8 +201,9 @@ export function DelayTester() {
       {isRunning && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-300">
-              ⏳ Waiting... ({Math.round((progress / 100) * delay)}ms / {delay}ms)
+            <span className="text-slate-300 flex items-center gap-1.5 font-medium">
+              <Clock className="w-4 h-4 text-primary-400" />
+              Waiting... ({Math.round((progress / 100) * delay)}ms / {delay}ms)
             </span>
             <span className="text-blue-400 font-semibold">{Math.round(progress)}%</span>
           </div>
@@ -227,18 +241,16 @@ export function DelayTester() {
           </div>
 
           <div className="bg-green-900/20 border border-green-500/30 p-4 rounded">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-green-400 font-semibold">✓ Success</span>
-              <span className="text-slate-400 text-sm">
-                Delay accuracy: {((1 - Math.abs(results.difference) / results.requested) * 100).toFixed(1)}%
-              </span>
+            <div className="flex items-center gap-2 mb-2 text-emerald-400">
+              <CheckCircle2 className="w-4 h-4" />
+              <strong className="text-sm">Success</strong>
             </div>
             <p className="text-xs text-slate-400">
               {Math.abs(results.difference) < 50 
-                ? '🎯 Excellent accuracy! Delay was within 50ms of requested time.'
+                ? 'Target achieved! Delay was within 50ms of requested time.'
                 : Math.abs(results.difference) < 200
-                ? '✓ Good accuracy. Delay was within 200ms of requested time.'
-                : '⚠️ Timing variance detected. This is normal for network requests.'}
+                ? 'Accuracy check: Good precision. Delay was within 200ms of requested time.'
+                : 'Alert: Timing variance detected. This is normal for network requests.'}
             </p>
           </div>
 
@@ -257,7 +269,8 @@ export function DelayTester() {
       {error && (
         <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-red-400 font-semibold">❌ Error</span>
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <span className="text-red-400 font-bold uppercase tracking-wider text-xs">Error</span>
           </div>
           <p className="text-red-300 text-sm">{error}</p>
         </div>

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { Activity, BookOpen, Github } from 'lucide-react'
 
 export function Header() {
   return (
@@ -16,20 +17,20 @@ export function Header() {
           <span className="tracking-tight">Mockly</span>
         </Link>
         
-        <div className="flex items-center gap-6">
-          <Link href="/playground" className="text-slate-300 hover:text-white transition-colors font-medium text-sm">
-            Playground
+        <div className="flex items-center gap-8">
+          <Link href="/playground" className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2">
+            <Activity className="w-4 h-4" /> Playground
           </Link>
-          <Link href="/docs" className="text-slate-300 hover:text-white transition-colors font-medium text-sm">
-            Documentation
+          <Link href="/docs" className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2">
+            <BookOpen className="w-4 h-4" /> Documentation
           </Link>
           <a 
             href="https://github.com/0xdps/fake-stack" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-slate-300 hover:text-white transition-colors font-medium text-sm"
+            className="text-slate-300 hover:text-white transition-colors font-medium text-sm flex items-center gap-2"
           >
-            GitHub
+            <Github className="w-4 h-4" /> GitHub
           </a>
         </div>
       </nav>

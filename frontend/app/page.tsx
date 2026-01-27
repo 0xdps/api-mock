@@ -1,5 +1,19 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { 
+  Zap, 
+  FileText, 
+  Repeat, 
+  Palette, 
+  Rocket, 
+  ShieldCheck, 
+  ArrowRight, 
+  Github,
+  Layout,
+  GraduationCap,
+  Laptop,
+  Play
+} from 'lucide-react'
 import { CodeExample } from '@/components/CodeExample'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -34,17 +48,17 @@ export default async function Home() {
         <div className="flex gap-4 justify-center">
           <Link 
             href="/playground" 
-            className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold transition"
+            className="group bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-primary-500/20"
           >
-            Explore & Try API →
+            <Play className="w-4 h-4" /> Explore & Try API <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <a 
             href="https://github.com/0xdps/fake-stack" 
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-lg font-semibold transition"
+            className="bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2"
           >
-            View on GitHub
+            <Github className="w-4 h-4" /> View on GitHub
           </a>
         </div>
       </section>
@@ -53,32 +67,32 @@ export default async function Home() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureCard 
-            icon="⚡️"
+            icon={<Zap className="w-6 h-6 text-yellow-400" />}
             title="Instant Access"
             description="No signup required. Start using our API endpoints immediately with realistic fake data."
           />
           <FeatureCard 
-            icon="📝"
+            icon={<FileText className="w-6 h-6 text-primary-400" />}
             title="Schema-Driven"
             description="All endpoints are auto-generated from JSON schemas. Add new resources without code."
           />
           <FeatureCard 
-            icon="🔄"
+            icon={<Repeat className="w-6 h-6 text-green-400" />}
             title="RESTful API"
             description="Standard REST endpoints with collection, single item, and metadata routes."
           />
           <FeatureCard 
-            icon="🎨"
+            icon={<Palette className="w-6 h-6 text-purple-400" />}
             title="Realistic Data"
             description="50+ data generators produce realistic names, emails, addresses, and more."
           />
           <FeatureCard 
-            icon="🚀"
+            icon={<Rocket className="w-6 h-6 text-orange-400" />}
             title="Fast & Reliable"
             description="Built with Go for high performance. CORS enabled for browser access."
           />
           <FeatureCard 
-            icon="🆓"
+            icon={<ShieldCheck className="w-6 h-6 text-blue-400" />}
             title="Free Forever"
             description="Completely free to use. No rate limits. Perfect for learning and testing."
           />
@@ -183,18 +197,22 @@ fetch('${API_URL}/people/users?count=5')
         </h2>
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <UseCaseCard 
+            icon={<Layout className="w-5 h-5 text-primary-400" />}
             title="Frontend Development"
             description="Build UIs without waiting for backend APIs. Test edge cases with controlled data."
           />
           <UseCaseCard 
+            icon={<GraduationCap className="w-5 h-5 text-green-400" />}
             title="Learning & Tutorials"
             description="Practice API integration without complex setup. Perfect for coding bootcamps."
           />
           <UseCaseCard 
+            icon={<Rocket className="w-5 h-5 text-orange-400" />}
             title="Prototyping"
             description="Quickly validate ideas with realistic data. Show demos to stakeholders."
           />
           <UseCaseCard 
+            icon={<Laptop className="w-5 h-5 text-blue-400" />}
             title="Testing"
             description="Test applications with consistent, reproducible data. Mock external dependencies."
           />
@@ -206,21 +224,24 @@ fetch('${API_URL}/people/users?count=5')
   )
 }
 
-function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300">
-      <div className="text-4xl mb-4 drop-shadow-sm">{icon}</div>
+    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300 group">
+      <div className="mb-4 p-3 bg-white/5 rounded-lg w-fit transition-transform group-hover:scale-110 group-hover:bg-white/10">{icon}</div>
       <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-slate-400 leading-relaxed">{description}</p>
+      <p className="text-slate-400 leading-relaxed text-sm">{description}</p>
     </div>
   )
 }
 
-function UseCaseCard({ title, description }: { title: string; description: string }) {
+function UseCaseCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300">
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-slate-400 leading-relaxed">{description}</p>
+    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300 group flex gap-4 items-start">
+      <div className="mt-1 p-2 bg-white/5 rounded-lg transition-transform group-hover:scale-110 group-hover:bg-white/10">{icon}</div>
+      <div>
+        <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
+        <p className="text-slate-400 leading-relaxed text-sm">{description}</p>
+      </div>
     </div>
   )
 }

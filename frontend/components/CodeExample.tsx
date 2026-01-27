@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Check, Copy } from 'lucide-react'
 
 interface CodeExampleProps {
   title: string
@@ -23,9 +24,19 @@ export function CodeExample({ title, code, language = 'javascript' }: CodeExampl
         <span className="text-slate-300 text-sm font-medium">{title}</span>
         <button
           onClick={handleCopy}
-          className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded transition"
+          className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded transition flex items-center gap-1.5"
         >
-          {copied ? '✓ Copied!' : 'Copy'}
+          {copied ? (
+            <>
+              <Check className="w-3 h-3" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              Copy
+            </>
+          )}
         </button>
       </div>
       <pre className="p-4 overflow-x-auto">

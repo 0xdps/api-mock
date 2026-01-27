@@ -1,6 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+import { 
+  Play, 
+  RefreshCw, 
+  CheckCircle2, 
+  AlertCircle, 
+  AlertTriangle, 
+  Zap, 
+  ChevronUp, 
+  ChevronDown,
+  Activity,
+  ArrowUp,
+  ArrowDown
+} from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
@@ -165,7 +178,7 @@ export function MiddlewareTester() {
         
         <div>
           <label className="block text-slate-300 mb-2 text-xs">
-            Flaky Rate: {flakyRate}% {flakyRate > 50 && '⚠️'}
+            Flaky Rate: {flakyRate}% {flakyRate > 50 && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 inline-block ml-1 mb-0.5" />}
           </label>
           <input
             type="range"
@@ -215,7 +228,7 @@ export function MiddlewareTester() {
               onClick={generateRequestId}
               className="text-xs text-blue-400 hover:text-blue-300"
             >
-              ↻ Generate
+              <RefreshCw className="w-3 h-3" /> Generate
             </button>
           </div>
           <input
@@ -259,7 +272,7 @@ export function MiddlewareTester() {
               onClick={generateIdempotencyKey}
               className="text-xs text-blue-400 hover:text-blue-300"
             >
-              ↻ Generate
+              <RefreshCw className="w-3 h-3" /> Generate
             </button>
           </div>
           <input
@@ -318,8 +331,8 @@ export function MiddlewareTester() {
               onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
               className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
             >
-              <option value="asc">↑ Ascending</option>
-              <option value="desc">↓ Descending</option>
+              <option value="asc">Ascending Order</option>
+              <option value="desc">Descending Order</option>
             </select>
           </div>
         </div>
@@ -365,9 +378,10 @@ export function MiddlewareTester() {
     <button
       onClick={handleTest}
       disabled={loading}
-      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition flex items-center justify-center gap-3"
     >
-      {loading ? 'Testing...' : '▶ Run Test'}
+      {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+      {loading ? 'Testing...' : 'Run Test'}
     </button>
   )
 
@@ -378,14 +392,16 @@ export function MiddlewareTester() {
           {error ? (
             <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-red-400 font-semibold">❌ Error</span>
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <span className="text-red-400 font-bold uppercase tracking-wider text-xs">Error</span>
               </div>
               <p className="text-red-300 text-sm">{error}</p>
             </div>
           ) : (
             <>
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-green-400 font-semibold">✓ Success</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span className="text-emerald-400 font-bold uppercase tracking-wider text-xs">Success</span>
                 <span className="text-slate-400 text-sm">
                   Status: <span className="text-white">{response.status}</span>
                 </span>

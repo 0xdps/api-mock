@@ -1,6 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { 
+  Play, 
+  Square, 
+  RefreshCw, 
+  CheckCircle2, 
+  AlertCircle, 
+  AlertTriangle, 
+  Zap, 
+  Dices,
+  Check,
+  X
+} from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
@@ -169,7 +181,7 @@ export function ChaosTester() {
         
         <div>
           <label className="block text-slate-300 mb-2 text-sm">
-            Flaky Rate: {flakyRate}% {flakyRate > 50 && '⚠️'}
+            Flaky Rate: {flakyRate}% {flakyRate > 50 && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 inline-block ml-1 mb-0.5" />}
           </label>
           <input
             type="range"
@@ -225,16 +237,17 @@ export function ChaosTester() {
       <button
         onClick={handleStart}
         disabled={isRunning}
-        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition flex items-center justify-center gap-3"
       >
-        {isRunning ? '🎲 Running...' : '▶ Start Chaos Test'}
+        {isRunning ? <Dices className="w-5 h-5 animate-bounce" /> : <Play className="w-5 h-5 fill-current" />}
+        {isRunning ? 'Running Chaos Test...' : 'Start Chaos Test'}
       </button>
       {isRunning && (
         <button
           onClick={handleStop}
-          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded font-semibold transition"
+          className="px-6 py-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-xl font-bold transition flex items-center gap-2"
         >
-          ⏹ Stop
+          <Square className="w-5 h-5 fill-current" /> Stop
         </button>
       )}
     </div>
@@ -349,10 +362,10 @@ export function ChaosTester() {
                     }`}
                   >
                     <span>
-                      #{result.index} {result.success ? '✓' : '✗'}
+                      #{result.index} {result.success ? <Check className="w-3 h-3 inline ml-1" /> : <X className="w-3 h-3 inline ml-1" />}
                     </span>
                     <span>
-                      {result.status && `${result.status} • `}{result.time}ms
+                      {result.status && `${result.status} - `}{result.time}ms
                     </span>
                   </div>
                 ))}

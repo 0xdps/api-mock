@@ -1,6 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+import { 
+  Play, 
+  RefreshCw, 
+  CheckCircle2, 
+  AlertCircle, 
+  Zap, 
+  AlertTriangle,
+  Server,
+  Lock,
+  Search,
+  Check,
+  PlusCircle
+} from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
@@ -97,37 +110,37 @@ export function StatusCodeGenerator() {
             onClick={() => { setSelectedCode(200); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-green-900/30 text-green-400 border border-green-500/50 hover:bg-green-900/50"
           >
-            200 OK
+            <Check className="w-4 h-4" /> 200 OK
           </button>
           <button
             onClick={() => { setSelectedCode(201); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-green-900/30 text-green-400 border border-green-500/50 hover:bg-green-900/50"
           >
-            201 Created
+            <PlusCircle className="w-4 h-4" /> 201 Created
           </button>
           <button
             onClick={() => { setSelectedCode(400); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-yellow-900/30 text-yellow-400 border border-yellow-500/50 hover:bg-yellow-900/50"
           >
-            400 Bad Request
+            <AlertTriangle className="w-4 h-4" /> 400 Bad Request
           </button>
           <button
             onClick={() => { setSelectedCode(401); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-yellow-900/30 text-yellow-400 border border-yellow-500/50 hover:bg-yellow-900/50"
           >
-            401 Unauthorized
+            <Lock className="w-4 h-4" /> 401 Unauthorized
           </button>
           <button
             onClick={() => { setSelectedCode(404); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-yellow-900/30 text-yellow-400 border border-yellow-500/50 hover:bg-yellow-900/50"
           >
-            404 Not Found
+            <Search className="w-4 h-4" /> 404 Not Found
           </button>
           <button
             onClick={() => { setSelectedCode(500); setCustomMessage('') }}
             className="px-4 py-2 rounded transition text-sm font-semibold bg-red-900/30 text-red-400 border border-red-500/50 hover:bg-red-900/50"
           >
-            500 Error
+            <Server className="w-4 h-4" /> 500 Error
           </button>
         </div>
       </div>
@@ -202,9 +215,10 @@ export function StatusCodeGenerator() {
     <button
       onClick={handleGenerate}
       disabled={loading}
-      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-semibold transition"
+      className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition flex items-center justify-center gap-3"
     >
-      {loading ? 'Generating...' : '▶ Generate Response'}
+      {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+      {loading ? 'Generating...' : 'Generate Response'}
     </button>
   )
 

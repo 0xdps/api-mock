@@ -1,8 +1,28 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { 
+  Terminal, 
+  Database, 
+  Clock, 
+  ShieldAlert, 
+  Copy, 
+  Play, 
+  Check, 
+  RefreshCw,
+  Search,
+  Settings,
+  List,
+  Layers,
+  FileCode,
+  ArrowRight,
+  Info,
+  Radio,
+  Lightbulb
+} from 'lucide-react'
 import { CodeExample } from './CodeExample'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { getGroupIcon } from '@/lib/icons'
 
 const API_URL = getApiUrl()
 
@@ -87,6 +107,15 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   // Advanced options collapse state
   const [showAdvanced, setShowAdvanced] = useState(false)
   
+  const [copied, setCopied] = useState(false)
+
+  // Copy handler
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   // Build URL based on endpoint type
   const buildUrl = (usePath?: string) => {
     const routes = schema['x-resource']?.routes || {}
@@ -242,34 +271,23 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
     }
   }
   
-  const getGroupIcon = (group: string): string => {
-    const icons: Record<string, string> = {
-      people: '👥',
-      business: '💼',
-      commerce: '🛒',
-      content: '📝',
-      social: '💬',
-      media: '🎬',
-      travel: '✈️',
-      location: '🌍',
-      finance: '💰',
-      food: '🍔',
-      education: '🎓',
-      sports: '⚽',
-      productivity: '✅',
-      reference: '📚',
-    }
-    return icons[group] || '📦'
-  }
+  const GroupIcon = getGroupIcon(group)
   
   return (
     <div className="space-y-4 px-3 sm:px-4 lg:px-6">
       {/* Compact Header */}
-      <div className="flex items-center gap-2">
-        <span className="text-2xl">{getGroupIcon(group)}</span>
-        <div>
-          <h1 className="text-2xl font-bold text-white capitalize">{resourceName}</h1>
-          <p className="text-slate-400 text-xs">
+      <div className="flex items-center gap-4 bg-slate-900/50 p-4 rounded-xl border border-white/5 mx-[-12px] sm:mx-0">
+        <div className="p-3 bg-primary-500/10 rounded-lg">
+          <GroupIcon className="w-8 h-8 text-primary-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <h1 className="text-2xl font-bold text-white capitalize tracking-tight">{resourceName}</h1>
+            <span className="text-[10px] font-bold bg-white/5 text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider border border-white/5">
+              {group}
+            </span>
+          </div>
+          <p className="text-slate-400 text-xs leading-relaxed max-w-2xl truncate sm:whitespace-normal">
             {schema.description || `Access and manage ${resourceName} data through our RESTful API.`}
           </p>
         </div>
@@ -279,9 +297,9 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
       <div className="grid lg:grid-cols-2 gap-4">
         {/* LEFT COLUMN: Request Builder (50%) */}
         <div>
-            <div className="bg-slate-800/50 backdrop-blur p-4 rounded-lg border border-slate-700 h-[calc(100vh-10rem)] overflow-y-auto">
-              <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-                <span>🎯</span> Request Builder
+            <div className="bg-slate-800/40 backdrop-blur-md p-5 rounded-xl border border-white/5 h-[calc(100vh-12rem)] overflow-y-auto shadow-premium">
+              <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider text-slate-300">
+                <Terminal className="w-4 h-4 text-primary-400" /> Request Builder
               </h2>
               
               {/* Endpoint Type Selector */}
@@ -704,11 +722,11 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
                     {url}
                   </code>
                   <button
-                    onClick={() => navigator.clipboard.writeText(url)}
-                    className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded border border-slate-600 text-xs transition"
+                    onClick={() => handleCopy(url)}
+                    className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-white/10 text-xs transition-all active:scale-95 group"
                     title="Copy URL"
                   >
-                    📋
+                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 group-hover:text-white" />}
                   </button>
                 </div>
               </div>
@@ -717,9 +735,10 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
               <button
                 onClick={handleFetch}
                 disabled={loading}
-                className="w-full mt-3 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded font-semibold transition text-sm"
+                className="w-full mt-4 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold text-base transition-all shadow-lg shadow-primary-500/20 flex items-center justify-center gap-3 group active:scale-[0.98]"
               >
-                {loading ? 'Loading...' : '▶ Send Request'}
+                {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
+                {loading ? 'Sending...' : 'Send Request'}
               </button>
             </div>
           </div>
@@ -728,24 +747,28 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
         <div>
           <div className="h-[calc(100vh-10rem)] overflow-y-auto">
           {(response || error) ? (
-            <div ref={responseRef} className="bg-slate-800/50 backdrop-blur p-4 rounded-lg border border-slate-700">
-              <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-                <span>📊</span> Response
+            <div ref={responseRef} className="bg-slate-800/40 backdrop-blur-md p-5 rounded-xl border border-white/5 shadow-premium">
+              <h2 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider text-slate-300">
+                <Database className="w-4 h-4 text-primary-400" /> Response
               </h2>
               
               {error ? (
-                <div className="bg-red-900/20 border border-red-500/50 p-4 rounded">
+                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-red-400 font-semibold">❌ Error</span>
+                    <ShieldAlert className="w-4 h-4 text-red-400" />
+                    <span className="text-red-400 font-bold text-xs uppercase tracking-tight">Error</span>
                   </div>
-                  <p className="text-red-300 text-sm">{error}</p>
+                  <p className="text-red-300/80 text-sm font-medium">{error}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {/* Response Headers */}
                   <div className="flex items-center justify-between flex-wrap gap-2 p-3 bg-slate-900/50 rounded border border-slate-700">
                     <div className="flex items-center gap-3 flex-wrap text-xs">
-                      <span className="text-green-400 font-semibold">✓ {response.status}</span>
+                      <span className="text-green-400 font-semibold flex items-center gap-1">
+                        <Check className="w-3 h-3" />
+                        {response.status}
+                      </span>
                       {response.cacheStatus !== 'N/A' && (
                         <span className="text-slate-400">
                           Cache: <span className={
@@ -767,37 +790,39 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
                   
                   {/* Applied Middleware Indicators */}
                   {endpointType === 'collection' && (delay > 0 || flakyRate > 0 || skipCache || selectedFields.length > 0 || sortField || searchQuery) && (
-                    <div className="p-3 bg-blue-900/20 border border-blue-500/30 rounded">
-                      <p className="text-xs text-blue-300 font-semibold mb-2">Applied Middleware:</p>
+                    <div className="p-3 bg-primary-500/5 border border-white/5 rounded-xl">
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <Layers className="w-3 h-3" /> Applied Middleware
+                      </p>
                       <div className="flex flex-wrap gap-1.5">
                         {delay > 0 && (
-                          <span className="text-xs bg-blue-900/50 text-blue-200 px-2 py-0.5 rounded">
-                            ⏱️ {delay}ms
+                          <span className="text-[10px] font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {delay}ms
                           </span>
                         )}
                         {flakyRate > 0 && (
-                          <span className="text-xs bg-yellow-900/50 text-yellow-200 px-2 py-0.5 rounded">
-                            🎲 {flakyRate}%
+                          <span className="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded border border-rose-500/20 flex items-center gap-1">
+                            <ShieldAlert className="w-3 h-3" /> {flakyRate}%
                           </span>
                         )}
                         {skipCache && (
-                          <span className="text-xs bg-purple-900/50 text-purple-200 px-2 py-0.5 rounded">
-                            🚫 Cache
+                          <span className="text-[10px] font-bold bg-purple-500/10 text-purple-500 px-2 py-0.5 rounded border border-purple-500/20 flex items-center gap-1">
+                            <RefreshCw className="w-3 h-3" /> BYPASS
                           </span>
                         )}
                         {selectedFields.length > 0 && (
-                          <span className="text-xs bg-green-900/50 text-green-200 px-2 py-0.5 rounded">
-                            🔍 {selectedFields.length} fields
+                          <span className="text-[10px] font-bold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                            <List className="w-3 h-3" /> {selectedFields.length} fields
                           </span>
                         )}
                         {sortField && (
-                          <span className="text-xs bg-indigo-900/50 text-indigo-200 px-2 py-0.5 rounded">
-                            🔀 {sortField}
+                          <span className="text-[10px] font-bold bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded border border-blue-500/20 flex items-center gap-1">
+                            <RefreshCw className="w-3 h-3 rotate-90" /> {sortField}
                           </span>
                         )}
                         {searchQuery && (
-                          <span className="text-xs bg-pink-900/50 text-pink-200 px-2 py-0.5 rounded">
-                            🔎 &quot;{searchQuery}&quot;
+                          <span className="text-[10px] font-bold bg-pink-500/10 text-pink-500 px-2 py-0.5 rounded border border-pink-500/20 flex items-center gap-1">
+                            <Search className="w-3 h-3" /> &quot;{searchQuery}&quot;
                           </span>
                         )}
                       </div>
@@ -841,7 +866,7 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
           ) : (
             <div className="bg-slate-800/50 backdrop-blur p-8 rounded-lg border border-slate-700 text-center h-full flex items-center justify-center">
               <div>
-                <div className="text-6xl mb-4">📡</div>
+                <Radio className="w-16 h-16 mx-auto mb-4 text-slate-600" />
                 <p className="text-slate-400 text-sm">
                   Configure your request and click <strong className="text-white">Send Request</strong> to see the response here.
                 </p>
@@ -912,7 +937,7 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
       {/* Search Guide */}
       <section className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur p-5 rounded-lg border border-blue-700/30">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xl">🔍</span>
+          <Search className="w-5 h-5 text-blue-400" />
           <h2 className="text-xl font-bold text-white">How to Use Search</h2>
         </div>
         
@@ -960,7 +985,8 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
           {/* Tips */}
           <div className="bg-blue-500/10 border border-blue-500/30 rounded p-3">
             <h4 className="text-xs font-semibold text-blue-300 mb-2 flex items-center gap-2">
-              <span>💡</span> Pro Tips
+              <Lightbulb className="w-4 h-4" />
+              Pro Tips
             </h4>
             <ul className="space-y-1 text-xs text-slate-300">
               <li className="flex items-start gap-2">
