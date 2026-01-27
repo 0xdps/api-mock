@@ -797,7 +797,7 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
                         )}
                         {searchQuery && (
                           <span className="text-xs bg-pink-900/50 text-pink-200 px-2 py-0.5 rounded">
-                            🔎 "{searchQuery}"
+                            🔎 &quot;{searchQuery}&quot;
                           </span>
                         )}
                       </div>

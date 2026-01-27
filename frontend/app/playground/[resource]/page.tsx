@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { ResourceDocumentation } from '@/components/ResourceDocumentation'
 import fs from 'fs'
 import path from 'path'
+import Link from 'next/link'
 
 function toTitleCase(str: string): string {
   return str
@@ -96,12 +97,12 @@ export default async function ResourcePlaygroundPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center text-slate-400 mt-20">
           <p className="text-xl">Resource not found</p>
-          <a 
+          <Link 
             href="/playground"
             className="mt-4 inline-block text-blue-400 hover:text-blue-300 underline"
           >
             ← Back to Playground
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -111,13 +112,13 @@ export default async function ResourcePlaygroundPage({
     <div className="mx-auto py-8">
       {/* Breadcrumb */}
       <div className="mb-4 flex items-center gap-2 text-sm text-slate-400 px-3 sm:px-4 lg:px-6">
-        <a href="/playground" className="hover:text-slate-300">
+        <Link href="/playground" className="hover:text-slate-300">
           Playground
-        </a>
+        </Link>
         <span>/</span>
-        <a href="/playground?tab=resources" className="hover:text-slate-300">
+        <Link href="/playground?tab=resources" className="hover:text-slate-300">
           Resources
-        </a>
+        </Link>
         <span>/</span>
         <span className="text-white">{toTitleCase(resource)}</span>
       </div>

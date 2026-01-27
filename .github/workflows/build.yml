@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [ trunk, develop ]
+    branches: [trunk, develop, main]
   pull_request:
-    branches: [ trunk, develop ]
+    branches: [trunk, develop, main]
 
 jobs:
   generate-types:
@@ -12,19 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.0.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-      
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
       - name: Generate Types
-        run: npm run generate-types
-      
+        run: pnpm run generate-types
+
       - name: Check for changes
         run: |
           if [ -n "$(git status --porcelain frontend/types/api.ts)" ]; then
-            echo "::error::TypeScript types are out of date. Run 'npm run generate-types'"
+            echo "::error::TypeScript types are out of date. Run 'pnpm run generate-types' locally and commit the changes."
             exit 1
           fi
 
@@ -34,23 +43,35 @@ jobs:
     needs: generate-types
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
-      
-      - name: Copy Schemas to Backend (for build verification)
-        run: |
-          mkdir -p backend/internal/schema/embedded
-          cp shared/schemas/*/*.json backend/internal/schema/embedded/
-      
+          go-version: "1.23"
+
+      - name: Install Node Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Sync Schemas to Backend
+        run: pnpm run generate-types
+
       - name: Build Backend
         run: cd backend && go build -o bin/server ./cmd/server
-      
+
       - name: Run Tests
         run: cd backend && go test ./internal/... -v -race -coverprofile=coverage.out -skip="TestCache_MixedConcurrentOperations"
-      
+
       - name: Display Test Coverage
         run: cd backend && go tool cover -func=coverage.out
 
@@ -60,21 +81,26 @@ jobs:
     needs: generate-types
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.0.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-      
-      - name: Generate Types
-        run: npm run generate-types
-      
-      - name: Install Dependencies
-        run: cd frontend && npm ci
-      
-      - name: Type Check
-        run: cd frontend && npm run type-check
-      
-      - name: Build
-        run: cd frontend && npm run build
+          node-version: "20"
+          cache: "pnpm"
 
+      - name: Install Dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Types
+        run: pnpm run generate-types
+
+      - name: Type Check
+        run: pnpm --filter @api-mockly/frontend type-check
+
+      - name: Build
+        run: pnpm --filter @api-mockly/frontend build

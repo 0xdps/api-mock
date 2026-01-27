@@ -171,7 +171,7 @@ export function ResourceSelector({}: ResourceSelectorProps) {
       {totalResources === 0 && (
         <div className="text-center py-12">
           <p className="text-slate-400 text-lg">
-            No resources found matching "{search}"
+            No resources found matching &quot;{search}&quot;
           </p>
           <button
             onClick={() => setSearch('')}
