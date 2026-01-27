@@ -14,6 +14,7 @@
 ## ✨ Features
 
 ### API Features
+
 - 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
 - 🎯 **100+ Resources** - From users to weather, stocks to movies
 - 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
@@ -23,6 +24,7 @@
 - 🆓 **Free Forever** - No rate limits, open source and self-hostable
 
 ### Advanced Query Features
+
 - 📄 **Pagination** - page, limit, offset parameters
 - 🔀 **Sorting** - Sort by any field, ascending or descending
 - 🔍 **Search** - Full-text search with field targeting
@@ -30,6 +32,7 @@
 - ✂️ **Field Selection** - Return only specific fields
 
 ### Middleware & Testing
+
 - ⏱️ **Delay Simulation** - Test timeouts (max 30s)
 - 🎲 **Chaos Engineering** - Random failures with flakyRate
 - 🚫 **Cache Control** - Bypass cache for fresh data
@@ -39,6 +42,7 @@
 - 🔍 **Request Tracing** - Track requests with X-Request-ID
 
 ### Frontend
+
 - 🎨 **Modern UI** - Next.js 16 + React 19 with SSR
 - 🎮 **Interactive Playground** - 50/50 split-screen with tabbed navigation
 - 📚 **Comprehensive Docs** - Live examples and code snippets
@@ -71,12 +75,14 @@ mockly/
 ### Development Setup
 
 **1. Clone the repository:**
+
 ```bash
 git clone https://github.com/0xdps/api-mockly.git
 cd api-mockly
 ```
 
 **2. Install dependencies:**
+
 ```bash
 # Install root dependencies (concurrently)
 npm install
@@ -86,11 +92,13 @@ npm run web:install
 ```
 
 **3. Start both API and website:**
+
 ```bash
 npm run dev
 ```
 
 This automatically:
+
 - ✅ Generates TypeScript types from schemas
 - ✅ Starts API server on http://localhost:8080
 - ✅ Starts website on http://localhost:3000
@@ -98,17 +106,19 @@ This automatically:
 **Note:** Types are auto-generated on every build. No manual steps needed!
 
 **Or run separately:**
+
 ```bash
 # API only
 npm run api:dev
 
-# Website only  
+# Website only
 npm run web:dev
 ```
 
 ### Using the API
 
 **Basic Usage:**
+
 ```bash
 # Get resources with pagination
 curl 'http://localhost:8080/products?page=1&limit=20'
@@ -121,6 +131,7 @@ curl http://localhost:8080/products/meta
 ```
 
 **Advanced Queries:**
+
 ```bash
 # Search products
 curl 'http://localhost:8080/products?q=laptop&search_fields=name,description'
@@ -136,6 +147,7 @@ curl 'http://localhost:8080/products?fields=id,name,price&limit=50'
 ```
 
 **Testing with Middleware:**
+
 ```bash
 # Add 2-second delay
 curl 'http://localhost:8080/products?delay=2000'
@@ -151,6 +163,7 @@ curl -H "X-Tenant-ID: tenant-123" http://localhost:8080/products
 ```
 
 **Production API:**
+
 ```bash
 curl 'https://api.mockly.codes/products?page=1&limit=20'
 ```
@@ -163,26 +176,27 @@ curl 'https://api.mockly.codes/products?page=1&limit=20'
 
 Resources are organized into 14 logical categories:
 
-| Group | Count | Resources | Description |
-|-------|-------|-----------|-------------|
-| 🛒 **Commerce** | 14 | products, orders, payments, coupons, categories, tags, carts, wishlists, promotions, discounts, returns, refunds, shipping, inventory | E-commerce |
-| 💼 **Business** | 12 | companies, organizations, jobs, meetings, invoices, subscriptions, clients, contracts, proposals, departments, vendors, reports | Business entities |
-| ✈️ **Travel** | 10 | hotels, flights, restaurants, properties, cars, tours, attractions, bookings, destinations, travelguides | Travel & hospitality |
-| 👥 **People** | 10 | users, contacts, students, players, employees, customers, profiles, authors, instructors, mentors | User profiles and people |
-| 🎬 **Media** | 10 | movies, books, albums, videos, images, songs, playlists, photos, audios, streams | Entertainment media |
-| 💬 **Social** | 9 | comments, reviews, messages, notifications, testimonials, likes, shares, followers, mentions | Social interactions |
-| 📝 **Content** | 8 | articles, posts, news, podcasts, blogs, tutorials, guides, documents | Written content |
-| ✅ **Productivity** | 6 | todos, notes, projects, tasks, tickets, events | Task management |
-| 🌍 **Location** | 6 | countries, cities, weather, states, regions, coordinates | Geographic data |
-| 💰 **Finance** | 6 | currencies, stocks, crypto, transactions, accounts, budgets | Financial data |
-| 📚 **Reference** | 3 | faqs, quotes, languages | Reference data |
-| 🍔 **Food** | 3 | recipes, ingredients, dishes | Food & cooking |
-| ⚽ **Sports** | 2 | matches, teams | Sports data |
-| 🎓 **Education** | 1 | courses | Educational content |
+| Group               | Count | Resources                                                                                                                             | Description              |
+| ------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| 🛒 **Commerce**     | 14    | products, orders, payments, coupons, categories, tags, carts, wishlists, promotions, discounts, returns, refunds, shipping, inventory | E-commerce               |
+| 💼 **Business**     | 12    | companies, organizations, jobs, meetings, invoices, subscriptions, clients, contracts, proposals, departments, vendors, reports       | Business entities        |
+| ✈️ **Travel**       | 10    | hotels, flights, restaurants, properties, cars, tours, attractions, bookings, destinations, travelguides                              | Travel & hospitality     |
+| 👥 **People**       | 10    | users, contacts, students, players, employees, customers, profiles, authors, instructors, mentors                                     | User profiles and people |
+| 🎬 **Media**        | 10    | movies, books, albums, videos, images, songs, playlists, photos, audios, streams                                                      | Entertainment media      |
+| 💬 **Social**       | 9     | comments, reviews, messages, notifications, testimonials, likes, shares, followers, mentions                                          | Social interactions      |
+| 📝 **Content**      | 8     | articles, posts, news, podcasts, blogs, tutorials, guides, documents                                                                  | Written content          |
+| ✅ **Productivity** | 6     | todos, notes, projects, tasks, tickets, events                                                                                        | Task management          |
+| 🌍 **Location**     | 6     | countries, cities, weather, states, regions, coordinates                                                                              | Geographic data          |
+| 💰 **Finance**      | 6     | currencies, stocks, crypto, transactions, accounts, budgets                                                                           | Financial data           |
+| 📚 **Reference**    | 3     | faqs, quotes, languages                                                                                                               | Reference data           |
+| 🍔 **Food**         | 3     | recipes, ingredients, dishes                                                                                                          | Food & cooking           |
+| ⚽ **Sports**       | 2     | matches, teams                                                                                                                        | Sports data              |
+| 🎓 **Education**    | 1     | courses                                                                                                                               | Educational content      |
 
 ### API Endpoints
 
 **Group Endpoints:**
+
 ```bash
 GET /{group}                    # Group info (metadata only)
 GET /{group}/{resource}         # Collection via group path
@@ -190,6 +204,7 @@ GET /{group}/{resource}/:id     # Single item via group path
 ```
 
 **Direct Resource Endpoints:**
+
 ```bash
 GET /{resource}?count=N         # Collection (max 100)
 GET /{resource}/:id             # Single item
@@ -197,6 +212,7 @@ GET /{resource}/meta            # Resource metadata
 ```
 
 **Examples:**
+
 ```bash
 # Browse by category
 curl https://api.mockly.codes/people
@@ -255,6 +271,7 @@ curl 'https://api.mockly.codes/users?count=5'
 ```
 
 **2. Restart the API server:**
+
 ```bash
 cd backend && make dev
 # or: go run cmd/server/main.go
@@ -263,6 +280,7 @@ cd backend && make dev
 **That's it!** Your new endpoint is live at `/orders` 🎉
 
 The build process automatically:
+
 - ✅ Syncs schemas to backend
 - ✅ Generates TypeScript types for frontend
 - ✅ Loads new routes in API server
@@ -287,6 +305,7 @@ Define custom paths, aliases, and methods in schemas:
 ```
 
 This creates:
+
 - ✅ `GET /todos`
 - ✅ `GET /tasks` (alias)
 - ✅ `GET /todo-items` (alias)
@@ -366,6 +385,7 @@ curl -H "Cache-Control: no-cache" http://localhost:8080/products
 ```
 
 All responses include `X-Cache` header:
+
 - `X-Cache: HIT` - Served from cache
 - `X-Cache: BYPASS` - Cache bypassed
 - `X-Cache: MISS` - Cache miss
@@ -378,6 +398,7 @@ All responses include `X-Cache` header:
 ### Quick Deploy
 
 **Backend (Railway - Recommended):**
+
 ```bash
 railway init
 railway add redis  # Automatically configures Redis
@@ -385,12 +406,14 @@ railway up         # Deploys with schemas
 ```
 
 **Backend (Fly.io - Alternative):**
+
 ```bash
 cd backend
 make deploy  # Auto-syncs schemas and deploys
 ```
 
 **Frontend (Vercel):**
+
 ```bash
 cd frontend
 vercel --prod  # Auto-generates types and deploys
@@ -404,17 +427,13 @@ The deployment process **automatically includes** all schemas:
 - ✅ Frontend: Types auto-generated via `prebuild` hook
 - ✅ No manual steps required!
 
-**Platform Options:**
-- **Railway** - Built-in Redis, simpler setup. See [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
-- **Fly.io** - Global edge network, multi-region support. See [DEPLOYMENT.md](./DEPLOYMENT.md)
+**📚 Complete Deployment Guide:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for:
 
-**📚 Complete Documentation:**
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Full deployment guide (both platforms)
-- [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md) - Step-by-step Railway migration
-- [RAILWAY_QUICKSTART.md](./RAILWAY_QUICKSTART.md) - Quick Railway reference
-- [PLATFORM_COMPARISON.md](./PLATFORM_COMPARISON.md) - Railway vs Fly.io comparison
-- [RAILWAY_TROUBLESHOOTING.md](./RAILWAY_TROUBLESHOOTING.md) - Common issues & solutions
-- [MIGRATION_SUMMARY.md](./MIGRATION_SUMMARY.md) - Migration overview & checklist
+- Platform comparison (Railway vs Fly.io)
+- Detailed setup instructions for both platforms
+- Environment configuration
+- Troubleshooting guide
+- Production URLs and verification steps
 
 ### Production URLs
 
@@ -426,6 +445,7 @@ The deployment process **automatically includes** all schemas:
 ## 🛠️ Technology Stack
 
 ### Backend (API)
+
 - **Language:** Go 1.23+
 - **Router:** chi v5 (lightweight, idiomatic)
 - **Data Generation:** gofakeit/v7
@@ -433,6 +453,7 @@ The deployment process **automatically includes** all schemas:
 - **Deployment:** Fly.io
 
 ### Frontend (Website)
+
 - **Framework:** Next.js 16 (App Router with SSR)
 - **Language:** TypeScript
 - **UI Library:** React 19
@@ -447,6 +468,7 @@ The deployment process **automatically includes** all schemas:
 ### API Documentation
 
 **Comprehensive API Reference:** [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
+
 - 📋 Complete endpoint reference
 - 🔍 All query parameters (pagination, sorting, search, filtering)
 - 🛠️ All 11 middleware features documented
@@ -455,13 +477,16 @@ The deployment process **automatically includes** all schemas:
 - ✨ Best practices and advanced usage
 
 **Online Documentation:** Visit https://mockly.codes/docs for:
+
 - Quick start guide (4 languages)
 - Interactive schema explorer
 - Live "Try It" buttons
 - Real-time API status
 
 ### Interactive Playground
+
 Visit https://mockly.codes/playground to:
+
 - 🎮 Test all API features
 - 📄 Pagination, sorting, search controls
 - 🛠️ Middleware testing (delay, flaky, cache)
@@ -495,6 +520,7 @@ MIT License - see [LICENSE](./LICENSE)
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [gofakeit](https://github.com/brianvoe/gofakeit) - Fake data generation
 - [chi](https://github.com/go-chi/chi) - Lightweight Go router
 - [Next.js 16](https://nextjs.org/) - React framework with SSR
