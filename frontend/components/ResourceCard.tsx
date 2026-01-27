@@ -8,8 +8,8 @@ interface ResourceCardProps {
 
 export function ResourceCard({ name, apiUrl, group }: ResourceCardProps) {
   return (
-    <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700 hover:border-primary-500 transition">
-      <h3 className="text-xl font-semibold text-white mb-3 capitalize">
+    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300 group">
+      <h3 className="text-xl font-semibold text-white mb-3 capitalize tracking-tight group-hover:text-primary-400 transition-colors">
         {name}
       </h3>
       
@@ -30,9 +30,9 @@ export function ResourceCard({ name, apiUrl, group }: ResourceCardProps) {
       
       <Link 
         href={`/docs#${name}`}
-        className="mt-4 inline-block text-primary-500 hover:text-primary-400 text-sm font-medium"
+        className="mt-6 inline-flex items-center text-primary-500 hover:text-primary-400 text-sm font-semibold transition-colors"
       >
-        View Schema →
+        View Schema <span className="ml-1 opacity-70">→</span>
       </Link>
     </div>
   )

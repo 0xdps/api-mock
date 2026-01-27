@@ -208,19 +208,19 @@ fetch('${API_URL}/people/users?count=5')
 
 function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
-      <div className="text-4xl mb-4">{icon}</div>
+    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300">
+      <div className="text-4xl mb-4 drop-shadow-sm">{icon}</div>
       <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-slate-400">{description}</p>
+      <p className="text-slate-400 leading-relaxed">{description}</p>
     </div>
   )
 }
 
 function UseCaseCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="bg-slate-800/50 backdrop-blur p-6 rounded-lg border border-slate-700">
+    <div className="bg-slate-800/40 backdrop-blur-md p-6 rounded-xl border border-white/5 shadow-premium hover:border-primary-500/30 transition-all duration-300">
       <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-slate-400">{description}</p>
+      <p className="text-slate-400 leading-relaxed">{description}</p>
     </div>
   )
 }
