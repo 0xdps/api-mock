@@ -507,7 +507,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 ## 📚 Documentation
 
 - **[backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)** - Comprehensive API reference
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide (Railway & Fly.io)
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history
 - **[backend/README.md](./backend/README.md)** - Backend setup

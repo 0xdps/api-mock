@@ -9,8 +9,6 @@ Choose your deployment platform:
 - **[Railway](#railway-deployment-recommended)** - Modern platform with built-in Redis, simpler configuration
 - **[Fly.io](#flyio-deployment)** - Global edge network, multi-region support
 
-> 📖 **Migrating from Fly.io to Railway?** See [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
-
 ---
 
 ## Railway Deployment (Recommended)
@@ -18,6 +16,7 @@ Choose your deployment platform:
 ### Prerequisites
 
 1. **Install Railway CLI:**
+
 ```bash
 # macOS (Homebrew)
 brew install railway
@@ -27,6 +26,7 @@ npm install -g @railway/cli
 ```
 
 2. **Login to Railway:**
+
 ```bash
 railway login
 ```
@@ -61,6 +61,7 @@ railway up
 ### Configuration
 
 Railway uses the existing `Dockerfile` and automatically:
+
 - ✅ Builds from repository root
 - ✅ Copies schemas from `shared/schemas/`
 - ✅ Provisions Redis on internal network (no TLS needed)
@@ -70,12 +71,14 @@ Railway uses the existing `Dockerfile` and automatically:
 ### Environment Variables
 
 **Automatically set by Railway:**
+
 - `PORT` - Service port (auto)
 - `REDIS_HOST` - From Redis plugin (auto)
 - `REDIS_PORT` - From Redis plugin (auto)
 - `REDIS_PASSWORD` - From Redis plugin (auto)
 
 **Set manually:**
+
 - `REDIS_DB=0`
 - `REDIS_TLS_ENABLED=false`
 - `CACHE_MODE=all`
@@ -99,8 +102,6 @@ railway logs
 railway status
 ```
 
-📖 **Full migration guide:** [RAILWAY_MIGRATION.md](./RAILWAY_MIGRATION.md)
-
 ---
 
 ## Fly.io Deployment
@@ -108,11 +109,13 @@ railway status
 ### Prerequisites
 
 1. **Install Fly CLI:**
+
 ```bash
 curl -L https://fly.io/install.sh | sh
 ```
 
 2. **Login to Fly.io:**
+
 ```bash
 flyctl auth login
 ```
@@ -143,6 +146,7 @@ make deploy
 ```
 
 This automatically:
+
 - ✅ Syncs schemas before deployment
 - ✅ Builds from repository root
 - ✅ Deploys to Fly.io
@@ -293,6 +297,7 @@ flyctl deploy --config backend/fly.toml
 No environment variables needed for schemas - they're embedded at build time!
 
 Optional variables:
+
 ```bash
 # Set port (default: 8080)
 flyctl secrets set PORT=8080
@@ -324,11 +329,13 @@ curl https://api-mockly.fly.dev/ | jq '.resources'
 ### Prerequisites
 
 1. **Install Vercel CLI:**
+
 ```bash
 npm install -g vercel
 ```
 
 2. **Login to Vercel:**
+
 ```bash
 vercel login
 ```
@@ -354,6 +361,7 @@ This project is a **monorepo** with both backend and frontend. The frontend Next
 3. Every push to `main`/`trunk` auto-deploys!
 
 **Why Root Directory = frontend?**
+
 - Your git repo structure stays at the project root
 - Vercel treats `frontend/` as the deployment root
 - This is standard for monorepos - one repo, multiple deployable apps
@@ -435,10 +443,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Fly CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
-      
+
       - name: Deploy to Fly.io
         run: flyctl deploy --config backend/fly.toml
         env:
@@ -453,16 +461,16 @@ Automatic via Vercel GitHub integration - no config needed!
 
 ## 📊 Deployment Summary
 
-| Aspect | Backend (Fly.io) | Frontend (Vercel) |
-|--------|------------------|-------------------|
-| **Git Root** | Repository root | Repository root |
-| **Deploy Root** | Repository root | `frontend/` (via Root Directory setting) |
-| **Build From** | Repository root | `frontend/` directory |
-| **Schemas** | Auto-copied during build | N/A |
-| **Types** | N/A | Auto-generated via `prebuild` |
-| **Command** | `flyctl deploy --config backend/fly.toml` | `vercel --prod` (from project root) |
-| **Auto-Deploy** | Via GitHub Actions | Via GitHub integration |
-| **Key Setting** | `fly.toml` dockerfile path | Vercel Root Directory = `frontend` ⚠️ |
+| Aspect          | Backend (Fly.io)                          | Frontend (Vercel)                        |
+| --------------- | ----------------------------------------- | ---------------------------------------- |
+| **Git Root**    | Repository root                           | Repository root                          |
+| **Deploy Root** | Repository root                           | `frontend/` (via Root Directory setting) |
+| **Build From**  | Repository root                           | `frontend/` directory                    |
+| **Schemas**     | Auto-copied during build                  | N/A                                      |
+| **Types**       | N/A                                       | Auto-generated via `prebuild`            |
+| **Command**     | `flyctl deploy --config backend/fly.toml` | `vercel --prod` (from project root)      |
+| **Auto-Deploy** | Via GitHub Actions                        | Via GitHub integration                   |
+| **Key Setting** | `fly.toml` dockerfile path                | Vercel Root Directory = `frontend` ⚠️    |
 
 ---
 
@@ -525,4 +533,3 @@ open https://mockly.codes/playground
 ---
 
 **Questions? Check the main [README.md](./README.md) or [BUILD_PROCESS.md](./BUILD_PROCESS.md)**
-
