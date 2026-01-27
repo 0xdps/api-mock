@@ -432,17 +432,11 @@ export function MiddlewareTester() {
   )
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold text-white mb-2">Middleware Testing</h2>
-        <p className="text-slate-400">Test all global middleware parameters and headers in one interface</p>
-      </div>
-      <RequestResponseLayout
-        requestPanel={requestPanel}
-        responsePanel={responsePanel}
-        actionButton={actionButton}
-        isLoading={loading}
-      />
-    </div>
+    <RequestResponseLayout
+      requestPanel={requestPanel}
+      responsePanel={responsePanel}
+      actionButton={actionButton}
+      isLoading={loading}
+    />
   )
 }

@@ -198,7 +198,7 @@ api-mockly/
 
    ```bash
    # Start both servers
-   npm run dev
+   pnpm run dev
 
    # Test in browser or with curl
    curl 'http://localhost:8080/users?count=5'

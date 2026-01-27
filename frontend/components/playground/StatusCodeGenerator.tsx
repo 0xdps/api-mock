@@ -61,7 +61,7 @@ export function StatusCodeGenerator() {
       const endTime = performance.now()
       setRequestTime(Math.round(endTime - startTime))
 
-      const data = res.json().catch(() => null)
+      const data = res.json()
       
       setResponse({
         data,

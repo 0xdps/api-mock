@@ -387,14 +387,14 @@ See [lib/api.ts](lib/api.ts) for configuration.
 ```bash
 # Clear cache and rebuild
 rm -rf .next
-npm run build
+pnpm run build
 ```
 
 ### Type Errors
 
 ```bash
 # Check for type errors
-npm run type-check
+pnpm run type-check
 ```
 
 ### API Connection Issues
@@ -419,8 +419,9 @@ Check that:
 
 1. Create a new branch
 2. Make your changes
-3. Run `pnpm run type-check`
-4. Submit a pull request
+3. Run `pnpm run build`
+4. Run `pnpm run type-check`
+5. Submit a pull request
 
 See [../CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.
 

@@ -105,11 +105,11 @@ This automatically:
 **Or run separately:**
 
 ```bash
-# API only
-npm run api:dev
+# API only (Go backend)
+make api-dev
 
 # Website only
-npm run web:dev
+pnpm --filter frontend dev
 ```
 
 ### Using the API
@@ -496,7 +496,7 @@ Visit https://mockly.codes/playground to:
 Contributions welcome! The easiest way to contribute is to add new resource schemas:
 
 1. Create `shared/schemas/your-resource.json`
-2. Test locally with `npm run dev` (types auto-generate!)
+2. Test locally with `pnpm run dev` (types auto-generate!)
 3. Submit a PR
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.

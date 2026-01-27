@@ -21,8 +21,8 @@ Choose your deployment platform:
 # macOS (Homebrew)
 brew install railway
 
-# npm
-npm install -g @railway/cli
+# pnpm
+pnpm install -g @railway/cli
 ```
 
 2. **Login to Railway:**
@@ -238,7 +238,7 @@ curl https://api-mockly.fly.dev/ | jq '.resources | length'
 Before deploying:
 
 - ✅ All schemas exist in `shared/schemas/`
-- ✅ Run `make sync-schemas` to sync to backend
+- ✅ Run `make generate-types` to sync to backend
 - ✅ Test locally with `go run cmd/server/main.go`
 - ✅ Verify all endpoints work
 - ✅ Deploy from **repository root**
@@ -271,7 +271,7 @@ docker build -f backend/Dockerfile -t api-mockly .
 
 ```bash
 cd backend
-make sync-schemas
+make generate-types
 make deploy
 ```
 
@@ -331,7 +331,7 @@ curl https://api-mockly.fly.dev/ | jq '.resources'
 1. **Install Vercel CLI:**
 
 ```bash
-npm install -g vercel
+pnpm install -g vercel
 ```
 
 2. **Login to Vercel:**
@@ -354,8 +354,8 @@ This project is a **monorepo** with both backend and frontend. The frontend Next
 2. **IMPORTANT:** In Settings → General:
    - **Root Directory:** Set to `frontend` ⚠️
    - **Framework Preset:** Next.js (auto-detected)
-   - **Build Command:** `npm run build` (auto-detected)
-   - **Install Command:** `npm install` (auto-detected)
+   - **Build Command:** `pnpm run build` (auto-detected)
+   - **Install Command:** `pnpm install` (auto-detected)
    - **Output Directory:** `.next` (auto-detected)
 
 3. Every push to `main`/`trunk` auto-deploys!
@@ -408,7 +408,7 @@ The frontend build automatically:
 
 - ✅ Types generated (automatic via `prebuild`)
 - ✅ Environment variables set (optional)
-- ✅ Test build locally: `npm run build`
+- ✅ Test build locally: `pnpm run build`
 - ✅ Deploy to Vercel
 
 ---

@@ -1,4 +1,4 @@
-.PHONY: help dev build test clean sync-schemas docker-build deploy api-dev web-dev
+.PHONY: help dev build test clean generate-types docker-build deploy api-dev web-dev
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -7,18 +7,15 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 # Schema and Type Management
-sync-schemas: ## Sync schemas to backend and generate frontend types
-	@echo "Syncing schemas and generating types..."
-	@npm run sync-schemas
-	@echo "✓ Synced schemas and generated types"
+sync-schemas: generate-types ## Alias for generate-types (for backwards compatibility)
 
-generate-types: ## Generate TypeScript types from schemas
-	@echo "Generating TypeScript types..."
-	@npm run generate-types
-	@echo "✓ Generated types"
+generate-types: ## Generate TypeScript types and sync schemas to backend
+	@echo "Generating types and syncing schemas..."
+	@pnpm run generate-types
+	@echo "✓ Generated types and synced schemas"
 
 # Backend
-api-dev: sync-schemas ## Run backend development server
+api-dev: generate-types ## Run backend development server
 	@echo "Starting backend development server..."
 	@if [ -f backend/.env ]; then \
 		echo "Loading environment variables from backend/.env"; \
@@ -31,7 +28,7 @@ api-dev: sync-schemas ## Run backend development server
 		cd backend && go run cmd/server/main.go; \
 	fi
 
-api-build: sync-schemas ## Build backend binary
+api-build: generate-types ## Build backend binary
 	@echo "Building backend binary..."
 	@cd backend && go build -o bin/server ./cmd/server
 	@echo "✓ Built binary: backend/bin/server"
@@ -42,19 +39,19 @@ api-test: ## Run backend tests
 # Frontend
 web-dev: generate-types ## Run frontend development server
 	@echo "Starting frontend development server..."
-	@cd frontend && NODE_OPTIONS='--no-warnings' npm run dev
+	@cd frontend && NODE_OPTIONS='--no-warnings' pnpm run dev
 
 web-build: generate-types ## Build frontend
 	@echo "Building frontend..."
-	@cd frontend && npm run build
+	@cd frontend && pnpm run build
 	@echo "✓ Built frontend"
 
 web-install: ## Install frontend dependencies
-	@cd frontend && npm install
+	@cd frontend && pnpm install
 
 # Combined Development
-dev: ## Run both API and web in parallel (requires npm concurrently)
-	@npm run dev
+dev: ## Run both API and web in parallel (uses Turborepo)
+	@pnpm run dev
 
 # Docker
 docker-build: ## Build Docker image for backend
@@ -120,10 +117,8 @@ clean: ## Clean build artifacts
 
 # Dependencies
 deps: ## Install all dependencies
-	@echo "Installing root dependencies..."
-	@npm install
-	@echo "Installing frontend dependencies..."
-	@cd frontend && npm install
+	@echo "Installing dependencies with pnpm..."
+	@pnpm install
 	@echo "Downloading backend dependencies..."
 	@cd backend && go mod download && go mod tidy
 	@echo "✓ Installed all dependencies"
