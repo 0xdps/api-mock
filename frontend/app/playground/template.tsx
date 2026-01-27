@@ -8,7 +8,7 @@ import { Volume2, BarChart3, Clock, Settings, Dices, Package, LucideIcon } from 
 type TabType = 'echo' | 'status' | 'delay' | 'middleware' | 'chaos'
 
 const tabs: { id: TabType; label: string; icon: LucideIcon; description: string; path: string }[] = [
-  { id: 'echo', label: 'Echo', icon: Volume2, description: 'Test request/response echoing', path: '/playground/echo' },
+  { id: 'echo', label: 'Echo', icon: Volume2, description: 'Test request/response', path: '/playground/echo' },
   { id: 'status', label: 'Status', icon: BarChart3, description: 'Generate HTTP status codes', path: '/playground/status' },
   { id: 'delay', label: 'Delay', icon: Clock, description: 'Test response delays', path: '/playground/delay' },
   { id: 'middleware', label: 'Middleware', icon: Settings, description: 'Test middleware parameters', path: '/playground/middleware' },
