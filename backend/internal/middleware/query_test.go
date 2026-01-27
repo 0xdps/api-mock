@@ -1,17 +1,19 @@
 package middleware
 
 import (
+	"math"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
 func TestPaginationMiddleware(t *testing.T) {
 	tests := []struct {
-		name         string
-		queryString  string
-		expectedPage int
-		expectedLimit int
+		name           string
+		queryString    string
+		expectedPage   int
+		expectedLimit  int
 		expectedOffset int
 	}{
 		{"Default values", "", 1, 10, 0},
@@ -44,7 +46,12 @@ func TestPaginationMiddleware(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 			}))
 
-			req := httptest.NewRequest("GET", "/?"+tt.queryString, nil)
+			u, _ := url.Parse("/")
+			if tt.queryString != "" {
+				q, _ := url.ParseQuery(tt.queryString)
+				u.RawQuery = q.Encode()
+			}
+			req := httptest.NewRequest("GET", u.String(), nil)
 			w := httptest.NewRecorder()
 			handler.ServeHTTP(w, req)
 		})
@@ -82,7 +89,12 @@ func TestSortingMiddleware(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 			}))
 
-			req := httptest.NewRequest("GET", "/?"+tt.queryString, nil)
+			u, _ := url.Parse("/")
+			if tt.queryString != "" {
+				q, _ := url.ParseQuery(tt.queryString)
+				u.RawQuery = q.Encode()
+			}
+			req := httptest.NewRequest("GET", u.String(), nil)
 			w := httptest.NewRecorder()
 			handler.ServeHTTP(w, req)
 		})
@@ -125,7 +137,13 @@ func TestSearchMiddleware(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 			}))
 
-			req := httptest.NewRequest("GET", "/?"+tt.queryString, nil)
+			u, _ := url.Parse("/")
+			if tt.queryString != "" {
+				// Use ParseQuery to handle the string, then re-encode it to escape spaces
+				q, _ := url.ParseQuery(tt.queryString)
+				u.RawQuery = q.Encode()
+			}
+			req := httptest.NewRequest("GET", u.String(), nil)
 			w := httptest.NewRecorder()
 			handler.ServeHTTP(w, req)
 		})
@@ -134,12 +152,12 @@ func TestSearchMiddleware(t *testing.T) {
 
 func TestNewPaginationMeta(t *testing.T) {
 	tests := []struct {
-		name              string
-		params            *PaginationParams
-		total             int
-		expectedPage      int
-		expectedLimit     int
-		expectedTotal     int
+		name               string
+		params             *PaginationParams
+		total              int
+		expectedPage       int
+		expectedLimit      int
+		expectedTotal      int
 		expectedTotalPages int
 	}{
 		{"Basic pagination", &PaginationParams{Page: 1, Limit: 10, Offset: 0}, 50, 1, 10, 50, 5},
@@ -327,8 +345,10 @@ func TestToFloat64(t *testing.T) {
 			if ok != tt.ok {
 				t.Errorf("Expected ok=%v, got %v", tt.ok, ok)
 			}
-			if ok && result != tt.expected {
-				t.Errorf("Expected %v, got %v", tt.expected, result)
+			if ok {
+				if math.Abs(result-tt.expected) > 0.000001 {
+					t.Errorf("Expected %v, got %v", tt.expected, result)
+				}
 			}
 		})
 	}

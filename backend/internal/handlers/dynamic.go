@@ -33,14 +33,16 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get context values
 		ctx := r.Context()
-		
-		// Check if cache should be bypassed from middleware
-		skipCache := middleware.ShouldSkipCache(ctx)
+
+		// Check if cache should be bypassed (check both context and request for robustness)
+		skipCache := middleware.ShouldSkipCache(ctx) || shouldSkipCache(r)
 
 		// Get pagination params (defaults: page=1, limit=10)
 		pagination, hasPagination := middleware.GetPagination(ctx)
-		count := pagination.Limit
-		if !hasPagination {
+		count := 10
+		if hasPagination {
+			count = pagination.Limit
+		} else {
 			count = getCountParam(r, 10)
 		}
 
@@ -118,14 +120,17 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		// Apply pagination if present
 		if hasPagination {
 			data = middleware.ApplyPagination(data, pagination)
-			
+
 			// Return paginated response with metadata
 			response := middleware.NewPaginatedResponse(data, pagination, total)
 			respondJSON(w, http.StatusOK, response)
 			return
 		}
 
-		// Return simple response if no pagination
+		// Return simple response if no pagination (limit to requested count)
+		if len(data) > count {
+			data = data[:count]
+		}
 		respondJSON(w, http.StatusOK, data)
 	}
 }

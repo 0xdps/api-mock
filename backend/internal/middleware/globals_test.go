@@ -8,14 +8,16 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func TestDelayMiddleware(t *testing.T) {
 	tests := []struct {
-		name          string
-		delay         string
-		minDuration   time.Duration
-		maxDuration   time.Duration
+		name        string
+		delay       string
+		minDuration time.Duration
+		maxDuration time.Duration
 	}{
 		{"No delay parameter", "", 0, 10 * time.Millisecond},
 		{"Valid delay 100ms", "100", 90 * time.Millisecond, 150 * time.Millisecond},
@@ -50,9 +52,9 @@ func TestDelayMiddleware(t *testing.T) {
 
 func TestFlakyMiddleware(t *testing.T) {
 	tests := []struct {
-		name         string
-		rate         string
-		expectFails  bool
+		name        string
+		rate        string
+		expectFails bool
 	}{
 		{"No rate parameter", "", false},
 		{"Success rate 1.0", "1.0", false},
@@ -252,14 +254,14 @@ func TestIdempotencyMiddleware(t *testing.T) {
 	cache := NewSimpleIdempotencyCache()
 
 	tests := []struct {
-		name               string
-		method             string
-		idempotencyKey     string
-		firstStatusCode    int
-		firstBody          string
-		secondStatusCode   int
-		secondBody         string
-		shouldUseCached    bool
+		name             string
+		method           string
+		idempotencyKey   string
+		firstStatusCode  int
+		firstBody        string
+		secondStatusCode int
+		secondBody       string
+		shouldUseCached  bool
 	}{
 		{
 			"POST with idempotency key - second request uses cached",
@@ -368,7 +370,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			handler := RequestIDMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				requestID := r.Context().Value(string("RequestID"))
+				requestID := r.Context().Value(chimiddleware.RequestIDKey)
 				if requestID == nil {
 					t.Fatal("Expected request ID in context")
 				}
