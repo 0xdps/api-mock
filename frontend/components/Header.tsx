@@ -8,7 +8,7 @@ export function Header() {
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 text-2xl font-bold text-white group transition-all">
           <Image 
-            src="/favicon.svg" 
+            src="/favicon.png" 
             alt="Mockly Logo" 
             width={32} 
             height={32}
