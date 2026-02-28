@@ -1,0 +1,27 @@
+frontend/app/page.tsx
+  17667501675424cd 34
+frontend/types/css.d.ts
+  17667501675424cd 1
+frontend/components/Header.tsx
+  17667501675424cd 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.6",
+  "base_commit_sha": "25b59d1cc83edc71d64abb8395f5d81d24a4e4a4",
+  "prompts": {
+    "17667501675424cd": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "4dce8567-16ba-4801-903b-2698a5b9453d",
+        "model": "copilot/claude-opus-4.6"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manir@gmail.com>",
+      "messages": [],
+      "total_additions": 5,
+      "total_deletions": 7,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
