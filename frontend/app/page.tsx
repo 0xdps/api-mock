@@ -31,7 +31,7 @@ export default async function Home() {
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="flex items-center justify-center gap-4 mb-6">
           <Image 
-            src="/favicon.png" 
+            src="/logo.svg" 
             alt="Mockly Logo" 
             width={64} 
             height={64}
