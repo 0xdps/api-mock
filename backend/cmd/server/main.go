@@ -77,17 +77,18 @@ func main() {
 	}
 
 	apiCache := cache.NewCache(registry, cacheConfig, redisStore)
+	platform := detectPlatform()
 
 	// Backend analytics configuration (Umami)
-	umamiScriptURL := getEnvString("UMAMI_SCRIPT_URL", "")
+	umamiCollectURL := getEnvString("UMAMI_COLLECT_URL", "")
 	umamiWebsiteID := getEnvString("UMAMI_WEBSITE_ID", "")
 	umamiHostname := getEnvString("UMAMI_HOSTNAME", "")
 	umamiBackendEnabled := getEnvBool("UMAMI_BACKEND_ENABLED", false)
 
 	if umamiBackendEnabled {
 		missingVars := make([]string, 0, 3)
-		if umamiScriptURL == "" {
-			missingVars = append(missingVars, "UMAMI_SCRIPT_URL")
+		if umamiCollectURL == "" {
+			missingVars = append(missingVars, "UMAMI_COLLECT_URL")
 		}
 		if umamiWebsiteID == "" {
 			missingVars = append(missingVars, "UMAMI_WEBSITE_ID")
@@ -132,7 +133,7 @@ func main() {
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.SetupCORS().Handler)
-	r.Use(middleware.NewBackendAnalyticsMiddleware(umamiBackendEnabled, umamiWebsiteID, umamiScriptURL, umamiHostname))
+	r.Use(middleware.NewBackendAnalyticsMiddleware(umamiBackendEnabled, umamiWebsiteID, umamiCollectURL, umamiHostname))
 
 	// Global parameter middleware
 	r.Use(middleware.RequestIDMiddleware)
@@ -164,12 +165,13 @@ func main() {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		groups := registry.GetAllGroups()
-		response := map[string]interface{}{
+		response := map[string]any{
 			"message":   "Mockly API",
 			"version":   "1.0.0",
 			"docs":      "https://mockly.codes/docs",
 			"resources": resourceNames,
 			"groups":    groups,
+			"platform":  platform,
 		}
 		json.NewEncoder(w).Encode(response)
 	})
@@ -498,4 +500,27 @@ func getEnvBool(key string, defaultValue bool) bool {
 		return defaultValue
 	}
 	return boolValue
+}
+
+func detectPlatform() string {
+	if platform := strings.TrimSpace(os.Getenv("PLATFORM")); platform != "" {
+		return strings.ToLower(platform)
+	}
+
+	switch {
+	case os.Getenv("FLY_APP_NAME") != "" || os.Getenv("FLY_REGION") != "":
+		return "fly.io"
+	case os.Getenv("RAILWAY_PROJECT_ID") != "" || os.Getenv("RAILWAY_SERVICE_ID") != "" || os.Getenv("RAILWAY_ENVIRONMENT") != "":
+		return "railway.com"
+	case os.Getenv("RENDER") != "":
+		return "render.com"
+	case os.Getenv("VERCEL") != "":
+		return "vercel"
+	case os.Getenv("K_SERVICE") != "" || os.Getenv("K_REVISION") != "":
+		return "cloud-run"
+	case os.Getenv("DYNO") != "":
+		return "heroku"
+	default:
+		return "local"
+	}
 }

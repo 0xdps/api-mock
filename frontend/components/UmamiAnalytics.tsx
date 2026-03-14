@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { trackUmamiEvent } from '@/lib/analytics'
 
@@ -20,17 +20,16 @@ function getElementLabel(element: HTMLElement): string {
 
 export function UmamiAnalytics() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const query = searchParams.toString()
-    const fullPath = query ? `${pathname}?${query}` : pathname
+    const query = typeof window !== 'undefined' ? window.location.search : ''
+    const fullPath = query ? `${pathname}${query}` : pathname
 
     trackUmamiEvent('pv', {
       path: fullPath,
       route: pathname,
     })
-  }, [pathname, searchParams])
+  }, [pathname])
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {

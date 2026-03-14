@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -47,12 +46,12 @@ type umamiEvent struct {
 	Data     map[string]interface{} `json:"data"`
 }
 
-func NewBackendAnalyticsMiddleware(enabled bool, websiteID, scriptURL, hostname string) func(http.Handler) http.Handler {
+func NewBackendAnalyticsMiddleware(enabled bool, websiteID, collectURL, hostname string) func(http.Handler) http.Handler {
 	tracker := &umamiBackendTracker{
-		enabled:    enabled && websiteID != "" && scriptURL != "",
+		enabled:    enabled && websiteID != "" && collectURL != "",
 		websiteID:  websiteID,
 		hostname:   hostname,
-		collectURL: deriveCollectURL(scriptURL),
+		collectURL: collectURL,
 		client: &http.Client{
 			Timeout: 1500 * time.Millisecond,
 		},
@@ -142,16 +141,6 @@ func (t *umamiBackendTracker) trackRequest(r *http.Request, status int, duration
 	default:
 		// Drop event when buffer is full to avoid impacting API latency.
 	}
-}
-
-func deriveCollectURL(scriptURL string) string {
-	trimmed := strings.TrimSpace(scriptURL)
-	trimmed = strings.TrimSuffix(trimmed, "/script.js")
-	trimmed = strings.TrimRight(trimmed, "/")
-	if trimmed == "" {
-		return ""
-	}
-	return trimmed + "/api/send"
 }
 
 func requestURL(r *http.Request) string {

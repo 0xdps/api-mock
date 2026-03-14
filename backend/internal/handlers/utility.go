@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -258,34 +257,10 @@ func (h *UtilityHandlers) Status(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"code":     code,
-		"message":  message,
-		"details":  details,
-		"platform": detectPlatform(),
+		"code":    code,
+		"message": message,
+		"details": details,
 	})
-}
-
-func detectPlatform() string {
-	if platform := strings.TrimSpace(os.Getenv("PLATFORM")); platform != "" {
-		return strings.ToLower(platform)
-	}
-
-	switch {
-	case os.Getenv("FLY_APP_NAME") != "" || os.Getenv("FLY_REGION") != "":
-		return "fly.io"
-	case os.Getenv("RAILWAY_PROJECT_ID") != "" || os.Getenv("RAILWAY_SERVICE_ID") != "" || os.Getenv("RAILWAY_ENVIRONMENT") != "":
-		return "railway.com"
-	case os.Getenv("RENDER") != "":
-		return "render.com"
-	case os.Getenv("VERCEL") != "":
-		return "vercel"
-	case os.Getenv("K_SERVICE") != "" || os.Getenv("K_REVISION") != "":
-		return "cloud-run"
-	case os.Getenv("DYNO") != "":
-		return "heroku"
-	default:
-		return "local"
-	}
 }
 
 // ErrorValidation returns a 422 with validation errors
