@@ -1,0 +1,31 @@
+backend/internal/handlers/utility.go
+  a5e6f1bf376fd610 262
+frontend/components/UmamiAnalytics.tsx
+  a5e6f1bf376fd610 4,25-26,32
+backend/internal/middleware/analytics.go
+  a5e6f1bf376fd610 49,51,54
+backend/cmd/server/main.go
+  a5e6f1bf376fd610 80,83,90-91,136,174,504-525
+backend/cmd/server/main_test.go
+  a5e6f1bf376fd610 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "0c8cbd5c127f6b94d36a68354f3bb9c4228a004e",
+  "prompts": {
+    "a5e6f1bf376fd610": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c5b7e9fd-5b28-4816-924c-25c1ca9b7d3a",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 87,
+      "total_deletions": 110,
+      "accepted_lines": 169,
+      "overriden_lines": 0
+    }
+  }
+}
