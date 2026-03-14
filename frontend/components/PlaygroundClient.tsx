@@ -17,6 +17,7 @@ import {
   ClipboardList
 } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 
 const API_URL = getApiUrl()
 
@@ -116,6 +117,14 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
   const groupUrl = resourceGroup ? buildUrl(true) : null
   
   const handleFetch = async () => {
+    trackUmamiEvent('pg_req_s', {
+      resource: selectedResource,
+      group: resourceGroup || null,
+      endpointType,
+      count: endpointType === 'collection' ? count : null,
+      hasNoCache: noCache,
+    })
+
     setLoading(true)
     setError(null)
     setRequestTime(null)
@@ -135,15 +144,38 @@ export function PlaygroundClient({ resources, groups }: PlaygroundClientProps) {
       const data = res.json()
       setResponse(data)
       setRequestTime(duration)
+
+      trackUmamiEvent('pg_req_ok', {
+        resource: selectedResource,
+        endpointType,
+        duration,
+      })
     } catch (err: any) {
       const endTime = performance.now()
       const duration = Math.round(endTime - startTime)
       
       setError(err.message)
       setRequestTime(duration)
+
+      trackUmamiEvent('pg_req_er', {
+        resource: selectedResource,
+        endpointType,
+        duration,
+        message: err.message,
+      })
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleCopyResponse = () => {
+    if (!response) return
+
+    navigator.clipboard.writeText(JSON.stringify(response, null, 2))
+    trackUmamiEvent('pg_rsp_cp', {
+      resource: selectedResource,
+      endpointType,
+    })
   }
   
   // Update selected resource when group changes
@@ -542,7 +574,7 @@ print(response.json())`}
                   )}
                 </div>
                 <button
-                  onClick={() => navigator.clipboard.writeText(JSON.stringify(response, null, 2))}
+                  onClick={handleCopyResponse}
                   className="text-[10px] font-bold uppercase bg-white/5 hover:bg-white/10 text-slate-400 px-3 py-1.5 rounded-lg border border-white/5 transition-all active:scale-95"
                 >
                   Copy JSON
@@ -585,6 +617,9 @@ function CodeSnippet({ title, code }: { title: string; code: string }) {
   
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
+    trackUmamiEvent('pg_code_cp', {
+      snippet: title,
+    })
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -26,16 +27,16 @@ func NewUtilityHandlers() *UtilityHandlers {
 // Echo returns the full request details
 func (h *UtilityHandlers) Echo(w http.ResponseWriter, r *http.Request) {
 	var body interface{}
-	
+
 	contentType := r.Header.Get("Content-Type")
-	
+
 	// Read body first as raw bytes (this is more reliable)
 	var bodyBytes []byte
 	if r.Body != nil {
 		defer r.Body.Close()
 		bodyBytes, _ = io.ReadAll(r.Body)
 	}
-	
+
 	// Handle different content types
 	if strings.Contains(contentType, "application/x-www-form-urlencoded") {
 		// Parse form data from body bytes
@@ -56,11 +57,11 @@ func (h *UtilityHandlers) Echo(w http.ResponseWriter, r *http.Request) {
 	} else if strings.Contains(contentType, "multipart/form-data") {
 		// For multipart, we need to recreate the body reader
 		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-		
+
 		// Parse multipart form data (limit to 10MB)
 		if err := r.ParseMultipartForm(10 << 20); err == nil {
 			formData := make(map[string]interface{})
-			
+
 			// Add form values
 			for key, values := range r.MultipartForm.Value {
 				if len(values) == 1 {
@@ -69,7 +70,7 @@ func (h *UtilityHandlers) Echo(w http.ResponseWriter, r *http.Request) {
 					formData[key] = values
 				}
 			}
-			
+
 			// Add file information (not the actual file content)
 			if len(r.MultipartForm.File) > 0 {
 				files := make(map[string]interface{})
@@ -90,7 +91,7 @@ func (h *UtilityHandlers) Echo(w http.ResponseWriter, r *http.Request) {
 				}
 				formData["_files"] = files
 			}
-			
+
 			body = formData
 		}
 	} else if len(bodyBytes) > 0 {
@@ -257,10 +258,34 @@ func (h *UtilityHandlers) Status(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"code":    code,
-		"message": message,
-		"details": details,
+		"code":     code,
+		"message":  message,
+		"details":  details,
+		"platform": detectPlatform(),
 	})
+}
+
+func detectPlatform() string {
+	if platform := strings.TrimSpace(os.Getenv("PLATFORM")); platform != "" {
+		return strings.ToLower(platform)
+	}
+
+	switch {
+	case os.Getenv("FLY_APP_NAME") != "" || os.Getenv("FLY_REGION") != "":
+		return "fly.io"
+	case os.Getenv("RAILWAY_PROJECT_ID") != "" || os.Getenv("RAILWAY_SERVICE_ID") != "" || os.Getenv("RAILWAY_ENVIRONMENT") != "":
+		return "railway.com"
+	case os.Getenv("RENDER") != "":
+		return "render.com"
+	case os.Getenv("VERCEL") != "":
+		return "vercel"
+	case os.Getenv("K_SERVICE") != "" || os.Getenv("K_REVISION") != "":
+		return "cloud-run"
+	case os.Getenv("DYNO") != "":
+		return "heroku"
+	default:
+		return "local"
+	}
 }
 
 // ErrorValidation returns a 422 with validation errors
@@ -336,8 +361,8 @@ func (h *UtilityHandlers) Chaos(w http.ResponseWriter, r *http.Request) {
 	// Random status codes (weighted towards common ones)
 	statusCodes := []int{
 		200, 200, 200, 200, 200, // 50% success
-		400, 401, 403, 404,       // 40% client errors
-		500, 502, 503,            // 30% server errors
+		400, 401, 403, 404, // 40% client errors
+		500, 502, 503, // 30% server errors
 	}
 	statusCode := statusCodes[rand.Intn(len(statusCodes))]
 

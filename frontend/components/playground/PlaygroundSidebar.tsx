@@ -42,6 +42,8 @@ export function PlaygroundSidebar() {
               <Link
                 key={tab.id}
                 href={tab.path}
+                data-umami-event="pg_tab"
+                data-umami-label={`Playground Tab ${tab.label}`}
                 className={`
                   w-full flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all text-left group
                   ${
@@ -67,6 +69,8 @@ export function PlaygroundSidebar() {
             </div>
             <Link
               href="/resources"
+              data-umami-event="pg_rs"
+              data-umami-label="Playground Browse Resources"
               className="w-full flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all text-left text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent group"
             >
               <Package className="w-5 h-5 flex-shrink-0 mt-0.5 text-slate-500 group-hover:text-primary-400 transition-colors" />

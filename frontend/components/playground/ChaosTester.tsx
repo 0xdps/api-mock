@@ -14,6 +14,7 @@ import {
   X
 } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -66,6 +67,14 @@ export function ChaosTester() {
   }, [results])
 
   const handleStart = async () => {
+    trackUmamiEvent('c_s', {
+      totalRequests,
+      concurrentRequests,
+      flakyRate,
+      maxDelay,
+      resource,
+    })
+
     setIsRunning(true)
     setResults([])
     setProgress(0)
@@ -117,10 +126,32 @@ export function ChaosTester() {
       setProgress((completed / totalRequests) * 100)
     }
     
+    const successfulCount = allResults.filter(result => result.success).length
+    const failedCount = allResults.length - successfulCount
+    const averageTime = allResults.length > 0
+      ? Math.round(allResults.reduce((sum, result) => sum + result.time, 0) / allResults.length)
+      : 0
+
+    trackUmamiEvent('c_ok', {
+      totalRequests,
+      completed: allResults.length,
+      successful: successfulCount,
+      failed: failedCount,
+      avgTime: averageTime,
+      resource,
+    })
+
     setIsRunning(false)
   }
 
   const handleStop = () => {
+    trackUmamiEvent('c_x', {
+      completed: stats.completed,
+      progress: Math.round(progress),
+      totalRequests,
+      resource,
+    })
+
     setIsRunning(false)
   }
 

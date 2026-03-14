@@ -15,6 +15,7 @@ import {
   PlusCircle
 } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -57,6 +58,11 @@ export function StatusCodeGenerator() {
   const [requestTime, setRequestTime] = useState<number | null>(null)
 
   const handleGenerate = async () => {
+    trackUmamiEvent('st_s', {
+      code: selectedCode,
+      hasCustomMessage: Boolean(customMessage),
+    })
+
     setLoading(true)
     setError(null)
     setResponse(null)
@@ -81,10 +87,20 @@ export function StatusCodeGenerator() {
         status: res.status,
         statusText: res.statusText,
       })
+
+      trackUmamiEvent('st_ok', {
+        code: selectedCode,
+        status: res.status,
+      })
     } catch (err: any) {
       const endTime = performance.now()
       setRequestTime(Math.round(endTime - startTime))
       setError(err.message)
+
+      trackUmamiEvent('st_er', {
+        code: selectedCode,
+        message: err.message,
+      })
     } finally {
       setLoading(false)
     }

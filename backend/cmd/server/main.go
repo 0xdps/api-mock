@@ -48,13 +48,13 @@ func main() {
 	// Initialize cache with configuration from environment
 	cacheModeStr := getEnvString("CACHE_MODE", "all") // off, local, remote, or all
 	cacheMode := cache.CacheMode(cacheModeStr)
-	
+
 	// If Redis failed to connect, force local-only mode
 	if redisStore == nil && (cacheMode == cache.CacheModeRemote || cacheMode == cache.CacheModeAll) {
 		log.Printf("⚠️  Redis unavailable, switching from '%s' to 'local' cache mode", cacheMode)
 		cacheMode = cache.CacheModeLocal
 	}
-	
+
 	// Validate cache mode
 	validModes := map[string]bool{
 		"off":    true,
@@ -66,9 +66,9 @@ func main() {
 		log.Printf("⚠️  Invalid CACHE_MODE '%s', defaulting to 'all'", cacheModeStr)
 		cacheMode = cache.CacheModeAll
 	}
-	
+
 	log.Printf("📦 Cache mode: %s", cacheMode)
-	
+
 	cacheConfig := cache.Config{
 		ItemsPerResource:    getEnvInt("CACHE_ITEMS_PER_RESOURCE", 100),
 		Seed:                getEnvInt64("CACHE_SEED", 42), // Fixed seed for reproducibility
@@ -77,6 +77,29 @@ func main() {
 	}
 
 	apiCache := cache.NewCache(registry, cacheConfig, redisStore)
+
+	// Backend analytics configuration (Umami)
+	umamiScriptURL := getEnvString("UMAMI_SCRIPT_URL", "")
+	umamiWebsiteID := getEnvString("UMAMI_WEBSITE_ID", "")
+	umamiHostname := getEnvString("UMAMI_HOSTNAME", "")
+	umamiBackendEnabled := getEnvBool("UMAMI_BACKEND_ENABLED", false)
+
+	if umamiBackendEnabled {
+		missingVars := make([]string, 0, 3)
+		if umamiScriptURL == "" {
+			missingVars = append(missingVars, "UMAMI_SCRIPT_URL")
+		}
+		if umamiWebsiteID == "" {
+			missingVars = append(missingVars, "UMAMI_WEBSITE_ID")
+		}
+		if umamiHostname == "" {
+			missingVars = append(missingVars, "UMAMI_HOSTNAME")
+		}
+
+		if len(missingVars) > 0 {
+			log.Fatalf("UMAMI_BACKEND_ENABLED=true requires env vars: %s", strings.Join(missingVars, ", "))
+		}
+	}
 
 	// Check if Redis already has data (only if Redis is available)
 	resourceNames := registry.GetAllResourceNames()
@@ -109,6 +132,7 @@ func main() {
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.SetupCORS().Handler)
+	r.Use(middleware.NewBackendAnalyticsMiddleware(umamiBackendEnabled, umamiWebsiteID, umamiScriptURL, umamiHostname))
 
 	// Global parameter middleware
 	r.Use(middleware.RequestIDMiddleware)
@@ -163,10 +187,10 @@ func main() {
 	// Testing utility routes - at root level
 	// Echo endpoint (all HTTP methods)
 	r.HandleFunc("/echo", utilityHandler.Echo)
-	
+
 	// Delay endpoint
 	r.Get("/delay/{ms}", utilityHandler.Delay)
-	
+
 	// Status code endpoint
 	r.Get("/status/{code}", utilityHandler.Status)
 

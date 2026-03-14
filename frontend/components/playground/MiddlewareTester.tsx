@@ -15,6 +15,7 @@ import {
   ArrowDown
 } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -99,6 +100,18 @@ export function MiddlewareTester() {
   }
 
   const handleTest = async () => {
+    trackUmamiEvent('m_s', {
+      resource,
+      delay,
+      flakyRate,
+      skipCache,
+      page,
+      limit,
+      hasSearch: Boolean(searchQuery),
+      hasRequestId: Boolean(requestId),
+      hasIdempotencyKey: Boolean(idempotencyKey),
+    })
+
     setLoading(true)
     setError(null)
     setResponse(null)
@@ -131,8 +144,18 @@ export function MiddlewareTester() {
         status: res.status,
         headers: responseHeaders,
       })
+
+      trackUmamiEvent('m_ok', {
+        resource,
+        status: res.status,
+      })
     } catch (err: any) {
       setError(err.message)
+
+      trackUmamiEvent('m_er', {
+        resource,
+        message: err.message,
+      })
     } finally {
       setLoading(false)
     }

@@ -48,6 +48,8 @@ export default async function Home() {
         <div className="flex gap-4 justify-center">
           <Link 
             href="/playground" 
+            data-umami-event="hero_pg"
+            data-umami-label="Hero Explore API"
             className="group bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-primary-500/20"
           >
             <Play className="w-4 h-4" /> Explore & Try API <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -56,6 +58,8 @@ export default async function Home() {
             href="https://github.com/0xdps/fake-stack" 
             target="_blank"
             rel="noopener noreferrer"
+            data-umami-event="hero_gh"
+            data-umami-label="Hero GitHub"
             className="bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2"
           >
             <Github className="w-4 h-4" /> View on GitHub

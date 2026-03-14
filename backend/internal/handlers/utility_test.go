@@ -72,7 +72,7 @@ func TestUtility_Echo(t *testing.T) {
 		formData.Set("username", "john_doe")
 		formData.Set("email", "john@example.com")
 		formData.Set("age", "25")
-		
+
 		req := httptest.NewRequest("POST", "/test/echo", strings.NewReader(formData.Encode()))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		w := httptest.NewRecorder()
@@ -109,22 +109,22 @@ func TestUtility_Echo(t *testing.T) {
 	t.Run("POST request with multipart form data", func(t *testing.T) {
 		body := &bytes.Buffer{}
 		writer := multipart.NewWriter(body)
-		
+
 		// Add form fields
 		writer.WriteField("title", "Test Document")
 		writer.WriteField("description", "This is a test")
 		writer.WriteField("tags", "test")
 		writer.WriteField("tags", "demo")
-		
+
 		// Add a fake file
 		part, err := writer.CreateFormFile("document", "test.txt")
 		if err != nil {
 			t.Fatal(err)
 		}
 		part.Write([]byte("This is test file content"))
-		
+
 		writer.Close()
-		
+
 		req := httptest.NewRequest("POST", "/test/echo", body)
 		req.Header.Set("Content-Type", writer.FormDataContentType())
 		w := httptest.NewRecorder()
@@ -155,7 +155,7 @@ func TestUtility_Echo(t *testing.T) {
 		if files == nil {
 			t.Error("Expected _files to be present")
 		}
-		
+
 		docFile := files["document"].(map[string]interface{})
 		if docFile["filename"] != "test.txt" {
 			t.Errorf("Expected filename=test.txt, got %v", docFile["filename"])
@@ -306,6 +306,7 @@ func TestUtility_DelayRandom(t *testing.T) {
 
 func TestUtility_Status(t *testing.T) {
 	handler := NewUtilityHandlers()
+	t.Setenv("PLATFORM", "test")
 
 	testCases := []struct {
 		code     string
@@ -339,6 +340,10 @@ func TestUtility_Status(t *testing.T) {
 			if response["code"].(float64) != float64(tc.expected) {
 				t.Errorf("Expected code %d in response, got %v", tc.expected, response["code"])
 			}
+
+			if response["platform"] != "test" {
+				t.Errorf("Expected platform=test, got %v", response["platform"])
+			}
 		})
 	}
 
@@ -353,6 +358,53 @@ func TestUtility_Status(t *testing.T) {
 
 		if w.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for invalid code, got %d", w.Code)
+		}
+	})
+}
+
+func TestDetectPlatform(t *testing.T) {
+	t.Run("uses explicit PLATFORM override", func(t *testing.T) {
+		t.Setenv("PLATFORM", "staging")
+		t.Setenv("FLY_APP_NAME", "mockly")
+
+		if got := detectPlatform(); got != "staging" {
+			t.Fatalf("Expected staging, got %s", got)
+		}
+	})
+
+	t.Run("detects fly.io", func(t *testing.T) {
+		t.Setenv("PLATFORM", "")
+		t.Setenv("FLY_APP_NAME", "mockly")
+
+		if got := detectPlatform(); got != "fly.io" {
+			t.Fatalf("Expected fly.io, got %s", got)
+		}
+	})
+
+	t.Run("detects railway.com", func(t *testing.T) {
+		t.Setenv("PLATFORM", "")
+		t.Setenv("FLY_APP_NAME", "")
+		t.Setenv("RAILWAY_PROJECT_ID", "abc123")
+
+		if got := detectPlatform(); got != "railway.com" {
+			t.Fatalf("Expected railway.com, got %s", got)
+		}
+	})
+
+	t.Run("falls back to local", func(t *testing.T) {
+		t.Setenv("PLATFORM", "")
+		t.Setenv("FLY_APP_NAME", "")
+		t.Setenv("RAILWAY_PROJECT_ID", "")
+		t.Setenv("RAILWAY_SERVICE_ID", "")
+		t.Setenv("RAILWAY_ENVIRONMENT", "")
+		t.Setenv("RENDER", "")
+		t.Setenv("VERCEL", "")
+		t.Setenv("K_SERVICE", "")
+		t.Setenv("K_REVISION", "")
+		t.Setenv("DYNO", "")
+
+		if got := detectPlatform(); got != "local" {
+			t.Fatalf("Expected local, got %s", got)
 		}
 	})
 }

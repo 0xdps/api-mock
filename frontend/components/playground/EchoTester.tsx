@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Play, RefreshCw, CheckCircle2, AlertCircle, Zap, Terminal, ClipboardList, X } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -56,6 +57,15 @@ export function EchoTester() {
   }
 
   const handleSend = async () => {
+    trackUmamiEvent('e_req_s', {
+      method,
+      contentType,
+      queryCount: queryParams.filter(p => p.key).length,
+      headerCount: headers.filter(h => h.key).length,
+      formFieldCount: formData.filter(f => f.key).length,
+      hasBody: ['POST', 'PUT', 'PATCH'].includes(method),
+    })
+
     setLoading(true)
     setError(null)
     setResponse(null)
@@ -106,8 +116,20 @@ export function EchoTester() {
         status: res.status,
         headers: Object.fromEntries(res.headers.entries())
       })
+
+      trackUmamiEvent('e_req_ok', {
+        method,
+        status: res.status,
+      })
     } catch (err: any) {
+      const endTime = performance.now()
+      setRequestTime(Math.round(endTime - startTime))
       setError(err.message)
+
+      trackUmamiEvent('e_req_er', {
+        method,
+        message: err.message,
+      })
     } finally {
       setLoading(false)
     }

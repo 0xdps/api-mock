@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
+import { UmamiAnalytics } from '@/components/UmamiAnalytics'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,11 +20,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         {children}
-        <Script
-          src="https://cloud.umami.is/script.js"
-          data-website-id="6ac40931-1eff-477b-bf98-7e517f787fc8"
-          strategy="afterInteractive"
-        />
+        <UmamiAnalytics />
       </body>
     </html>
   )

@@ -13,6 +13,7 @@ import {
   Check
 } from 'lucide-react'
 import { getApiUrl, apiClient } from '@/lib/api'
+import { trackUmamiEvent } from '@/lib/analytics'
 import { RequestResponseLayout } from './RequestResponseLayout'
 
 const API_URL = getApiUrl()
@@ -40,6 +41,11 @@ export function DelayTester() {
   }, [])
 
   const handleStart = async () => {
+    trackUmamiEvent('d_s', {
+      delay,
+      testType,
+    })
+
     setIsRunning(true)
     setProgress(0)
     setResults(null)
@@ -77,9 +83,21 @@ export function DelayTester() {
         data,
       })
       setProgress(100)
+
+      trackUmamiEvent('d_ok', {
+        delay,
+        actual: actualTime,
+        difference: actualTime - delay,
+        testType,
+      })
     } catch (err: any) {
       if (err.name !== 'AbortError') {
         setError(err.message)
+        trackUmamiEvent('d_er', {
+          delay,
+          testType,
+          message: err.message,
+        })
       }
     } finally {
       setIsRunning(false)
@@ -91,6 +109,12 @@ export function DelayTester() {
   }
 
   const handleStop = () => {
+    trackUmamiEvent('d_x', {
+      delay,
+      progress: Math.round(progress),
+      testType,
+    })
+
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
