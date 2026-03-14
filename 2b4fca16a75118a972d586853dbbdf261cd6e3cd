@@ -1,0 +1,51 @@
+backend/internal/middleware/analytics.go
+  a5e6f1bf376fd610 1-172
+frontend/components/playground/EchoTester.tsx
+  a5e6f1bf376fd610 6,61-68,119,121-122,125-126,128,130-132
+frontend/components/UmamiAnalytics.tsx
+  a5e6f1bf376fd610 1-83
+frontend/components/Header.tsx
+  a5e6f1bf376fd610 32
+frontend/components/playground/ChaosTester.tsx
+  a5e6f1bf376fd610 17,71-77,129-134,136-143,149-154
+frontend/components/PlaygroundClient.tsx
+  a5e6f1bf376fd610 20,121-127,147,149-152,159,161-165,170-174,176-178,577,621-622
+frontend/components/playground/MiddlewareTester.tsx
+  a5e6f1bf376fd610 18,104-114,147,149-150,154,156-158
+frontend/components/playground/StatusCodeGenerator.tsx
+  a5e6f1bf376fd610 18,62-65,90,92-93,99,101-103
+backend/internal/handlers/utility_test.go
+  a5e6f1bf376fd610 309,343-346,365-407
+frontend/components/playground/DelayTester.tsx
+  a5e6f1bf376fd610 16,45-48,86,88-92,97-100,113-117
+frontend/app/page.tsx
+  a5e6f1bf376fd610 52,62
+frontend/components/playground/PlaygroundSidebar.tsx
+  a5e6f1bf376fd610 46,73
+backend/cmd/server/main.go
+  a5e6f1bf376fd610 81-84,86-103,135
+backend/internal/handlers/utility.go
+  a5e6f1bf376fd610 11,264,268-288
+frontend/components/ResourceCard.tsx
+  a5e6f1bf376fd610 37,46,52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "2b4fca16a75118a972d586853dbbdf261cd6e3cd",
+  "prompts": {
+    "a5e6f1bf376fd610": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c5b7e9fd-5b28-4816-924c-25c1ca9b7d3a",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 629,
+      "total_deletions": 15,
+      "accepted_lines": 585,
+      "overriden_lines": 31
+    }
+  }
+}
