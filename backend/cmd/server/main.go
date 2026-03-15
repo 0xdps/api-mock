@@ -29,11 +29,7 @@ func main() {
 
 	// Initialize Redis (optional - gracefully handle connection failures)
 	redisConfig := redisstore.Config{
-		Host:       getEnvString("REDIS_HOST", "localhost"),
-		Port:       getEnvInt("REDIS_PORT", 6379),
-		Password:   getEnvString("REDIS_PASSWORD", ""),
-		DB:         getEnvInt("REDIS_DB", 0),
-		TLSEnabled: getEnvBool("REDIS_TLS_ENABLED", false),
+		URL: getEnvString("REDIS_URL", "redis://localhost:6379/0"),
 	}
 
 	redisStore, err := redisstore.NewStore(redisConfig)

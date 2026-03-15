@@ -2,10 +2,10 @@ package redisstore
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -19,29 +19,21 @@ type Store struct {
 
 // Config holds Redis connection configuration
 type Config struct {
-	Host       string
-	Port       int
-	Password   string
-	DB         int
-	TLSEnabled bool
+	// URL is the Redis connection URL.
+	// Formats:
+	//   redis://:password@host:port/db        (plain)
+	//   rediss://:password@host:port/db       (TLS)
+	URL string
 }
 
 // NewStore creates a new Redis store
 func NewStore(config Config) (*Store, error) {
-	// Configure TLS only if enabled (for Upstash Redis with TLS)
-	var tlsConfig *tls.Config
-	if config.TLSEnabled {
-		tlsConfig = &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		}
+	opts, err := redis.ParseURL(config.URL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid REDIS_URL: %w", err)
 	}
 
-	client := redis.NewClient(&redis.Options{
-		Addr:      fmt.Sprintf("%s:%d", config.Host, config.Port),
-		Password:  config.Password,
-		DB:        config.DB,
-		TLSConfig: tlsConfig,
-	})
+	client := redis.NewClient(opts)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -51,7 +43,12 @@ func NewStore(config Config) (*Store, error) {
 		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 	}
 
-	log.Printf("✅ Connected to Redis at %s:%d", config.Host, config.Port)
+	// Log host without exposing credentials
+	redisHost := opts.Addr
+	if u, err := url.Parse(config.URL); err == nil {
+		redisHost = u.Host
+	}
+	log.Printf("✅ Connected to Redis at %s", redisHost)
 
 	return &Store{
 		client: client,
