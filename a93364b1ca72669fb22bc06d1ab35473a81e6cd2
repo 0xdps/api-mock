@@ -1,0 +1,42 @@
+railway.toml
+  c3cdb7ff482aba26 31-33
+backend/.env.example
+  c3cdb7ff482aba26 12-16,21-35
+backend/internal/redisstore/redisstore.go
+  c3cdb7ff482aba26 8,22-26,31-33,36,46-51
+backend/cmd/server/main.go
+  c3cdb7ff482aba26 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "a93364b1ca72669fb22bc06d1ab35473a81e6cd2",
+  "prompts": {
+    "a5e6f1bf376fd610": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c5b7e9fd-5b28-4816-924c-25c1ca9b7d3a",
+        "model": "copilot/auto"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 90,
+      "overriden_lines": 0
+    },
+    "c3cdb7ff482aba26": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "916fb6fb-5c62-4127-adfa-9d19bb460202",
+        "model": "copilot/claude-sonnet-4.6"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>",
+      "messages": [],
+      "total_additions": 42,
+      "total_deletions": 30,
+      "accepted_lines": 40,
+      "overriden_lines": 2
+    }
+  }
+}
