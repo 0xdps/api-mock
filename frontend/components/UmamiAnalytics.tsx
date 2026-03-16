@@ -6,7 +6,7 @@ import Script from 'next/script'
 import { trackUmamiEvent } from '@/lib/analytics'
 
 const UMAMI_SCRIPT_SRC = 'https://manage.anately.sh/script.js'
-const UMAMI_WEBSITE_ID = 'cf979932-e5c7-4c0b-af26-66828359c028'
+const UMAMI_WEBSITE_ID = '6535c752-d8b4-4758-8710-98a1a5f6d751'
 
 function getElementLabel(element: HTMLElement): string {
   const explicitLabel = element.getAttribute('data-umami-label') || element.getAttribute('aria-label')
