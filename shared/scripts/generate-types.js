@@ -6,6 +6,7 @@ const path = require('path');
 // Directories
 const schemasDir = path.join(__dirname, '..', 'schemas');
 const typesOutputFile = path.join(__dirname, '..', '..', 'frontend', 'types', 'api.ts');
+const manifestOutputFile = path.join(__dirname, '..', '..', 'frontend', 'lib', 'schemas-manifest.ts');
 const backendSchemasDir = path.join(__dirname, '..', '..', 'backend', 'internal', 'schema', 'embedded');
 
 // Ensure output directories exist
@@ -44,7 +45,8 @@ for (const file of schemaFiles) {
   const content = fs.readFileSync(file, 'utf8');
   const schema = JSON.parse(content);
   const resourceName = path.basename(file, '.json');
-  schemas.push({ name: resourceName, schema });
+  const group = path.basename(path.dirname(file));
+  schemas.push({ name: resourceName, schema, group });
 }
 
 // Generate TypeScript types
@@ -94,9 +96,32 @@ for (const file of schemaFiles) {
   copiedCount++;
 }
 
+// Generate schemas manifest for frontend (avoids fs usage in Cloudflare Workers)
+const manifestEntries = schemas
+  .sort((a, b) => a.name.localeCompare(b.name))
+  .map(({ name, schema, group }) => `  { name: ${JSON.stringify(name)}, group: ${JSON.stringify(group)}, schema: ${JSON.stringify(schema)} }`)
+  .join(',\n');
+
+const manifestContent = `// Auto-generated schemas manifest - DO NOT EDIT
+// Run: pnpm --filter @api-mockly/shared generate-types
+
+export interface SchemaEntry {
+  name: string;
+  group: string;
+  schema: Record<string, any>;
+}
+
+export const schemasManifest: SchemaEntry[] = [
+${manifestEntries},
+];
+`;
+
+fs.writeFileSync(manifestOutputFile, manifestContent, 'utf8');
+
 // Output summary
 const schemaNames = schemas.map(s => s.name.charAt(0).toUpperCase() + s.name.slice(1)).join(', ');
 console.log(`✓ Generated TypeScript types for ${schemas.length} schemas`);
 console.log(`  Output: ${typesOutputFile}`);
+console.log(`✓ Generated schemas manifest at ${manifestOutputFile}`);
 console.log(`  Schemas: ${schemaNames}`);
 console.log(`✓ Copied ${copiedCount} schema files to backend/internal/schema/embedded/`);

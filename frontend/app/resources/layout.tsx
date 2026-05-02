@@ -1,31 +1,9 @@
 import { Header } from '@/components/Header'
 import { DocsSidebarWrapper } from '@/components/DocsSidebarWrapper'
-import fs from 'fs'
-import path from 'path'
+import { schemasManifest } from '@/lib/schemas-manifest'
 
 async function getSchemas() {
-  const schemasDir = path.join(process.cwd(), '../shared/schemas')
-  const schemas: Array<{ name: string; schema: any; group: string }> = []
-  
-  const entries = fs.readdirSync(schemasDir, { withFileTypes: true })
-  
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      const groupDir = path.join(schemasDir, entry.name)
-      const files = fs.readdirSync(groupDir).filter((f: string) => f.endsWith('.json'))
-      
-      for (const file of files) {
-        const content = fs.readFileSync(path.join(groupDir, file), 'utf-8')
-        schemas.push({
-          name: file.replace('.json', ''),
-          schema: JSON.parse(content),
-          group: entry.name
-        })
-      }
-    }
-  }
-  
-  return schemas.sort((a, b) => a.name.localeCompare(b.name))
+  return schemasManifest
 }
 
 export default async function DocsLayout({

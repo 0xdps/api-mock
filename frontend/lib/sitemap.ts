@@ -1,5 +1,4 @@
-import fs from 'fs'
-import path from 'path'
+import { schemasManifest } from './schemas-manifest'
 
 export interface SitemapUrl {
   loc: string
@@ -9,43 +8,17 @@ export interface SitemapUrl {
 }
 
 export function getAllResources(): Array<{ name: string; group: string }> {
-  const schemasDir = path.join(process.cwd(), '../shared/schemas')
-  const resources: Array<{ name: string; group: string }> = []
-  
-  if (!fs.existsSync(schemasDir)) {
-    return resources
-  }
-  
-  const entries = fs.readdirSync(schemasDir, { withFileTypes: true })
-  
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      const groupDir = path.join(schemasDir, entry.name)
-      const files = fs.readdirSync(groupDir).filter((f: string) => f.endsWith('.json'))
-      
-      for (const file of files) {
-        resources.push({
-          name: file.replace('.json', ''),
-          group: entry.name
-        })
-      }
-    }
-  }
-  
-  return resources.sort((a, b) => a.name.localeCompare(b.name))
+  return schemasManifest.map(({ name, group }) => ({ name, group }))
 }
 
 export function getAllGroups(): Record<string, string[]> {
-  const resources = getAllResources()
   const groups: Record<string, string[]> = {}
-  
-  for (const resource of resources) {
-    if (!groups[resource.group]) {
-      groups[resource.group] = []
+  for (const { name, group } of schemasManifest) {
+    if (!groups[group]) {
+      groups[group] = []
     }
-    groups[resource.group].push(resource.name)
+    groups[group].push(name)
   }
-  
   return groups
 }
 
