@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { trackUmamiEvent } from '@/lib/analytics'
 
-const UMAMI_SCRIPT_SRC = 'https://manage.anately.sh/script.js'
+const UMAMI_SCRIPT_SRC = 'https://assets.0xlabs.space/anately.js'
 const UMAMI_WEBSITE_ID = '6535c752-d8b4-4758-8710-98a1a5f6d751'
+const UMAMI_HOST_URL = 'https://analytics.0xlabs.space'
 
 function getElementLabel(element: HTMLElement): string {
   const explicitLabel = element.getAttribute('data-umami-label') || element.getAttribute('aria-label')
@@ -77,6 +78,7 @@ export function UmamiAnalytics() {
       src={UMAMI_SCRIPT_SRC}
       data-website-id={UMAMI_WEBSITE_ID}
       strategy="afterInteractive"
+      data-host-url={UMAMI_HOST_URL}
     />
   )
 }
