@@ -1,0 +1,33 @@
+frontend/app/resources/[resource]/page.tsx
+  5f4f62e5e6b260b1 3,13
+frontend/app/playground/[resource]/page.tsx
+  5f4f62e5e6b260b1 3,14
+frontend/lib/schemas-manifest.ts
+  5f4f62e5e6b260b1 1-111
+frontend/lib/sitemap.ts
+  5f4f62e5e6b260b1 1,11,16-18,20
+frontend/app/resources/layout.tsx
+  5f4f62e5e6b260b1 3,6
+shared/scripts/generate-types.js
+  5f4f62e5e6b260b1 9,48-49,99-120,125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "7ad03dbb6d8c023c34c7afa551fc007ea336d73d",
+  "prompts": {
+    "5f4f62e5e6b260b1": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "20b99c29-e02b-4d57-96b1-95622dbc868a",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap Singh",
+      "messages": [],
+      "total_additions": 149,
+      "total_deletions": 106,
+      "accepted_lines": 149,
+      "overriden_lines": 0
+    }
+  }
+}
