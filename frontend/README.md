@@ -376,7 +376,7 @@ See [lib/api.ts](lib/api.ts) for configuration.
 ## 📚 Related Documentation
 
 - **Project Overview:** [../README.md](../README.md)
-- **API Documentation:** https://mockly.codes/docs
+- **API Documentation:** https://www.mockly.codes/docs
 - **Backend Setup:** [../backend/README.md](../backend/README.md)
 - **Contributing:** [../CONTRIBUTING.md](../CONTRIBUTING.md)
 

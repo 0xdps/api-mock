@@ -45,7 +45,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://github.com/0xdps/fake-stack" 
+                  href="https://github.com/0xdps/api-mockly" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-slate-400 hover:text-white transition-colors duration-200 inline-flex items-center group"

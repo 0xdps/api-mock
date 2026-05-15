@@ -7,246 +7,266 @@
 
 ---
 
-🌐 **Live:** https://mockly.codes  
-📚 **Docs:** https://mockly.codes/docs  
-🎮 **Playground:** https://mockly.codes/playground
+🌐 **Live:** https://www.mockly.codes  
+📚 **Docs:** https://www.mockly.codes/docs  
+🎮 **Playground:** https://www.mockly.codes/playground  
+🤖 **AI-readable:** https://www.mockly.codes/llms.txt
 
 ## ✨ Features
 
 ### API Features
 
-- 🚀 **Schema-Driven** - Add new endpoints by creating JSON schemas (zero code!)
-- 🎯 **100+ Resources** - From users to weather, stocks to movies
-- 📂 **14 Categories** - Resources organized into logical groups (people, commerce, content, etc.)
-- 💡 **Realistic Data** - Powered by gofakeit with 50+ generators
-- ⚡ **Blazing Fast** - Redis + in-memory cache (<1ms responses)
-- 🔄 **Consistent Data** - Fixed seed ensures reproducible results
-- 🆓 **Free Forever** - No rate limits, open source and self-hostable
+- 🚀 **Schema-Driven** — Add new endpoints by creating a JSON schema. Zero code changes needed.
+- 🎯 **100+ Resources** — From users to weather, stocks to movies
+- 📂 **14 Categories** — People, Commerce, Business, Content, Social, Media, Travel, Location, Finance, Food, Education, Sports, Productivity, Reference
+- 💡 **Realistic Data** — Powered by gofakeit with 50+ generators
+- ⚡ **Fast** — Redis + in-memory cache (<1ms responses)
+- 🔄 **Consistent** — Fixed seed ensures reproducible results across restarts
+- 🆓 **Free Forever** — No rate limits, no account required for built-in resources
 
-### Advanced Query Features
+### Query Features
 
-- 📄 **Pagination** - page, limit, offset parameters
-- 🔀 **Sorting** - Sort by any field, ascending or descending
-- 🔍 **Search** - Full-text search with field targeting
-- 🎯 **Filtering** - Filter by field values (exact, range, contains)
-- ✂️ **Field Selection** - Return only specific fields
+- 📄 **Pagination** — `page`, `limit`, `offset`
+- 🔀 **Sorting** — `sort` + `order` on any field
+- 🔍 **Full-text search** — `q` with optional `search_fields` targeting
+- 🎯 **Filtering** — Exact, range (`>`, `<`, `>=`, `<=`), and substring (`~contains`, `~startsWith`, `~endsWith`) operators
+- ✂️ **Field selection** — `fields=id,name,price`
 
 ### Middleware & Testing
 
-- ⏱️ **Delay Simulation** - Test timeouts (max 30s)
-- 🎲 **Chaos Engineering** - Random failures with flakyRate
-- 🚫 **Cache Control** - Bypass cache for fresh data
-- 🏢 **Multi-tenancy** - Tenant isolation via X-Tenant-ID
-- 🔐 **RBAC** - Role-based testing via X-Role
-- 🔄 **Idempotency** - Safe retries with Idempotency-Key
-- 🔍 **Request Tracing** - Track requests with X-Request-ID
+- ⏱️ **Delay** — `?delay=2000` simulates slow responses (max 30s)
+- 🎲 **Chaos** — `?flakyRate=0.3` randomly returns 503s
+- 🚫 **Cache bypass** — `?skip_cache=true`
+- 🏢 **Multi-tenancy** — `X-Tenant-ID` header
+- 🔐 **RBAC** — `X-Role` header
+- 🔄 **Idempotency** — `Idempotency-Key` header
+- 🔍 **Tracing** — `X-Request-ID` header
 
 ### Frontend
 
-- 🎨 **Modern UI** - Next.js 16 + React 19 with SSR
-- 🎮 **Interactive Playground** - 50/50 split-screen with tabbed navigation
-- 📚 **Comprehensive Docs** - Live examples and code snippets
-- 📊 **Cache Management** - Admin endpoints for stats
-- 🤖 **Automated Build** - TypeScript types auto-generated
-- 🌐 **CORS Enabled** - Ready for frontend development
+- 🎨 **Next.js 16** + React 19, TypeScript, Tailwind CSS
+- 🎮 **Interactive Playground** — Live request/response, 5 utility tools
+- 📚 **Docs at `/docs`** — Complete API reference with code examples
+- 🤖 **AI-friendly** — `/llms.txt` and `/llms-full.txt` for LLM tools
+- 🌐 **Hosted on Cloudflare** via OpenNext
 
 ## 📦 Project Structure
 
 ```
-mockly/
-├── backend/          # Go API service (chi + gofakeit)
-│   ├── cmd/          # Application entry points
-│   ├── internal/     # Handlers, middleware, schema
-│   ├── Dockerfile    # Docker build config
-│   └── fly.toml      # Fly.io deployment config
-├── frontend/         # Next.js 16 website (React 19 + TypeScript + Tailwind)
-│   ├── app/          # Pages (landing, docs, playground)
-│   ├── components/   # React components
-│   └── lib/          # Utility functions
-├── shared/           # Source of truth for schemas & scripts
-│   ├── schemas/      # Resource definitions (user, post, etc.)
-│   └── scripts/      # Build scripts (generate-types.js)
-├── railway.toml      # Railway deployment config (optional)
-└── package.json      # Root scripts for dev workflow
+api-mockly/
+├── backend/              # Go API server (chi router, gofakeit)
+│   ├── cmd/server/       # Entry point
+│   ├── internal/         # Handlers, middleware, schema loader, cache
+│   └── Dockerfile        # Multi-stage Docker build
+├── frontend/             # Next.js 16 website
+│   ├── app/              # Pages: /, /docs, /playground, /templates, /resources
+│   ├── components/       # React components
+│   ├── lib/              # API client, schemas manifest
+│   └── wrangler.jsonc    # Cloudflare Workers / Pages config
+├── shared/               # Source of truth
+│   ├── schemas/          # JSON Schema definitions (one file per resource)
+│   └── scripts/          # generate-types.js (auto-generates frontend types)
+├── Dockerfile            # Root-level Docker build (used by Railway)
+├── railway.toml          # Railway deployment config
+└── Makefile              # Dev helpers
 ```
 
 ## 🚀 Quick Start
 
-### Development Setup
+### Prerequisites
 
-**1. Clone the repository:**
+- Go 1.23+
+- Node.js 20+
+- pnpm 9+
+
+### 1. Clone & install
 
 ```bash
 git clone https://github.com/0xdps/api-mockly.git
 cd api-mockly
-```
-
-**2. Install dependencies:**
-
-```bash
-# Install all workspace dependencies
 pnpm install
 ```
 
-**3. Start both API and website:**
+### 2. Start both services
 
 ```bash
 pnpm run dev
 ```
 
-This automatically:
+This runs:
+- ✅ Schema generation (`shared/schemas/` → `frontend/lib/schemas-manifest.ts`)
+- ✅ Go API at http://localhost:8080
+- ✅ Next.js site at http://localhost:3000
 
-- ✅ Generates TypeScript types from schemas
-- ✅ Starts API server on http://localhost:8080
-- ✅ Starts website on http://localhost:3000
-
-**Note:** Types are auto-generated on every build. No manual steps needed!
-
-**Or run separately:**
+Or run individually:
 
 ```bash
-# API only (Go backend)
+# Backend only
 make api-dev
 
-# Website only
+# Frontend only
 pnpm --filter frontend dev
 ```
 
-### Using the API
-
-**Basic Usage:**
+### 3. Try it
 
 ```bash
-# Get resources with pagination
-curl 'http://localhost:8080/products?page=1&limit=20'
+# Built-in resource — no auth
+curl "http://localhost:8080/products?limit=5&sort=price&order=asc"
 
-# Get single item
-curl http://localhost:8080/products/42
+# Search
+curl "http://localhost:8080/users?q=alice&limit=5"
 
-# Get resource metadata
-curl http://localhost:8080/products/meta
+# Single item
+curl "http://localhost:8080/products/42"
+
+# Schema metadata
+curl "http://localhost:8080/products/meta"
 ```
 
-**Advanced Queries:**
+## 🏗️ Build & Deploy
+
+### Backend → Railway
+
+The backend is a Dockerized Go binary deployed on [Railway](https://railway.com).
+
+**Local build:**
 
 ```bash
-# Search products
-curl 'http://localhost:8080/products?q=laptop&search_fields=name,description'
-
-# Sort products by price
-curl 'http://localhost:8080/products?sort=price&order=asc&limit=10'
-
-# Filter by category and price
-curl 'http://localhost:8080/products?category=Electronics&price<1000'
-
-# Select specific fields
-curl 'http://localhost:8080/products?fields=id,name,price&limit=50'
+# From the repo root (Railway builds from here)
+docker build -t api-mockly-backend .
+docker run -p 8080:8080 api-mockly-backend
 ```
 
-**Testing with Middleware:**
+**Deploy to Railway:**
 
 ```bash
-# Add 2-second delay
-curl 'http://localhost:8080/products?delay=2000'
+# Install Railway CLI
+npm install -g @railway/cli
 
-# Test with 50% failure rate
-curl 'http://localhost:8080/products?flakyRate=0.5'
+# Login and link
+railway login
+railway link          # Select your project
 
-# Bypass cache for fresh data
-curl 'http://localhost:8080/products?skip_cache=true'
+# Set environment variables (once)
+railway variables set CACHE_MODE=all
+railway variables set CACHE_ITEMS_PER_RESOURCE=100
+railway variables set CACHE_SEED=42
+railway variables set MAX_ITEMS_PER_RESOURCE=1000
+# Redis variables (REDIS_HOST, REDIS_PORT, REDIS_PASSWORD) are injected
+# automatically when you add a Redis plugin in the Railway dashboard.
 
-# Multi-tenant request
-curl -H "X-Tenant-ID: tenant-123" http://localhost:8080/products
+# Deploy
+railway up
 ```
 
-**Production API:**
+Railway uses `railway.toml` at the repo root which points to `Dockerfile`.
+On every push to `trunk`, Railway auto-deploys if GitHub integration is enabled.
+
+**Required environment variables:**
+
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` | set by Railway | HTTP listen port |
+| `REDIS_HOST` | — | Auto-set by Redis plugin |
+| `REDIS_PORT` | — | Auto-set by Redis plugin |
+| `REDIS_PASSWORD` | — | Auto-set by Redis plugin |
+| `REDIS_DB` | `0` | Redis database index |
+| `REDIS_TLS_ENABLED` | `false` | Set `true` for external Redis |
+| `CACHE_MODE` | `off` | `off` / `local` / `remote` / `all` |
+| `CACHE_ITEMS_PER_RESOURCE` | `100` | Items to pre-generate per resource |
+| `CACHE_SEED` | `42` | Seed for reproducible data |
+| `MAX_ITEMS_PER_RESOURCE` | `1000` | Max items requestable per resource |
+
+### Frontend → Cloudflare
+
+The frontend is a Next.js 16 app deployed to **Cloudflare Workers** using [OpenNext](https://github.com/opennextjs/opennextjs-cloudflare).
+
+**Local build:**
 
 ```bash
-curl 'https://api.mockly.codes/products?page=1&limit=20'
+cd frontend
+pnpm build                    # Compiles Next.js
+pnpm exec wrangler pages dev  # Preview locally via Wrangler
 ```
 
-📚 **Full API Documentation:** [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
-
-## 📚 Available Resources (100 Endpoints!)
-
-### 📂 Resource Groups
-
-Resources are organized into 14 logical categories:
-
-| Group               | Count | Resources                                                                                                                             | Description              |
-| ------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| 🛒 **Commerce**     | 14    | products, orders, payments, coupons, categories, tags, carts, wishlists, promotions, discounts, returns, refunds, shipping, inventory | E-commerce               |
-| 💼 **Business**     | 12    | companies, organizations, jobs, meetings, invoices, subscriptions, clients, contracts, proposals, departments, vendors, reports       | Business entities        |
-| ✈️ **Travel**       | 10    | hotels, flights, restaurants, properties, cars, tours, attractions, bookings, destinations, travelguides                              | Travel & hospitality     |
-| 👥 **People**       | 10    | users, contacts, students, players, employees, customers, profiles, authors, instructors, mentors                                     | User profiles and people |
-| 🎬 **Media**        | 10    | movies, books, albums, videos, images, songs, playlists, photos, audios, streams                                                      | Entertainment media      |
-| 💬 **Social**       | 9     | comments, reviews, messages, notifications, testimonials, likes, shares, followers, mentions                                          | Social interactions      |
-| 📝 **Content**      | 8     | articles, posts, news, podcasts, blogs, tutorials, guides, documents                                                                  | Written content          |
-| ✅ **Productivity** | 6     | todos, notes, projects, tasks, tickets, events                                                                                        | Task management          |
-| 🌍 **Location**     | 6     | countries, cities, weather, states, regions, coordinates                                                                              | Geographic data          |
-| 💰 **Finance**      | 6     | currencies, stocks, crypto, transactions, accounts, budgets                                                                           | Financial data           |
-| 📚 **Reference**    | 3     | faqs, quotes, languages                                                                                                               | Reference data           |
-| 🍔 **Food**         | 3     | recipes, ingredients, dishes                                                                                                          | Food & cooking           |
-| ⚽ **Sports**       | 2     | matches, teams                                                                                                                        | Sports data              |
-| 🎓 **Education**    | 1     | courses                                                                                                                               | Educational content      |
-
-### API Endpoints
-
-**Group Endpoints:**
+**Deploy to Cloudflare Pages:**
 
 ```bash
-GET /{group}                    # Group info (metadata only)
-GET /{group}/{resource}         # Collection via group path
-GET /{group}/{resource}/:id     # Single item via group path
+# Install Wrangler (if not already)
+pnpm add -g wrangler
+
+# Login
+wrangler login
+
+# Build + deploy (run from frontend/)
+cd frontend
+pnpm build
+pnpm exec wrangler pages deploy .open-next/assets --project-name api-mockly
 ```
 
-**Direct Resource Endpoints:**
+Or using the Workers deploy path (configured in `wrangler.jsonc`):
 
 ```bash
-GET /{resource}?count=N         # Collection (max 100)
-GET /{resource}/:id             # Single item
-GET /{resource}/meta            # Resource metadata
+cd frontend
+pnpm build
+pnpm exec wrangler deploy
 ```
 
-**Examples:**
+`wrangler.jsonc` is already configured:
+- **entry:** `.open-next/worker.js`
+- **assets:** `.open-next/assets`
+- **compatibility:** `nodejs_compat` flag, date `2026-05-02`
 
-```bash
-# Browse by category
-curl https://api.mockly.codes/people
-# Returns: {"group": "people", "resources": ["users", "contacts", ...], "count": 4}
+**CI/CD:** Connect the repo to Cloudflare Pages in the dashboard for automatic deployments on push. Set the build command to:
 
-# Get data via category path
-curl 'https://api.mockly.codes/people/users?count=5'
-
-# Or access directly (backwards compatible)
-curl 'https://api.mockly.codes/users?count=5'
+```
+cd frontend && pnpm build
 ```
 
-**Production API:** https://api.mockly.codes
+And the output directory to:
 
-## 🎯 Schema-Driven Development
+```
+frontend/.open-next/assets
+```
 
-### Adding a New Resource (Zero Code!)
+## 📚 Available Resources (100 Endpoints)
 
-**1. Create a schema** in `shared/schemas/`:
+Resources are organized into 14 categories:
 
-> **Note:** TypeScript types are automatically generated from schemas during build. No manual steps required!
+| Group | Count | Resources |
+|---|---|---|
+| 🛒 Commerce | 14 | products, orders, payments, coupons, categories, tags, carts, wishlists, promotions, discounts, returns, refunds, shipping, inventory |
+| 💼 Business | 12 | companies, organizations, jobs, meetings, invoices, subscriptions, clients, contracts, proposals, departments, vendors, reports |
+| ✈️ Travel | 10 | hotels, flights, restaurants, properties, cars, tours, attractions, bookings, destinations, travelguides |
+| 👥 People | 10 | users, contacts, students, players, employees, customers, profiles, authors, instructors, mentors |
+| 🎬 Media | 10 | movies, books, albums, videos, images, songs, playlists, photos, audios, streams |
+| 💬 Social | 9 | comments, reviews, messages, notifications, testimonials, likes, shares, followers, mentions |
+| 📝 Content | 8 | articles, posts, news, podcasts, blogs, tutorials, guides, documents |
+| ✅ Productivity | 6 | todos, notes, projects, tasks, tickets, events |
+| 🌍 Location | 6 | countries, cities, weather, states, regions, coordinates |
+| 💰 Finance | 6 | currencies, stocks, crypto, transactions, accounts, budgets |
+| 📚 Reference | 3 | faqs, quotes, languages |
+| 🍔 Food | 3 | recipes, ingredients, dishes |
+| ⚽ Sports | 2 | matches, teams |
+| 🎓 Education | 1 | courses |
+
+All accessible at `GET https://api.mockly.codes/{resource}`.
+
+## 🎯 Adding a New Resource
+
+Create a JSON schema in `shared/schemas/{group}/your-resource.json`:
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Order",
+  "title": "Widget",
   "type": "object",
   "x-resource": {
-    "name": "orders",
-    "singular": "order",
-    "description": "E-commerce orders",
-    "group": "commerce",
-    "routes": {
-      "path": "/orders",
-      "methods": ["GET"],
-      "aliases": ["/purchases"]
-    }
+    "name": "widgets",
+    "singular": "widget",
+    "description": "Example widget resource",
+    "group": "commerce"
   },
   "properties": {
     "id": {
@@ -254,275 +274,69 @@ curl 'https://api.mockly.codes/users?count=5'
       "x-generator": "random_int",
       "x-generator-params": { "min": 1, "max": 10000 }
     },
-    "total": {
-      "type": "number",
-      "x-generator": "random_int",
-      "x-generator-params": { "min": 10, "max": 500 }
-    },
-    "status": {
-      "type": "string",
-      "x-generator": "word"
-    }
+    "name": { "type": "string", "x-generator": "word" },
+    "price": { "type": "number", "x-generator": "price" },
+    "in_stock": { "type": "boolean", "x-generator": "bool" }
   }
 }
 ```
 
-**2. Restart the API server:**
+Then restart the API — `GET /widgets` is live. Types are auto-generated on the next `pnpm build`.
 
-```bash
-cd backend && make dev
-# or: go run cmd/server/main.go
-```
+See the full generator list in [`backend/internal/schema/loader.go`](./backend/internal/schema/loader.go).
 
-**That's it!** Your new endpoint is live at `/orders` 🎉
+## 🛠️ Tech Stack
 
-The build process automatically:
-
-- ✅ Syncs schemas to backend
-- ✅ Generates TypeScript types for frontend
-- ✅ Loads new routes in API server
-
-See [BUILD_PROCESS.md](./BUILD_PROCESS.md) for details.
-
-### Custom Routes
-
-Define custom paths, aliases, and methods in schemas:
-
-```json
-{
-  "x-resource": {
-    "name": "todos",
-    "routes": {
-      "path": "/todos",
-      "aliases": ["/tasks", "/todo-items"],
-      "methods": ["GET", "POST"]
-    }
-  }
-}
-```
-
-This creates:
-
-- ✅ `GET /todos`
-- ✅ `GET /tasks` (alias)
-- ✅ `GET /todo-items` (alias)
-
-### Supported Generators (200+)
-
-We support over 200 generators via gofakeit. Popular ones:
-
-**Personal:** `name`, `first_name`, `email`, `username`, `password`, `avatar`  
-**Address:** `address`, `city`, `country`, `zip_code`, `latitude`, `longitude`  
-**Company:** `company`, `job`, `catch_phrase`, `company_name`, `job_title`  
-**Internet:** `url`, `domain_name`, `ipv4`, `uuid`, `mac_address`, `image_url`  
-**Dates:** `date`, `date_time`, `past_date`, `future_date`, `time_zone`  
-**Text:** `word`, `sentence`, `paragraph`, `text`, `quote_text`  
-**Numbers:** `random_int`, `random_digit`, `random_number`, `float32`  
-**Weather:** `weather_temperature`, `weather_description`, `weather_humidity`  
-**Finance:** `currency_code`, `exchange_rate`, `stock_symbol`, `crypto_name`  
-**Geography:** `country_name`, `city_name`, `language_name`, `capital_city`  
-**Media:** `movie_title`, `book_title`, `album_title`, `video_title`  
-**Travel:** `flight_number`, `hotel_name`, `restaurant_name`, `recipe_name`  
-**Business:** `invoice_number`, `order_id`, `payment_status`, `ticket_id`  
-**Other:** `phone_number`, `boolean`, `user_agent`, `car_model`
-
-See all generators in [`backend/internal/schema/loader.go`](./backend/internal/schema/loader.go)
-
-## ⚡ Cache & Performance
-
-The backend uses an **in-memory cache with warmup on startup** for blazing fast responses:
-
-```bash
-🔥 Starting cache warmup (seed: 42, items per resource: 100)...
-✅ Cache warmup completed in 2.5s
-   📊 Resources: 100, Total items: 10,000
-```
-
-### Benefits
-
-- **<1ms response times** - Pre-generated data served from memory
-- **Consistent data** - Same ID always returns same object (perfect for testing)
-- **Reproducible** - Fixed seed (42) ensures same data across restarts
-- **Low CPU usage** - Generate once, serve thousands of times
-
-### Configuration
-
-Configure via environment variables:
-
-```bash
-# Number of items to cache per resource (default: 100)
-CACHE_ITEMS_PER_RESOURCE=100
-
-# Random seed for reproducible data (default: 42)
-CACHE_SEED=42
-```
-
-### Admin Endpoints
-
-```bash
-# View cache statistics
-GET /admin/cache/stats
-
-# Refresh cache (regenerate all data)
-POST /admin/cache/refresh
-```
-
-### Cache Bypass
-
-Get fresh data without using cache (useful for testing/demos):
-
-```bash
-# Via query parameter
-GET /users?nocache=true
-GET /products?fresh=true
-
-# Via header
-curl -H "X-No-Cache: true" http://localhost:8080/users
-curl -H "Cache-Control: no-cache" http://localhost:8080/products
-```
-
-All responses include `X-Cache` header:
-
-- `X-Cache: HIT` - Served from cache
-- `X-Cache: BYPASS` - Cache bypassed
-- `X-Cache: MISS` - Cache miss
-
-📖 **Full cache documentation:** [backend/CACHE.md](./backend/CACHE.md)  
-📖 **Cache bypass guide:** [backend/CACHE_BYPASS.md](./backend/CACHE_BYPASS.md)
-
-## 🚀 Deployment
-
-### Quick Deploy
-
-**Backend (Railway - Recommended):**
-
-```bash
-railway init
-railway add redis  # Automatically configures Redis
-railway up         # Deploys with schemas
-```
-
-**Backend (Fly.io - Alternative):**
-
-```bash
-cd backend
-make deploy  # Auto-syncs schemas and deploys
-```
-
-**Frontend (Vercel):**
-
-```bash
-cd frontend
-vercel --prod  # Auto-generates types and deploys
-```
-
-### Important: Schema Syncing
-
-The deployment process **automatically includes** all schemas:
-
-- ✅ Backend: Schemas copied from `shared/` during Docker build
-- ✅ Frontend: Types auto-generated via `prebuild` hook
-- ✅ No manual steps required!
-
-**📚 Complete Deployment Guide:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for:
-
-- Platform comparison (Railway vs Fly.io)
-- Detailed setup instructions for both platforms
-- Environment configuration
-- Troubleshooting guide
-- Production URLs and verification steps
-
-### Production URLs
-
-- **API:** https://api.mockly.codes
-- **Website:** https://mockly.codes
-- **Docs:** https://mockly.codes/docs
-- **Playground:** https://mockly.codes/playground
-
-## 🛠️ Technology Stack
-
-### Backend (API)
-
-- **Language:** Go 1.23+
-- **Router:** chi v5 (lightweight, idiomatic)
-- **Data Generation:** gofakeit/v7
-- **CORS:** go-chi/cors
-- **Deployment:** Fly.io
-
-### Frontend (Website)
-
-- **Framework:** Next.js 16 (App Router with SSR)
-- **Language:** TypeScript
-- **UI Library:** React 19
-- **Styling:** Tailwind CSS
-- **HTTP Client:** pingpong-fetch (universal, fast, type-safe)
-- **Rendering:** Server-Side with ISR (5-minute cache)
-- **Deployment:** Vercel
-- **API Integration:** https://api.mockly.codes
+| Layer | Technology |
+|---|---|
+| **API language** | Go 1.23 |
+| **API router** | chi v5 |
+| **Data generation** | gofakeit/v7 |
+| **Database** | MesaHub (SQLite-compatible, for user templates) |
+| **Cache** | Redis + in-memory |
+| **API deployment** | Railway (Docker) |
+| **Frontend framework** | Next.js 16 / React 19 |
+| **Frontend language** | TypeScript |
+| **Styling** | Tailwind CSS |
+| **Frontend adapter** | OpenNext for Cloudflare |
+| **Frontend deployment** | Cloudflare Workers / Pages |
 
 ## 📖 Documentation
 
-### API Documentation
-
-**Comprehensive API Reference:** [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)
-
-- 📋 Complete endpoint reference
-- 🔍 All query parameters (pagination, sorting, search, filtering)
-- 🛠️ All 11 middleware features documented
-- 💻 Code examples (JavaScript, Python, cURL)
-- 📊 Response formats and error handling
-- ✨ Best practices and advanced usage
-
-**Online Documentation:** Visit https://mockly.codes/docs for:
-
-- Quick start guide (4 languages)
-- Interactive schema explorer
-- Live "Try It" buttons
-- Real-time API status
-
-### Interactive Playground
-
-Visit https://mockly.codes/playground to:
-
-- 🎮 Test all API features
-- 📄 Pagination, sorting, search controls
-- 🛠️ Middleware testing (delay, flaky, cache)
-- 🔍 Request/response inspection
-- 📋 Copy code examples
-- 5 utility tools: Echo, Status, Delay, Middleware, Chaos
+| File | Contents |
+|---|---|
+| [mockly.codes/docs](https://www.mockly.codes/docs) | Human-readable full API reference |
+| [mockly.codes/llms.txt](https://www.mockly.codes/llms.txt) | Concise AI/LLM-readable reference |
+| [mockly.codes/llms-full.txt](https://www.mockly.codes/llms-full.txt) | Full API reference for AI code generation |
+| [backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md) | Raw backend API reference |
+| [DEPLOYMENT.md](./DEPLOYMENT.md) | Detailed deployment guide |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
+| [CHANGELOG.md](./CHANGELOG.md) | Version history |
 
 ## 🤝 Contributing
 
-Contributions welcome! The easiest way to contribute is to add new resource schemas:
+Contributions welcome! The easiest contribution is a new schema — no Go knowledge needed.
 
-1. Create `shared/schemas/your-resource.json`
-2. Test locally with `pnpm run dev` (types auto-generate!)
-3. Submit a PR
+1. Fork the repo
+2. Add `shared/schemas/{group}/your-resource.json`
+3. Run `pnpm run dev` and test `http://localhost:8080/your-resource`
+4. Open a PR
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guidelines.
 
-## 📚 Documentation
+## 📄 License
 
-- **[backend/API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)** - Comprehensive API reference
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide (Railway & Fly.io)
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
-- **[CHANGELOG.md](./CHANGELOG.md)** - Version history
-- **[backend/README.md](./backend/README.md)** - Backend setup
-- **[frontend/README.md](./frontend/README.md)** - Frontend setup
-
-## � License
-
-MIT License - see [LICENSE](./LICENSE)
+MIT — see [LICENSE](./LICENSE)
 
 ## 🙏 Acknowledgments
 
-Built with:
-
-- [gofakeit](https://github.com/brianvoe/gofakeit) - Fake data generation
-- [chi](https://github.com/go-chi/chi) - Lightweight Go router
-- [Next.js 16](https://nextjs.org/) - React framework with SSR
-- [React 19](https://react.dev/) - UI library
+- [gofakeit](https://github.com/brianvoe/gofakeit) — fake data generation
+- [chi](https://github.com/go-chi/chi) — Go HTTP router
+- [Next.js](https://nextjs.org/) — React framework
+- [OpenNext for Cloudflare](https://github.com/opennextjs/opennextjs-cloudflare) — Cloudflare adapter
 
 ---
 
 **Made with ❤️ by [Devendra Pratap](https://github.com/0xdps)**
+
+

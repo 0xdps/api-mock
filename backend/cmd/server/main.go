@@ -8,12 +8,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/0xdps/api-mock/go/internal/auth"
 	"github.com/0xdps/api-mock/go/internal/cache"
 	"github.com/0xdps/api-mock/go/internal/handlers"
 	"github.com/0xdps/api-mock/go/internal/middleware"
+	"github.com/0xdps/api-mock/go/internal/ratelimit"
 	"github.com/0xdps/api-mock/go/internal/redisstore"
 	"github.com/0xdps/api-mock/go/internal/schema"
 	"github.com/0xdps/api-mock/go/internal/static"
+	"github.com/0xdps/api-mock/go/internal/store"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
@@ -41,8 +44,96 @@ func main() {
 		defer redisStore.Close()
 	}
 
+	// ── Persistent store (MesaHub) ──────────────────────────────────────────
+	var (
+		userHandlers          *handlers.UserHandlers
+		templateAccessHandler *handlers.TemplateAccessHandler
+		sessionMiddleware     func(http.Handler) http.Handler
+		apiKeyMiddleware      func(http.Handler) http.Handler
+	)
+
+	mesahubURL := getEnvString("MESAHUB_URL", "")
+	if mesahubURL != "" {
+		dbStore, err := store.New(mesahubURL)
+		if err != nil {
+			log.Fatalf("Failed to connect to MesaHub: %v", err)
+		}
+		log.Printf("✅ Connected to MesaHub")
+
+		storeUsers := store.NewUsers(dbStore.DB())
+		storeTemplates := store.NewTemplates(dbStore.DB())
+		storeAPIKeys := store.NewAPIKeys(dbStore.DB())
+		storeUsageLogs := store.NewUsageLogs(dbStore.DB())
+
+		// nube-auth client
+		nubeGatewayURL := getEnvString("NUBE_GATEWAY_URL", "https://api.nubeauth.com")
+		nubeClient := auth.NewNubeClient(nubeGatewayURL)
+		log.Printf("✅ nube-auth client configured: %s", nubeGatewayURL)
+
+		// Redis client for auth + rate limiting (reuse existing connection)
+		var rdb interface {
+			Allow(ctx interface{}, key string, rpm int) (bool, error)
+		}
+		_ = rdb // rate limiter is wired separately below
+
+		var rateLimiter *ratelimit.Limiter
+		if redisStore != nil {
+			rateLimiter = ratelimit.New(redisStore.Client())
+			sessionMiddleware = auth.SessionMiddleware(nubeClient, redisStore.Client())
+			apiKeyMiddleware = auth.APIKeyMiddleware(storeAPIKeys, redisStore.Client())
+		} else {
+			rateLimiter = ratelimit.New(nil)
+			sessionMiddleware = auth.SessionMiddleware(nubeClient, nil)
+			apiKeyMiddleware = auth.APIKeyMiddleware(storeAPIKeys, nil)
+		}
+		_ = rateLimiter // used in route group below
+
+		userHandlers = handlers.NewUserHandlers(storeUsers, storeTemplates, storeAPIKeys, registry)
+		templateAccessHandler = handlers.NewTemplateAccessHandler(storeTemplates, storeUsageLogs, storeUsers, registry)
+
+		// Seed featured templates from the schema registry (idempotent — skips if already seeded)
+		if count, seedErr := storeTemplates.CountFeatured(); seedErr != nil {
+			log.Printf("⚠️  Featured template seed check failed: %v", seedErr)
+		} else if count >= len(registry.Schemas) {
+			log.Printf("✅ Featured templates already seeded (%d records)", count)
+		} else {
+			seeded := 0
+			for name, s := range registry.Schemas {
+				// Use the pre-stored raw JSON bytes to avoid re-marshaling Go structs
+				// whose string fields may reference embed.FS read-only pages (SIGBUS risk).
+				schemaJSON, ok := registry.SchemasRaw[name]
+				if !ok {
+					log.Printf("⚠️  Seed: no raw JSON for %s, skipping", name)
+					continue
+				}
+				slug := s.Resource.Name
+				if slug == "" {
+					slug = name
+				}
+				_, cErr := storeTemplates.CreateFeatured(&store.Template{
+					UserID:      store.SystemUserID,
+					Name:        s.Title,
+					Slug:        slug,
+					Description: s.Resource.Description,
+					Visibility:  "public",
+					Type:        "custom",
+					SchemaJSON:  string(schemaJSON),
+					IsFeatured:  true,
+				})
+				if cErr != nil {
+					log.Printf("⚠️  Seed: create %s: %v", slug, cErr)
+					continue
+				}
+				seeded++
+			}
+			log.Printf("✅ Seeded %d featured templates", seeded)
+		}
+	} else {
+		log.Printf("ℹ️  MESAHUB_URL not set — user/template features disabled")
+	}
+
 	// Initialize cache with configuration from environment
-	cacheModeStr := getEnvString("CACHE_MODE", "all") // off, local, remote, or all
+	cacheModeStr := getEnvString("CACHE_MODE", "off") // off, local, remote, or all
 	cacheMode := cache.CacheMode(cacheModeStr)
 
 	// If Redis failed to connect, force local-only mode
@@ -59,8 +150,8 @@ func main() {
 		"all":    true,
 	}
 	if !validModes[cacheModeStr] {
-		log.Printf("⚠️  Invalid CACHE_MODE '%s', defaulting to 'all'", cacheModeStr)
-		cacheMode = cache.CacheModeAll
+		log.Printf("⚠️  Invalid CACHE_MODE '%s', defaulting to 'off'", cacheModeStr)
+		cacheMode = cache.CacheModeOff
 	}
 
 	log.Printf("📦 Cache mode: %s", cacheMode)
@@ -109,18 +200,22 @@ func main() {
 		}
 	}
 
-	if hasData {
-		// Load from Redis
-		log.Printf("✅ Redis has existing data, loading into memory...")
-		if err := apiCache.LoadFromRedis(); err != nil {
-			log.Fatalf("Failed to load from Redis: %v", err)
+	if cacheMode != cache.CacheModeOff {
+		if hasData {
+			// Load from Redis
+			log.Printf("✅ Redis has existing data, loading into memory...")
+			if err := apiCache.LoadFromRedis(); err != nil {
+				log.Fatalf("Failed to load from Redis: %v", err)
+			}
+		} else {
+			// Generate and populate both Redis and in-memory
+			log.Printf("📝 Redis is empty, generating and populating cache...")
+			if err := apiCache.Warmup(); err != nil {
+				log.Fatalf("Failed to warmup cache: %v", err)
+			}
 		}
 	} else {
-		// Generate and populate both Redis and in-memory
-		log.Printf("📝 Redis is empty, generating and populating cache...")
-		if err := apiCache.Warmup(); err != nil {
-			log.Fatalf("Failed to warmup cache: %v", err)
-		}
+		log.Printf("📦 Cache mode is 'off', skipping warmup")
 	}
 
 	r := chi.NewRouter()
@@ -164,7 +259,7 @@ func main() {
 		response := map[string]any{
 			"message":   "Mockly API",
 			"version":   "1.0.0",
-			"docs":      "https://mockly.codes/docs",
+			"docs":      "https://www.mockly.codes/docs",
 			"resources": resourceNames,
 			"groups":    groups,
 			"platform":  platform,
@@ -436,6 +531,63 @@ func main() {
 	log.Printf("📊 Admin routes:")
 	log.Printf("   GET  /admin/cache/stats   - View cache statistics")
 	log.Printf("   POST /admin/cache/refresh - Refresh cache")
+
+	// ── User + Template platform routes (requires MesaHub) ─────────────────
+	if userHandlers != nil && templateAccessHandler != nil {
+		// POST /auth/sync — upsert nube-auth user (requires session token)
+		r.With(sessionMiddleware).Post("/auth/sync", userHandlers.SyncUser)
+
+		// GET /me — current user (requires session token)
+		r.With(sessionMiddleware).Get("/me", userHandlers.GetMe)
+
+		// /me/templates — CRUD (requires session token)
+		r.With(sessionMiddleware).Route("/me/templates", func(r chi.Router) {
+			r.Get("/", userHandlers.ListTemplates)
+			r.Post("/", userHandlers.CreateTemplate)
+			r.Get("/{id}", userHandlers.GetTemplate)
+			r.Put("/{id}", userHandlers.UpdateTemplate)
+			r.Delete("/{id}", userHandlers.DeleteTemplate)
+		})
+
+		// /me/api-keys — manage personal keys (requires session token)
+		r.With(sessionMiddleware).Route("/me/api-keys", func(r chi.Router) {
+			r.Get("/", userHandlers.ListAPIKeys)
+			r.Post("/", userHandlers.CreateAPIKey)
+			r.Delete("/{id}", userHandlers.RevokeAPIKey)
+		})
+
+		// /me/access-key — manage public access key (requires session token)
+		r.With(sessionMiddleware).Get("/me/access-key", userHandlers.GetAccessKeyInfo)
+		r.With(sessionMiddleware).Post("/me/access-key/regenerate", userHandlers.RegenerateAccessKey)
+
+		// GET /templates — public template discovery (no auth required)
+		r.Get("/templates", userHandlers.ListPublicTemplates)
+
+		// GET /templates/{id} — public single-template metadata (no auth required)
+		r.Get("/templates/{id}", userHandlers.GetPublicTemplate)
+
+		// /t/{templateId} — data generation from user templates (requires API key)
+		r.With(apiKeyMiddleware).Route("/t", func(r chi.Router) {
+			r.Get("/{templateId}", templateAccessHandler.GetTemplateData)
+			r.Get("/{templateId}/meta", templateAccessHandler.GetTemplateMeta)
+		})
+
+		// /v1/{slug} — public access to featured templates (no API key required)
+		r.Get("/v1/{slug}", templateAccessHandler.GetBySlugPublic)
+
+		log.Printf("🔑 Platform routes registered:")
+		log.Printf("   POST /auth/sync                 - Sync nube-auth user")
+		log.Printf("   GET  /me                        - Current user")
+		log.Printf("   CRUD /me/templates[/{id}]       - Template management")
+		log.Printf("   CRUD /me/api-keys[/{id}]        - Personal API keys")
+		log.Printf("   GET  /me/access-key             - Public access key info")
+		log.Printf("   POST /me/access-key/regenerate  - Regenerate access key")
+		log.Printf("   GET  /templates                 - Public template discovery")
+		log.Printf("   GET  /templates/{id}            - Public template metadata")
+		log.Printf("   GET  /t/{templateId}            - Generate data from template")
+		log.Printf("   GET  /t/{templateId}/meta       - Template schema metadata")
+		log.Printf("   GET  /v1/{slug}                 - Generate data from featured template (no auth)")
+	}
 
 	// Start server
 	port := os.Getenv("PORT")

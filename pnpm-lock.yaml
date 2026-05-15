@@ -19,9 +19,18 @@ importers:
       '@api-mockly/shared':
         specifier: workspace:*
         version: link:../shared
+      '@nube-auth/client':
+        specifier: ^0.3.3
+        version: 0.3.3
+      '@nube-auth/react':
+        specifier: ^0.1.8
+        version: 0.1.8(react@19.0.0)
       '@pingpong-js/fetch':
         specifier: ^1.0.2
         version: 1.0.2
+      '@tanstack/react-query':
+        specifier: ^5.100.10
+        version: 5.100.10(react@19.0.0)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1100,6 +1109,17 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
+  '@nube-auth/client@0.3.1':
+    resolution: {integrity: sha512-lWLuJtVmu15/5HC2Cv4en57aUP9jRiEqWe24Y/V0hszgr4mZq9kGH8gvcYzuA78kSAkSPSmbru6TdgsHJJetUA==}
+
+  '@nube-auth/client@0.3.3':
+    resolution: {integrity: sha512-+yyArGzCvmX7sWpMffqRHjFeUBxTfbwr0f/h6R2vMmKKb14JCPtPzS7Rk33vssaWKniGuKOGCPSREg5keKQ4zg==}
+
+  '@nube-auth/react@0.1.8':
+    resolution: {integrity: sha512-75Lab/IAh3sCdwRFc87pe54cnCoeXLcFFIr6NCvhsR5NGgTiSEgi8Val7dm20vxNT4WP3B7+NRk9daqN8o/usg==}
+    peerDependencies:
+      react: '>=18.0.0'
+
   '@opennextjs/aws@3.10.4':
     resolution: {integrity: sha512-xVmWHGdptJgVhQivuoeAYqsWpIgGoDEeZJC6AYMgvQYisDicGuS7gh10Z8MEmrgsJxNGdZ0arCCDieGxM88afw==}
     hasBin: true
@@ -1442,6 +1462,14 @@ packages:
 
   '@tailwindcss/postcss@4.1.18':
     resolution: {integrity: sha512-Ce0GFnzAOuPyfV5SxjXGn0CubwGcuDB0zcdaPuCSzAa/2vII24JTkH+I6jcbXLb1ctjZMZZI6OjDaLPJQL1S0g==}
+
+  '@tanstack/query-core@5.100.10':
+    resolution: {integrity: sha512-8UR0yJR+GiQ40m3lPhUr0xbfAupe6GSQiksSBSa9SM2NjezFyxXCIA69/lz8cSoNKZLrw1/PktIyQBJcVeMi3w==}
+
+  '@tanstack/react-query@5.100.10':
+    resolution: {integrity: sha512-FLaZf2RCrA/Zgp4aiu5tG3TyasTRO7aZ99skxQpr3Hg/zXOhu6yq5FZCYQ/tRaJtM9ylnoK8tFK7PolXQadv6Q==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tsconfig/node18@1.0.3':
     resolution: {integrity: sha512-RbwvSJQsuN9TB04AQbGULYfOGE/RnSFk/FLQ5b0NmDf5Kx2q/lABZbHQPKCO1vZ6Fiwkplu+yb9pGdLy1iGseQ==}
@@ -4841,6 +4869,20 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
+  '@nube-auth/client@0.3.1':
+    dependencies:
+      '@pingpong-js/fetch': 1.0.2
+
+  '@nube-auth/client@0.3.3':
+    dependencies:
+      '@pingpong-js/fetch': 1.0.2
+
+  '@nube-auth/react@0.1.8(react@19.0.0)':
+    dependencies:
+      '@nube-auth/client': 0.3.1
+      '@tanstack/react-query': 5.100.10(react@19.0.0)
+      react: 19.0.0
+
   '@opennextjs/aws@3.10.4(next@16.2.4(@babel/core@7.29.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
       '@ast-grep/napi': 0.40.5
@@ -5314,6 +5356,13 @@ snapshots:
       '@tailwindcss/oxide': 4.1.18
       postcss: 8.5.6
       tailwindcss: 4.1.18
+
+  '@tanstack/query-core@5.100.10': {}
+
+  '@tanstack/react-query@5.100.10(react@19.0.0)':
+    dependencies:
+      '@tanstack/query-core': 5.100.10
+      react: 19.0.0
 
   '@tsconfig/node18@1.0.3': {}
 

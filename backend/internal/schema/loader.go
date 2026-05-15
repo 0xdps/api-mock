@@ -49,22 +49,22 @@ type PropertySchema struct {
 	Properties      map[string]PropertySchema `json:"properties,omitempty"`
 	Items           *PropertySchema           `json:"items,omitempty"`
 	GeneratorCount  int                       `json:"x-generator-count,omitempty"`
-	
+
 	// Enum constraints
 	Enum []interface{} `json:"enum,omitempty"`
-	
+
 	// Numeric constraints
 	Minimum          *float64 `json:"minimum,omitempty"`
 	Maximum          *float64 `json:"maximum,omitempty"`
 	ExclusiveMinimum *float64 `json:"exclusiveMinimum,omitempty"`
 	ExclusiveMaximum *float64 `json:"exclusiveMaximum,omitempty"`
 	MultipleOf       *float64 `json:"multipleOf,omitempty"`
-	
+
 	// String constraints
-	MinLength *int    `json:"minLength,omitempty"`
-	MaxLength *int    `json:"maxLength,omitempty"`
-	Pattern   string  `json:"pattern,omitempty"`
-	
+	MinLength *int   `json:"minLength,omitempty"`
+	MaxLength *int   `json:"maxLength,omitempty"`
+	Pattern   string `json:"pattern,omitempty"`
+
 	// Array constraints
 	MinItems    *int `json:"minItems,omitempty"`
 	MaxItems    *int `json:"maxItems,omitempty"`
@@ -92,13 +92,15 @@ type Field struct {
 
 // Registry holds all loaded schemas
 type Registry struct {
-	Schemas map[string]*Schema
+	Schemas    map[string]*Schema
+	SchemasRaw map[string][]byte // original JSON bytes, safe to marshal without re-encoding
 }
 
 // NewRegistry creates a new schema registry
 func NewRegistry() *Registry {
 	return &Registry{
-		Schemas: make(map[string]*Schema),
+		Schemas:    make(map[string]*Schema),
+		SchemasRaw: make(map[string][]byte),
 	}
 }
 
@@ -171,6 +173,12 @@ func (r *Registry) loadSchemaFromData(data []byte, filename string) error {
 	}
 
 	r.Schemas[schema.Resource.Name] = &schema
+	// Store a heap-allocated copy of the raw bytes so callers (e.g. the seeder)
+	// can use the original JSON without re-marshaling through Go structs whose
+	// string fields may still reference the embed.FS read-only segment.
+	raw := make([]byte, len(data))
+	copy(raw, data)
+	r.SchemasRaw[schema.Resource.Name] = raw
 	return nil
 }
 
@@ -198,7 +206,7 @@ func (s *Schema) ValidateItem(item map[string]interface{}, skipFields ...string)
 	for _, field := range skipFields {
 		skipMap[field] = true
 	}
-	
+
 	for _, requiredField := range s.Required {
 		if skipMap[requiredField] {
 			continue
@@ -287,7 +295,7 @@ func validateProperty(name string, value interface{}, schema PropertySchema) err
 
 	case "number", "integer":
 		var numValue float64
-		
+
 		switch v := value.(type) {
 		case float64:
 			numValue = v
@@ -461,7 +469,7 @@ func validateFormat(name string, value string, format string) error {
 			}
 		}
 
-	// Note: Other formats like ipv6, time, regex, etc. can be added as needed
+		// Note: Other formats like ipv6, time, regex, etc. can be added as needed
 	}
 
 	return nil
@@ -596,6 +604,13 @@ func (r *Registry) inferGeneratorType(prop PropertySchema) string {
 	default:
 		return "word"
 	}
+}
+
+// GenerateFromSchema generates fake data from a Schema struct directly,
+// without requiring it to be registered in the Registry.
+func (r *Registry) GenerateFromSchema(s *Schema, count int) ([]map[string]interface{}, error) {
+	fields := r.SchemaToFields(s)
+	return r.generateRecords(fields, count)
 }
 
 // GenerateData generates fake data for a resource

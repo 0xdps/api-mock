@@ -193,9 +193,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Patch (0.0.X):** Bug fixes, backward compatible
 
 ### Links
-- [Website](https://mockly.codes)
+- [Website](https://www.mockly.codes)
 - [API](https://api.mockly.codes)
-- [Documentation](https://mockly.codes/docs)
-- [Playground](https://mockly.codes/playground)
+- [Documentation](https://www.mockly.codes/docs)
+- [Playground](https://www.mockly.codes/playground)
 - [GitHub Repository](https://github.com/0xdps/api-mock)
 - [Issue Tracker](https://github.com/0xdps/api-mock/issues)

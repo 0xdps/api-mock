@@ -1,5 +1,19 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mockly.codes/sitemap.xml
+Sitemap: https://www.mockly.codes/sitemap.xml
+
+# AI / LLM
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# LLM-friendly docs
+# https://www.mockly.codes/llms.txt
+# https://www.mockly.codes/llms-full.txt
 

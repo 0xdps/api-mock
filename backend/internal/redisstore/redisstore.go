@@ -285,6 +285,12 @@ func (s *Store) HasResources(resourceNames []string) (bool, error) {
 	return false, nil
 }
 
+// Client returns the underlying *redis.Client for use by other packages
+// (e.g. auth middleware, rate limiter).
+func (s *Store) Client() *redis.Client {
+	return s.client
+}
+
 // Close closes the Redis connection
 func (s *Store) Close() error {
 	return s.client.Close()

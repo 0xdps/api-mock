@@ -23,7 +23,7 @@ export default async function DocsLayout({
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
-      <Header />
+      <Header compact />
       
       <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
         {/* Sidebar - Fixed width on desktop */}

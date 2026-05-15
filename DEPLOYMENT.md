@@ -1,535 +1,216 @@
 # Deployment Guide
 
-## 🚀 Backend Deployment
+Mockly has two independently deployed services:
 
-### Platform Options
-
-Choose your deployment platform:
-
-- **[Railway](#railway-deployment-recommended)** - Modern platform with built-in Redis, simpler configuration
-- **[Fly.io](#flyio-deployment)** - Global edge network, multi-region support
+| Service | Platform | Config file |
+|---|---|---|
+| **Backend** (Go API) | Railway | `railway.toml`, `Dockerfile` |
+| **Frontend** (Next.js) | Cloudflare Workers | `frontend/wrangler.jsonc` |
 
 ---
 
-## Railway Deployment (Recommended)
+## Backend → Railway
+
+The backend is a Dockerized Go binary. Railway builds it from the repo root using `Dockerfile` and `railway.toml`.
 
 ### Prerequisites
 
-1. **Install Railway CLI:**
-
 ```bash
-# macOS (Homebrew)
-brew install railway
-
-# pnpm
-pnpm install -g @railway/cli
-```
-
-2. **Login to Railway:**
-
-```bash
+npm install -g @railway/cli
 railway login
 ```
 
-### Quick Start
+### First-time setup
+
+1. **Create a project on [railway.com](https://railway.com)**
+2. **Add a Redis plugin** (Dashboard → New → Database → Redis). Railway auto-injects `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`.
+3. **Link your local clone:**
 
 ```bash
-# From repository root
-railway init
+railway link    # select your project
+```
 
-# Add Redis (automatically configures connection)
-railway add redis
+4. **Add a Redis database** in the Railway dashboard: New > Database > Redis. This injects `${{Redis.REDIS_URL}}` automatically.
 
-# Set environment variables
-railway variables set REDIS_DB=0
-railway variables set REDIS_TLS_ENABLED=false
+5. **Set environment variables:**
+
+```bash
+# Reference the Redis plugin (Railway resolves ${{...}} in variable values)
+railway variables set 'REDIS_URL=${{Redis.REDIS_URL}}'
 railway variables set CACHE_MODE=all
 railway variables set CACHE_ITEMS_PER_RESOURCE=100
 railway variables set CACHE_SEED=42
 railway variables set MAX_ITEMS_PER_RESOURCE=1000
+# Required for user/template features:
+railway variables set MESAHUB_URL=<your-mesahub-url>
+railway variables set NUBE_GATEWAY_URL=https://api.nubeauth.com
+```
 
-# Deploy
+6. **Deploy:**
+
+```bash
 railway up
 ```
 
-### GitHub Integration (Auto-deploy)
+### Auto-deploy on push
 
-1. Connect your GitHub repository to Railway
-2. Railway auto-deploys on every push to main/trunk
-3. Redis connection variables are automatically injected
+Connect your GitHub repo in the Railway dashboard (Settings → Source). Railway will auto-deploy on every push to `trunk`.
 
-### Configuration
-
-Railway uses the existing `Dockerfile` and automatically:
-
-- ✅ Builds from repository root
-- ✅ Copies schemas from `shared/schemas/`
-- ✅ Provisions Redis on internal network (no TLS needed)
-- ✅ Injects environment variables
-- ✅ Assigns public URL with SSL
-
-### Environment Variables
-
-**Automatically set by Railway:**
-
-- `PORT` - Service port (auto)
-- `REDIS_HOST` - From Redis plugin (auto)
-- `REDIS_PORT` - From Redis plugin (auto)
-- `REDIS_PASSWORD` - From Redis plugin (auto)
-
-**Set manually:**
-
-- `REDIS_DB=0`
-- `REDIS_TLS_ENABLED=false`
-- `CACHE_MODE=all`
-- `CACHE_ITEMS_PER_RESOURCE=100`
-- `CACHE_SEED=42`
-- `MAX_ITEMS_PER_RESOURCE=1000`
-
-### Verification
+### Local Docker build (same as Railway)
 
 ```bash
-# Get deployment URL
-railway domain
+# From repo root — mirrors what Railway builds
+docker build -t api-mockly-backend .
+docker run -p 8080:8080 \
+  -e CACHE_MODE=local \
+  -e CACHE_ITEMS_PER_RESOURCE=100 \
+  -e CACHE_SEED=42 \
+  api-mockly-backend
+```
 
-# Test API
+### Environment variables reference
+
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` | set by Railway | HTTP listen port |
+| `REDIS_HOST` | — | Auto-set by Redis plugin |
+| `REDIS_PORT` | — | Auto-set by Redis plugin |
+| `REDIS_PASSWORD` | — | Auto-set by Redis plugin |
+| `REDIS_DB` | `0` | Redis database index |
+| `REDIS_TLS_ENABLED` | `false` | Enable TLS for external Redis |
+| `CACHE_MODE` | `off` | `off` / `local` / `remote` / `all` |
+| `CACHE_ITEMS_PER_RESOURCE` | `100` | Items pre-generated per resource |
+| `CACHE_SEED` | `42` | Seed for reproducible data |
+| `MAX_ITEMS_PER_RESOURCE` | `1000` | Max items per request |
+| `MESAHUB_URL` | — | MesaHub DB URL (for user templates) |
+| `MESAHUB_TOKEN` | — | MesaHub auth token |
+| `NUBE_JWKS_URL` | — | JWKS endpoint for auth token validation |
+
+### Verify
+
+```bash
+railway logs               # tail logs
+railway domain             # get your public URL
+
 curl https://your-app.up.railway.app/
-
-# View logs
-railway logs
-
-# Check status
-railway status
+# → {"api":"mockly","version":"...","resources":100}
 ```
 
 ---
 
-## Fly.io Deployment
+## Frontend → Cloudflare
+
+The frontend is a Next.js 16 app deployed to **Cloudflare Workers** using [OpenNext for Cloudflare](https://github.com/opennextjs/opennextjs-cloudflare).
 
 ### Prerequisites
 
-1. **Install Fly CLI:**
+```bash
+pnpm add -g wrangler
+wrangler login
+```
+
+### Build
 
 ```bash
-curl -L https://fly.io/install.sh | sh
+cd frontend
+pnpm build
 ```
 
-2. **Login to Fly.io:**
+This runs (in order):
+1. `generate-types` — generates `lib/schemas-manifest.ts` from `shared/schemas/`
+2. `next build` — compiles the Next.js app
+3. `wrangler build` (via OpenNext) — outputs `.open-next/`
+
+The output is:
+- `.open-next/worker.js` — Cloudflare Worker entry point
+- `.open-next/assets/` — static assets
+
+### Deploy to Cloudflare Pages
 
 ```bash
-flyctl auth login
+cd frontend
+pnpm build
+wrangler pages deploy .open-next/assets --project-name api-mockly
 ```
 
-### Important: Schema Syncing for Deployment
-
-The backend deployment **automatically includes all schemas** from `shared/schemas/`. Here's how it works:
-
-```
-Repository Root
-├── shared/schemas/          ← Source schemas
-│   └── *.json
-└── backend/
-    ├── Dockerfile           ← Copies from shared/schemas/
-    ├── fly.toml            ← Builds from root directory
-    └── internal/schema/
-        └── embedded/        ← Schemas copied here during build
-```
-
-### Deployment Process
-
-#### Method 1: Using Makefile (Recommended)
+Or via the Workers route (configured in `wrangler.jsonc`):
 
 ```bash
-# From backend directory
-cd backend
-make deploy
+cd frontend
+pnpm build
+wrangler deploy
 ```
 
-This automatically:
-
-- ✅ Syncs schemas before deployment
-- ✅ Builds from repository root
-- ✅ Deploys to Fly.io
-
-#### Method 2: Using Fly CLI Directly
+### Preview locally
 
 ```bash
-# From repository root
-flyctl deploy --config backend/fly.toml
+cd frontend
+pnpm build
+wrangler pages dev .open-next/assets
 ```
 
-**Important:** Always deploy from the **repository root**, not from the `backend/` directory.
+### CI/CD via Cloudflare Pages dashboard
 
-#### Method 3: First-Time Setup
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+2. Select the `api-mockly` repo
+3. Set:
+   - **Build command:** `cd frontend && pnpm build`
+   - **Build output directory:** `frontend/.open-next/assets`
+   - **Root directory:** `/` (repo root)
+4. Add environment variables if needed (see below)
+5. Every push to `trunk` triggers a deployment automatically.
 
-If deploying for the first time:
+### wrangler.jsonc overview
 
-```bash
-# From repository root
-cd backend
-flyctl launch --no-deploy
-
-# Edit fly.toml if needed
-# Then deploy
-cd ..
-flyctl deploy --config backend/fly.toml
+```jsonc
+{
+  "name": "api-mockly",
+  "compatibility_date": "2026-05-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": ".open-next/worker.js",
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}
 ```
 
-### Docker Build Process
+### Environment variables (frontend)
 
-The Dockerfile is designed to:
+Set these in the Cloudflare Pages dashboard under Settings → Environment Variables:
 
-1. **Build from repository root** to access `shared/schemas/`
-2. **Copy schemas** into `backend/internal/schema/embedded/`
-3. **Build Go binary** with embedded schemas
-4. **Create minimal Alpine image** (~20MB)
-
-### How Fly.io Finds Schemas
-
-The `fly.toml` configuration specifies:
-
-```toml
-[build]
-  dockerfile = "backend/Dockerfile"
-  ignorefile = ".dockerignore"
-```
-
-The Dockerfile then:
-
-```dockerfile
-# Copy shared schemas to backend
-COPY shared/schemas/*.json internal/schema/embedded/
-```
-
-### Testing Docker Build Locally
-
-```bash
-# From repository root
-docker build -f backend/Dockerfile -t api-mockly:latest .
-
-# Run locally
-docker run -p 8080:8080 api-mockly:latest
-
-# Test
-curl http://localhost:8080/
-```
-
-Or use the Makefile:
-
-```bash
-cd backend
-make docker-build    # Builds image
-make docker-run      # Runs container
-```
-
-### Verifying Schema Inclusion
-
-After deployment, verify all schemas are loaded:
-
-```bash
-# Check deployed API
-curl https://api-mockly.fly.dev/ | jq '.resources | length'
-
-# Should return: 54
-```
-
-### Deployment Checklist
-
-Before deploying:
-
-- ✅ All schemas exist in `shared/schemas/`
-- ✅ Run `make generate-types` to sync to backend
-- ✅ Test locally with `go run cmd/server/main.go`
-- ✅ Verify all endpoints work
-- ✅ Deploy from **repository root**
-
-### Common Issues
-
-#### Issue: Schemas not found during build
-
-**Problem:** Building from `backend/` directory
-
-```bash
-# ❌ Wrong - can't access ../shared/
-cd backend
-docker build -t api-mockly .
-```
-
-**Solution:** Build from repository root
-
-```bash
-# ✅ Correct
-cd /path/to/api-mock  # Repository root
-docker build -f backend/Dockerfile -t api-mockly .
-```
-
-#### Issue: Some schemas missing
-
-**Problem:** Schemas not synced before deployment
-
-**Solution:** Sync schemas first
-
-```bash
-cd backend
-make generate-types
-make deploy
-```
-
-#### Issue: Fly.io deploy fails
-
-**Problem:** Incorrect build context
-
-**Solution:** Check `fly.toml` has correct dockerfile path:
-
-```toml
-[build]
-  dockerfile = "backend/Dockerfile"
-```
-
-And deploy from root:
-
-```bash
-flyctl deploy --config backend/fly.toml
-```
-
-### Environment Variables
-
-No environment variables needed for schemas - they're embedded at build time!
-
-Optional variables:
-
-```bash
-# Set port (default: 8080)
-flyctl secrets set PORT=8080
-
-# Set any custom config
-flyctl secrets set MY_VAR=value
-```
-
-### Updating Schemas in Production
-
-When you add or modify schemas:
-
-```bash
-# 1. Update schema in shared/schemas/
-vim shared/schemas/new-resource.json
-
-# 2. Redeploy (schemas auto-sync during build)
-cd backend
-make deploy
-
-# 3. Verify
-curl https://api-mockly.fly.dev/ | jq '.resources'
-```
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Public API base URL (defaults to `https://api.mockly.codes`) |
 
 ---
 
-## 🌐 Frontend Deployment (Vercel)
+## Production URLs
 
-### Prerequisites
-
-1. **Install Vercel CLI:**
-
-```bash
-pnpm install -g vercel
-```
-
-2. **Login to Vercel:**
-
-```bash
-vercel login
-```
-
-### Important: Monorepo Configuration
-
-This project is a **monorepo** with both backend and frontend. The frontend Next.js app is in the `frontend/` subdirectory.
-
-**Critical:** You MUST configure Vercel's **Root Directory** setting to `frontend` for the deployment to work correctly.
-
-### Deployment Process
-
-#### Method 1: Using Vercel Dashboard (Recommended for First Deploy)
-
-1. Connect your GitHub repo to Vercel
-2. **IMPORTANT:** In Settings → General:
-   - **Root Directory:** Set to `frontend` ⚠️
-   - **Framework Preset:** Next.js (auto-detected)
-   - **Build Command:** `pnpm run build` (auto-detected)
-   - **Install Command:** `pnpm install` (auto-detected)
-   - **Output Directory:** `.next` (auto-detected)
-
-3. Every push to `main`/`trunk` auto-deploys!
-
-**Why Root Directory = frontend?**
-
-- Your git repo structure stays at the project root
-- Vercel treats `frontend/` as the deployment root
-- This is standard for monorepos - one repo, multiple deployable apps
-- Backend deploys separately (Fly.io), frontend deploys to Vercel
-
-#### Method 2: Using Vercel CLI
-
-```bash
-# From project root (not frontend/)
-vercel --prod
-
-# When prompted:
-# - Set Root Directory to: frontend
-# - Accept other defaults
-```
-
-**Note:** Types are auto-generated during build via `prebuild` hook!
-
-### Environment Variables
-
-Optional - frontend auto-detects API URL:
-
-```bash
-# Production (optional - auto-detected)
-NEXT_PUBLIC_API_URL=https://api.mockly.codes
-```
-
-Set in Vercel dashboard or CLI:
-
-```bash
-vercel env add NEXT_PUBLIC_API_URL production
-# Enter: https://api.mockly.codes
-```
-
-### Build Process
-
-The frontend build automatically:
-
-1. ✅ Generates TypeScript types from schemas (via `prebuild`)
-2. ✅ Builds Next.js app with SSR
-3. ✅ Optimizes for production
-
-### Deployment Checklist
-
-- ✅ Types generated (automatic via `prebuild`)
-- ✅ Environment variables set (optional)
-- ✅ Test build locally: `pnpm run build`
-- ✅ Deploy to Vercel
+| Service | URL |
+|---|---|
+| API | https://api.mockly.codes |
+| Website | https://www.mockly.codes |
+| Docs | https://www.mockly.codes/docs |
+| Playground | https://www.mockly.codes/playground |
+| LLMs.txt | https://www.mockly.codes/llms.txt |
 
 ---
 
-## 🔄 CI/CD Pipeline
+## Troubleshooting
 
-### GitHub Actions
+**Backend not starting**
+- Check `railway logs` for Go panic output
+- Ensure `CACHE_MODE=local` if Redis is not configured yet
 
-The `.github/workflows/build.yml` automatically:
+**Frontend 500 on Cloudflare**
+- Run `wrangler pages dev` locally to reproduce — errors surface in terminal
+- Ensure `nodejs_compat` flag is set in `wrangler.jsonc`
+- Dynamic routes (e.g. `/templates/[id]`) require the Worker entry, not just static assets
 
-1. Generates TypeScript types
-2. Verifies types are in sync
-3. Builds backend with schemas
-4. Builds frontend with types
-5. Runs tests
+**`wrangler deploy` fails with "No D1 binding"**
+- Mockly does not use D1 — ignore this if it appears in old configs; `wrangler.jsonc` is the authoritative config
 
-### Continuous Deployment
-
-**Backend (Fly.io):**
-
-Add to `.github/workflows/deploy.yml`:
-
-```yaml
-name: Deploy Backend
-
-on:
-  push:
-    branches: [main, trunk]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Fly CLI
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Fly.io
-        run: flyctl deploy --config backend/fly.toml
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-```
-
-**Frontend (Vercel):**
-
-Automatic via Vercel GitHub integration - no config needed!
-
----
-
-## 📊 Deployment Summary
-
-| Aspect          | Backend (Fly.io)                          | Frontend (Vercel)                        |
-| --------------- | ----------------------------------------- | ---------------------------------------- |
-| **Git Root**    | Repository root                           | Repository root                          |
-| **Deploy Root** | Repository root                           | `frontend/` (via Root Directory setting) |
-| **Build From**  | Repository root                           | `frontend/` directory                    |
-| **Schemas**     | Auto-copied during build                  | N/A                                      |
-| **Types**       | N/A                                       | Auto-generated via `prebuild`            |
-| **Command**     | `flyctl deploy --config backend/fly.toml` | `vercel --prod` (from project root)      |
-| **Auto-Deploy** | Via GitHub Actions                        | Via GitHub integration                   |
-| **Key Setting** | `fly.toml` dockerfile path                | Vercel Root Directory = `frontend` ⚠️    |
-
----
-
-## ✅ Post-Deployment Verification
-
-### Backend
-
-```bash
-# Check API is live
-curl https://api-mockly.fly.dev/
-
-# Verify all 54 endpoints
-curl https://api-mockly.fly.dev/ | jq '.resources | length'
-
-# Test specific endpoints
-curl https://api-mockly.fly.dev/users?count=5
-curl https://api-mockly.fly.dev/weather?count=3
-```
-
-### Frontend
-
-```bash
-# Visit website
-open https://mockly.codes
-
-# Check docs page
-open https://mockly.codes/docs
-
-# Test playground
-open https://mockly.codes/playground
-```
-
----
-
-## 🎯 Key Takeaways
-
-### For Backend Deployment:
-
-1. ✅ **Always build from repository root** (not `backend/`)
-2. ✅ **Schemas auto-copy** during Docker build
-3. ✅ **Use Makefile** for convenience: `make deploy`
-4. ✅ **Verify schemas** after deployment
-
-### For Frontend Deployment:
-
-1. ⚠️ **MUST set Root Directory** to `frontend` in Vercel settings
-2. ✅ **Types auto-generate** via `prebuild` hook
-3. ✅ **No manual steps** needed after initial setup
-4. ✅ **Vercel GitHub integration** is easiest
-5. ✅ **API URL auto-detected** in production
-6. ✅ **Git repo structure** stays at project root (monorepo)
-
-### For Both:
-
-- ✅ **No manual schema syncing** needed
-- ✅ **No manual type generation** needed
-- ✅ **Everything is automated** in build process
-- ✅ **CI/CD enforces** correctness
-
----
-
-**Questions? Check the main [README.md](./README.md) or [BUILD_PROCESS.md](./BUILD_PROCESS.md)**
+**Schema changes not reflected after deploy**
+- Re-run `pnpm build` from `frontend/` — schema generation is a prebuild step
+- Schemas are embedded into the binary at Docker build time for the backend

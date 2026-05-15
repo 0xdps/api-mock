@@ -1,5 +1,12 @@
-# Railway Configuration for API Mockly Backend
-# https://docs.railway.app/deploy/config-as-code
+# Railway deployment config for the Mockly backend
+# https://docs.railway.com/reference/config-as-code
+#
+# The backend is a Dockerized Go binary.
+# Docker build context is the repo root (copies shared/schemas/ into the image).
+#
+# Required services in Railway dashboard:
+#   1. This service — built from Dockerfile
+#   2. Redis — add via New > Database > Redis; exposes ${{Redis.REDIS_URL}}
 
 [build]
   builder = "DOCKERFILE"
@@ -8,26 +15,33 @@
 [deploy]
   startCommand = "./server"
   restartPolicyType = "ON_FAILURE"
-  restartPolicyMaxRetries = 3
-  
-# [[services]]
-#   name = "api-mockly"
-  
-#   [services.healthcheck]
-#     path = "/"
-#     timeout = 10
-#     interval = 30
-  
-#   # Railway will automatically set PORT environment variable
-#   # The app will bind to 0.0.0.0:$PORT
-  
-#   # Environment variables (set via Railway CLI or Dashboard)
-#   # CACHE_MODE: all | local | remote | off
-#   # CACHE_ITEMS_PER_RESOURCE: 100
-#   # CACHE_SEED: 42
-#   # MAX_ITEMS_PER_RESOURCE: 1000
-#   # 
-#   # Redis connection (automatically configured when Redis plugin is added)
-#   # REDIS_URL: ${{Redis.REDIS_URL}}
-#   # Railway Redis uses the internal network (no TLS needed).
-#   # For Upstash or external TLS Redis, use a rediss:// URL.
+  restartPolicyMaxRetries = 10
+
+  [deploy.healthcheck]
+    path = "/"
+    timeout = 10
+    interval = 30
+
+# Environment variables
+# Set these in the Railway dashboard (service -> Variables tab) or via:
+#   railway variables set KEY=VALUE
+#
+# Required:
+#   REDIS_URL         = ${{Redis.REDIS_URL}}   <- reference the Redis service
+#   MESAHUB_URL       = <your MesaHub endpoint>
+#   NUBE_GATEWAY_URL  = https://api.nubeauth.com
+#
+# Cache (optional, sensible defaults shown):
+#   CACHE_MODE                = all    # off | local | remote | all
+#   CACHE_ITEMS_PER_RESOURCE  = 100
+#   CACHE_SEED                = 42
+#   MAX_ITEMS_PER_RESOURCE    = 1000
+#
+# Analytics (optional):
+#   UMAMI_BACKEND_ENABLED = true
+#   UMAMI_COLLECT_URL     = https://your-umami.example.com/api/send
+#   UMAMI_WEBSITE_ID      = <uuid>
+#   UMAMI_HOSTNAME        = api.mockly.codes
+#
+# Railway injects automatically:
+#   PORT — the external-facing port; the server binds to :$PORT (default 8080)

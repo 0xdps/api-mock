@@ -18,6 +18,12 @@ frontend/.env.local
 # Ignore editor files
 .vscode
 .idea
+
+# Never bake env files into images
+.env.backend
+.env.frontend
+backend/.env
+frontend/.env.local
 *.swp
 *.swo
 

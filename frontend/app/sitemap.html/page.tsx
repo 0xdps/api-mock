@@ -36,7 +36,8 @@ export default function SitemapPage() {
   // Static pages
   const staticPages = [
     { path: '/', label: 'Home', description: 'Mockly homepage' },
-    { path: '/resources', label: 'Resources', description: 'API resources index' },
+    { path: '/docs', label: 'Documentation', description: 'Full API reference, query parameters, and code examples' },
+    { path: '/templates', label: 'Explore Templates', description: 'Browse 100+ official and community mock data templates' },
     { path: '/playground', label: 'Playground', description: 'Interactive API testing tools' },
   ]
   
@@ -153,7 +154,7 @@ export default function SitemapPage() {
           <h2 className="text-2xl font-bold text-white mb-4 mt-4">External Links</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <a
-              href="https://github.com/0xdps/fake-stack"
+              href="https://github.com/0xdps/api-mockly"
               target="_blank"
               rel="noopener noreferrer"
               className="block p-6 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-blue-500/50 transition-colors group"

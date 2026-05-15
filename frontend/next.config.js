@@ -3,7 +3,8 @@ const path = require('path');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  turbopack: { root: path.resolve(__dirname, '..') }
+  turbopack: { root: path.resolve(__dirname, '..') },
+  output: 'standalone',
 }
 
 module.exports = nextConfig

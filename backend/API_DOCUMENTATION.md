@@ -104,7 +104,7 @@ GET /
 {
   "message": "Mockly API",
   "version": "1.0.0",
-  "docs": "https://mockly.codes/docs",
+  "docs": "https://www.mockly.codes/docs",
   "resources": ["products", "users", "orders", ...],
   "groups": {
     "commerce": ["products", "orders", "carts", ...],
@@ -892,7 +892,7 @@ Mockly provides 100+ resources across 14 categories:
 ### Reference (📚)
 - `books`, `authors`, `quotes`, `definitions`, `translations`, `weather`, `currencies`, `timezones`
 
-**Full list:** Visit https://mockly.codes/docs
+**Full list:** Visit https://www.mockly.codes/docs
 
 ---
 
@@ -1010,10 +1010,10 @@ try {
 
 ## Support & Resources
 
-- **Documentation:** https://mockly.codes/docs
-- **Playground:** https://mockly.codes/playground
-- **GitHub:** https://github.com/0xdps/fake-stack
-- **Website:** https://mockly.codes
+- **Documentation:** https://www.mockly.codes/docs
+- **Playground:** https://www.mockly.codes/playground
+- **GitHub:** https://github.com/0xdps/api-mockly
+- **Website:** https://www.mockly.codes
 
 ---
 
@@ -1041,4 +1041,4 @@ MIT License - Free to use for any purpose.
 
 **Happy mocking! 🎭**
 
-For more examples and interactive testing, visit the [Playground](https://mockly.codes/playground).
+For more examples and interactive testing, visit the [Playground](https://www.mockly.codes/playground).

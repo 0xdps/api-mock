@@ -9,7 +9,8 @@ export async function GET() {
   // Static pages
   const staticPages = [
     { loc: '', changefreq: 'daily', priority: 1.0 },
-    { loc: '/resources', changefreq: 'weekly', priority: 0.9 },
+    { loc: '/docs', changefreq: 'weekly', priority: 0.95 },
+    { loc: '/templates', changefreq: 'daily', priority: 0.9 },
     { loc: '/playground', changefreq: 'weekly', priority: 0.9 },
     { loc: '/playground/echo', changefreq: 'monthly', priority: 0.8 },
     { loc: '/playground/status', changefreq: 'monthly', priority: 0.8 },

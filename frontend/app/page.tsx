@@ -12,7 +12,8 @@ import {
   Layout,
   GraduationCap,
   Laptop,
-  Play
+  Play,
+  Compass
 } from 'lucide-react'
 import { CodeExample } from '@/components/CodeExample'
 import { Header } from '@/components/Header'
@@ -45,17 +46,25 @@ export default async function Home() {
           Schema-driven mock API service with realistic data. 
           Perfect for prototyping, testing, and demos.
         </p>
-        <div className="flex gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center">
           <Link 
             href="/playground" 
             data-umami-event="hero_pg"
             data-umami-label="Hero Explore API"
             className="group bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg shadow-primary-500/20"
           >
-            <Play className="w-4 h-4" /> Explore & Try API <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            <Play className="w-4 h-4" /> Try the Playground <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            href="/templates"
+            data-umami-event="hero_tpl"
+            data-umami-label="Hero Explore Templates"
+            className="group bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-primary-500/40 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2"
+          >
+            <Compass className="w-4 h-4 text-primary-400" /> Explore Templates
           </Link>
           <a 
-            href="https://github.com/0xdps/fake-stack" 
+            href="https://github.com/0xdps/api-mockly" 
             target="_blank"
             rel="noopener noreferrer"
             data-umami-event="hero_gh"

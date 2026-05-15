@@ -27,7 +27,7 @@ export function getBaseUrl(): string {
     return process.env.NEXT_PUBLIC_SITE_URL
   }
   return process.env.NODE_ENV === 'production'
-    ? 'https://mockly.codes'
+    ? 'https://www.mockly.codes'
     : 'http://localhost:3000'
 }
 

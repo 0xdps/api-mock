@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { 
   Terminal, 
   Database, 
@@ -18,13 +18,15 @@ import {
   ArrowRight,
   Info,
   Radio,
-  Lightbulb
+  Lightbulb,
+  Code2,
 } from 'lucide-react'
 import { CodeExample } from './CodeExample'
 import { getApiUrl, apiClient } from '@/lib/api'
 import { getGroupIcon } from '@/lib/icons'
 
 const API_URL = getApiUrl()
+const PUBLIC_API = 'https://api.mockly.codes'
 
 // Helper to pluralize resource names
 function pluralize(word: string): string {
@@ -101,12 +103,13 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   const [flakyRate, setFlakyRate] = useState(0)
   const [skipCache, setSkipCache] = useState(false)
   
-  // Code examples dropdown
-  const [showExamples, setShowExamples] = useState(false)
-  
+  // Code examples tab
+  const [codeTab, setCodeTab] = useState<'curl' | 'js' | 'python' | 'go' | 'node'>('curl')
+  const [codeCopied, setCodeCopied] = useState(false)
+
   // Advanced options collapse state
   const [showAdvanced, setShowAdvanced] = useState(false)
-  
+
   const [copied, setCopied] = useState(false)
 
   // Copy handler
@@ -195,9 +198,54 @@ export function ResourceDocumentation({ resource, schema, group }: ResourceDocum
   
   const directUrl = buildUrl(directPath)
   const groupUrl = buildUrl(groupPath)
-  
+
   // Use selected URL for fetching
   const url = selectedPathType === 'direct' ? directUrl : groupUrl
+
+  // Public URL for code examples (always points to production)
+  const publicUrl = url.replace(API_URL, PUBLIC_API)
+
+  // Dynamic code snippets (no auth — built-in resources are public)
+  const codeSnippets = useMemo(() => {
+    const [base, qs] = publicUrl.split('?')
+    const params = Object.fromEntries(new URLSearchParams(qs || '').entries())
+    const paramsStr = JSON.stringify(params, null, 8)
+      .replace(/"/g, "'")
+      .replace(/^\{/, '{')
+    return {
+      curl: `curl "${publicUrl}"`,
+      js: `const response = await fetch('${publicUrl}')
+const data = await response.json()
+console.log(data)`,
+      python: `import requests
+
+response = requests.get(
+    '${base}',
+    params=${paramsStr}
+)
+
+data = response.json()
+print(data)`,
+      go: `package main
+
+import (
+    "fmt"
+    "io"
+    "net/http"
+)
+
+func main() {
+    resp, _ := http.Get("${publicUrl}")
+    defer resp.Body.Close()
+    body, _ := io.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}`,
+      node: `const axios = require('axios')
+
+const { data } = await axios.get('${publicUrl}')
+console.log(data)`,
+    }
+  }, [publicUrl])
   
   // Auto-scroll to response section when response/error changes
   useEffect(() => {
@@ -1009,56 +1057,51 @@ bg-slate-810/50 backdrop-blur p-4 rounded-lg border border-slate-700
       {/* Code Examples */}
       <section>
         <h2 className="text-xl font-bold text-white mb-3">Code Examples</h2>
-        
-        <div className="grid md:grid-cols-2 gap-3">
-          {/* JavaScript */}
-          <div>
-            <h3 className="text-base font-semibold text-white mb-2">JavaScript</h3>
-            <CodeExample 
-              title="Fetch Collection"
-              code={`// Get 10 ${resourceName}
-fetch('${API_URL}${directPath}?count=10')
-  .then(res => res.json())
-  .then(data => console.log(data));`}
-              language="javascript"
-            />
-          </div>
-          
-          {/* Python */}
-          <div>
-            <h3 className="text-base font-semibold text-white mb-2">Python</h3>
-            <CodeExample 
-              title="Fetch with Requests"
-              code={`import requests
 
-response = requests.get(
-    '${API_URL}${directPath}?count=10'
-)
-data = response.json()`}
-              language="python"
-            />
+        <div className="bg-slate-800/40 rounded-xl border border-slate-700 overflow-hidden">
+          {/* Tab bar */}
+          <div className="flex items-center gap-1 px-4 py-3 border-b border-slate-700/60 bg-slate-900/40">
+            <Code2 className="w-4 h-4 text-primary-400 mr-1" />
+            {(
+              [
+                { id: 'curl', label: 'cURL' },
+                { id: 'js', label: 'JavaScript' },
+                { id: 'python', label: 'Python' },
+                { id: 'go', label: 'Go' },
+                { id: 'node', label: 'Node.js' },
+              ] as const
+            ).map(t => (
+              <button
+                key={t.id}
+                onClick={() => setCodeTab(t.id)}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  codeTab === t.id
+                    ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(codeSnippets[codeTab])
+                setCodeCopied(true)
+                setTimeout(() => setCodeCopied(false), 2000)
+              }}
+              className="ml-auto flex items-center gap-1.5 text-xs text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition-colors"
+            >
+              {codeCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+              {codeCopied ? 'Copied!' : 'Copy'}
+            </button>
           </div>
-          
-          {/* cURL */}
-          <div>
-            <h3 className="text-base font-semibold text-white mb-2">cURL</h3>
-            <CodeExample 
-              title="Command Line"
-              code={`curl "${API_URL}${directPath}?count=10"`}
-              language="bash"
-            />
-          </div>
-          
-          {/* Fresh Data */}
-          <div>
-            <h3 className="text-base font-semibold text-white mb-2">Bypass Cache</h3>
-            <CodeExample 
-              title="Get Fresh Data"
-              code={`fetch('${API_URL}${directPath}?nocache=true')`}
-              language="javascript"
-            />
-          </div>
+          <pre className="p-4 overflow-x-auto text-xs text-slate-300 font-mono leading-relaxed">
+            <code>{codeSnippets[codeTab]}</code>
+          </pre>
         </div>
+        <p className="text-xs text-slate-600 mt-2">
+          Examples reflect your current request builder settings.
+        </p>
       </section>
       
       {/* Schema Properties */}

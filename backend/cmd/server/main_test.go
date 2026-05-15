@@ -15,7 +15,7 @@ func TestRootResponseIncludesPlatform(t *testing.T) {
 		response := map[string]interface{}{
 			"message":   "Mockly API",
 			"version":   "1.0.0",
-			"docs":      "https://mockly.codes/docs",
+			"docs":      "https://www.mockly.codes/docs",
 			"resources": []string{"users"},
 			"groups":    map[string][]string{"people": []string{"users"}},
 			"platform":  detectPlatform(),

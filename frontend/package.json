@@ -16,7 +16,10 @@
   },
   "dependencies": {
     "@api-mockly/shared": "workspace:*",
+    "@nube-auth/client": "^0.3.3",
+    "@nube-auth/react": "^0.1.8",
     "@pingpong-js/fetch": "^1.0.2",
+    "@tanstack/react-query": "^5.100.10",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "next": "^16.2.3",

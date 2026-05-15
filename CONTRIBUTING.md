@@ -18,7 +18,7 @@ The easiest way to contribute is by adding new resource schemas. All endpoints a
    ```bash
    cd backend
    go run cmd/server/main.go
-   # Test your endpoint: curl 'http://localhost:8080/your-resource?count=5'
+   # Test your endpoint: curl 'http://localhost:8080/your-resource?limit=5'
    ```
 4. **Submit a Pull Request**
 
@@ -102,9 +102,9 @@ Look for issues labeled:
 
 ### Prerequisites
 
-- Go 1.22+
-- Node.js 18+
-- pnpm 9.0+
+- Go 1.23+
+- Node.js 20+
+- pnpm 9+
 
 ### Local Setup
 
@@ -143,19 +143,21 @@ api-mockly/
 │   │   └── server/   # Main server
 │   ├── internal/     # Private application code
 │   │   ├── handlers/ # HTTP handlers
-│   │   ├── middleware/ # CORS, etc.
+│   │   ├── middleware/ # CORS, analytics
+│   │   ├── store/    # DB models (templates, API keys)
 │   │   └── schema/   # Schema loader & generator
-│   ├── Dockerfile    # Container build
-│   └── fly.toml      # Fly.io deployment config
+│   └── Dockerfile    # Multi-stage Docker build (used by Railway)
 ├── shared/           # Source of truth
-│   ├── schemas/      # JSON schema definitions
-│   └── scripts/      # Build scripts
-├── frontend/         # Next.js website
+│   ├── schemas/      # JSON schema definitions (one file per resource)
+│   └── scripts/      # generate-types.js
+├── frontend/         # Next.js 16 website
 │   ├── app/          # App router pages
 │   ├── components/   # React components
-│   └── lib/          # Utility functions
-├── package.json      # Root scripts
-└── vercel.json       # Frontend deployment config
+│   ├── lib/          # API client, schemas manifest
+│   └── wrangler.jsonc # Cloudflare Workers config
+├── Dockerfile        # Root Docker build (for Railway)
+├── railway.toml      # Railway deployment config
+└── package.json      # Root scripts (dev, build)
 ```
 
 ## Code Style Guidelines
@@ -200,11 +202,11 @@ api-mockly/
    # Start both servers
    pnpm run dev
 
-   # Test in browser or with curl
-   curl 'http://localhost:8080/users?count=5'
+   # Test API
+   curl 'http://localhost:8080/users?limit=5'
 
    # Or test production API
-   curl 'https://api.mockly.codes/users?count=5'
+   curl 'https://api.mockly.codes/users?limit=5'
    ```
 
 4. **Submit PR:**
@@ -278,7 +280,7 @@ Before submitting:
 1. **Test the API endpoint:**
 
    ```bash
-   curl 'http://localhost:8080/your-resource?count=5'
+   curl 'http://localhost:8080/your-resource?limit=5'
    ```
 
 2. **Verify JSON response:**
