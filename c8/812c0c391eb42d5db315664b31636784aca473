@@ -1,0 +1,14 @@
+frontend/components/UmamiAnalytics.tsx
+  h_7a2f4c8f0473b8 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "c8812c0c391eb42d5db315664b31636784aca473",
+  "prompts": {},
+  "humans": {
+    "h_7a2f4c8f0473b8": {
+      "author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}
