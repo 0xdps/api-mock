@@ -75,12 +75,13 @@ export function UmamiAnalytics() {
   }, [])
 
   return (
-    <Script
-      src={UMAMI_SCRIPT_SRC}
-      data-website-id={UMAMI_WEBSITE_ID}
-      strategy="afterInteractive"
-      data-domain={MOCKLY_DOMAIN}
-      data-api={UMAMI_API_URL}
-    />
+    // <Script
+    //   src={UMAMI_SCRIPT_SRC}
+    //   data-website-id={UMAMI_WEBSITE_ID}
+    //   strategy="afterInteractive"
+    //   data-domain={MOCKLY_DOMAIN}
+    //   data-api={UMAMI_API_URL}
+    // />
+    <script defer src="https://analytics.0xlabs.space/script.js" data-website-id="6535c752-d8b4-4758-8710-98a1a5f6d751"></script>
   )
 }
