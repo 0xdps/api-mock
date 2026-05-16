@@ -7,7 +7,7 @@ import { trackUmamiEvent } from '@/lib/analytics'
 
 const UMAMI_SCRIPT_SRC = 'https://assets.0xlabs.space/anately.js'
 const UMAMI_WEBSITE_ID = '6535c752-d8b4-4758-8710-98a1a5f6d751'
-const UMAMI_API_URL = 'https://analytics.0xlabs.space'
+const UMAMI_API_URL = 'https://analytics.0xlabs.space/api/event'
 const MOCKLY_DOMAIN = 'mockly.codes'
 
 function getElementLabel(element: HTMLElement): string {
