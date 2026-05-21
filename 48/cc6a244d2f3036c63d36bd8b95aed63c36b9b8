@@ -1,0 +1,28 @@
+backend/internal/schema/locale.go
+  s_0f9ef797610df4::t_acfc23b0c0ddba 1-371
+backend/internal/handlers/dynamic.go
+  s_0f9ef797610df4::t_de122fed2a7898 40-45,75-80
+backend/internal/schema/loader.go
+  s_0f9ef797610df4::t_da54895905d69a 627-734
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "48cc6a244d2f3036c63d36bd8b95aed63c36b9b8",
+  "prompts": {},
+  "humans": {
+    "h_7a2f4c8f0473b8": {
+      "author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0f9ef797610df4": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "caf027fe-f385-4c72-a59a-99592dd2d412",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}
