@@ -10,15 +10,15 @@ import (
 type FilterOperator string
 
 const (
-	OpEqual         FilterOperator = "="
-	OpNotEqual      FilterOperator = "!="
-	OpGreater       FilterOperator = ">"
-	OpGreaterEqual  FilterOperator = ">="
-	OpLess          FilterOperator = "<"
-	OpLessEqual     FilterOperator = "<="
-	OpContains      FilterOperator = "contains"
-	OpStartsWith    FilterOperator = "startsWith"
-	OpEndsWith      FilterOperator = "endsWith"
+	OpEqual        FilterOperator = "="
+	OpNotEqual     FilterOperator = "!="
+	OpGreater      FilterOperator = ">"
+	OpGreaterEqual FilterOperator = ">="
+	OpLess         FilterOperator = "<"
+	OpLessEqual    FilterOperator = "<="
+	OpContains     FilterOperator = "contains"
+	OpStartsWith   FilterOperator = "startsWith"
+	OpEndsWith     FilterOperator = "endsWith"
 )
 
 // Filter represents a single filter condition
@@ -43,8 +43,10 @@ func ParseFilters(queryParams map[string][]string) []Filter {
 		if key == "count" || key == "nocache" || key == "fresh" ||
 			key == "page" || key == "limit" || key == "offset" || // Pagination
 			key == "sort" || key == "order" || // Sorting
-			key == "q" || key == "search" || // Search
-			key == "fields" { // Field filtering
+			key == "q" || key == "search" || key == "search_fields" || // Search
+			key == "fields" || // Field filtering
+			key == "delay" || key == "flakyRate" || key == "skip_cache" || // Middleware
+			key == "locale" { // Locale-aware generation
 			continue
 		}
 
