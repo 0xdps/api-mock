@@ -37,6 +37,12 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		// Check if cache should be bypassed (check both context and request for robustness)
 		skipCache := middleware.ShouldSkipCache(ctx) || shouldSkipCache(r)
 
+		// locale overrides name/location/phone generators; bypass cache when set
+		locale := r.URL.Query().Get("locale")
+		if locale != "" {
+			skipCache = true
+		}
+
 		// Get pagination params (defaults: page=1, limit=10)
 		pagination, hasPagination := middleware.GetPagination(ctx)
 		count := 10
@@ -66,8 +72,12 @@ func (h *DynamicHandler) GetCollection(resourceName string) http.HandlerFunc {
 		}
 
 		if skipCache {
-			// Generate fresh data (bypass cache)
-			data, err = h.registry.GenerateData(resourceName, generateCount)
+			// Generate fresh data (bypass cache), applying locale overrides if requested
+			if locale != "" {
+				data, err = h.registry.GenerateDataWithLocale(resourceName, generateCount, locale)
+			} else {
+				data, err = h.registry.GenerateData(resourceName, generateCount)
+			}
 			if err != nil {
 				respondJSON(w, http.StatusInternalServerError, map[string]string{
 					"error": err.Error(),

@@ -624,6 +624,114 @@ func (r *Registry) GenerateData(resourceName string, count int) ([]map[string]in
 	return r.generateRecords(fields, count)
 }
 
+// GenerateDataWithLocale generates fake data for a resource using locale-specific values
+// for personal/location fields (names, cities, phone numbers, etc.).
+// locale should be a BCP-47 tag such as "en-IN", "ja-JP", "de-DE".
+// Unsupported locales fall back to the default (gofakeit) generators.
+func (r *Registry) GenerateDataWithLocale(resourceName string, count int, locale string) ([]map[string]interface{}, error) {
+	schema, ok := r.GetSchema(resourceName)
+	if !ok {
+		return nil, fmt.Errorf("schema not found: %s", resourceName)
+	}
+
+	fields := r.SchemaToFields(schema)
+	return r.generateRecordsWithLocale(fields, count, locale)
+}
+
+// GenerateFromSchemaWithLocale is like GenerateFromSchema but applies locale overrides.
+func (r *Registry) GenerateFromSchemaWithLocale(s *Schema, count int, locale string) ([]map[string]interface{}, error) {
+	fields := r.SchemaToFields(s)
+	return r.generateRecordsWithLocale(fields, count, locale)
+}
+
+// generateRecordsWithLocale generates records applying locale-aware field overrides.
+func (r *Registry) generateRecordsWithLocale(fields []Field, count int, locale string) ([]map[string]interface{}, error) {
+	info := GetLocaleInfo(locale)
+	records := make([]map[string]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		record := make(map[string]interface{})
+		for _, field := range fields {
+			record[field.Name] = r.generateValueWithContextLocale(field, record, info)
+		}
+		records[i] = record
+	}
+
+	return records, nil
+}
+
+// generateValueWithContextLocale is the locale-aware version of generateValueWithContext.
+func (r *Registry) generateValueWithContextLocale(field Field, record map[string]interface{}, info *LocaleInfo) interface{} {
+	faker := gofakeit.New(0)
+
+	switch field.Generator {
+	case "email":
+		return r.generateSmartEmail(record, faker)
+	case "username":
+		return r.generateSmartUsername(record, faker)
+	case "avatar":
+		return r.generateSmartAvatar(record, faker)
+	case "sentence":
+		if field.Name == "title" {
+			return r.generateSmartTitle(faker)
+		}
+	case "paragraph":
+		if field.Name == "body" || field.Name == "description" {
+			if title, ok := record["title"].(string); ok && title != "" {
+				return r.generateSmartBody(title, faker)
+			}
+		}
+	}
+
+	return r.generateValueLocale(field, faker, info)
+}
+
+// generateValueLocale generates a single value, applying locale overrides where applicable.
+func (r *Registry) generateValueLocale(field Field, faker *gofakeit.Faker, info *LocaleInfo) interface{} {
+	if info == nil {
+		return r.generateValue(field, faker)
+	}
+
+	switch field.Generator {
+	case "first_name":
+		if len(info.FirstNames) > 0 {
+			return info.FirstNames[faker.IntRange(0, len(info.FirstNames)-1)]
+		}
+	case "last_name":
+		if len(info.LastNames) > 0 {
+			return info.LastNames[faker.IntRange(0, len(info.LastNames)-1)]
+		}
+	case "name":
+		if len(info.FirstNames) > 0 && len(info.LastNames) > 0 {
+			first := info.FirstNames[faker.IntRange(0, len(info.FirstNames)-1)]
+			last := info.LastNames[faker.IntRange(0, len(info.LastNames)-1)]
+			return first + " " + last
+		}
+	case "city":
+		if len(info.Cities) > 0 {
+			return info.Cities[faker.IntRange(0, len(info.Cities)-1)]
+		}
+	case "state":
+		if len(info.States) > 0 {
+			return info.States[faker.IntRange(0, len(info.States)-1)]
+		}
+	case "country":
+		if info.Country != "" {
+			return info.Country
+		}
+	case "phone", "phone_number":
+		if info.PhonePrefix != "" {
+			return generateLocalePhone(info, faker)
+		}
+	case "zip", "zip_code":
+		if info.ZipFormat != "" {
+			return generateLocaleZip(info, faker)
+		}
+	}
+
+	return r.generateValue(field, faker)
+}
+
 // generateRecords generates multiple records using gofakeit
 func (r *Registry) generateRecords(fields []Field, count int) ([]map[string]interface{}, error) {
 	records := make([]map[string]interface{}, count)
