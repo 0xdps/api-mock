@@ -48,6 +48,9 @@ curl "https://api.mockly.codes/products?sort=price&order=desc"
 # Select fields only
 curl "https://api.mockly.codes/products?fields=id,name,price&limit=20"
 
+# Locale-aware data (Indian users)
+curl "https://api.mockly.codes/users?locale=en-IN&limit=5"
+
 # User template (API key required)
 curl -H "Authorization: Bearer mk_your_key" "https://api.mockly.codes/t/template-id"
 \`\`\`
@@ -73,6 +76,7 @@ curl -H "Authorization: Bearer mk_your_key" "https://api.mockly.codes/t/template
 | \`search_fields\` | string      | —       | Comma-separated fields to search in    |
 | \`fields\`        | string      | —       | Comma-separated fields to return       |
 | \`{field}=val\`   | string      | —       | Filter by field value                  |
+| \`locale\`        | string      | —       | BCP-47 locale tag for locale-aware names, cities, phones (e.g. \`en-IN\`, \`ja-JP\`, \`de-DE\`) |
 | \`delay\`         | int (ms)    | —       | Simulate network latency               |
 | \`flakyRate\`     | float 0–1   | —       | Probability of 503 error (chaos)       |
 | \`skip_cache\`    | bool        | false   | Bypass response cache                  |

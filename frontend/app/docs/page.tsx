@@ -310,6 +310,7 @@ curl "https://api.mockly.codes/products?fields=id,name,price&limit=50"`} />
                   ['delay', 'int (ms)', '—', 'Simulate network latency (max 30,000 ms)'],
                   ['flakyRate', 'float 0–1', '—', 'Probability of returning a 503 error'],
                   ['skip_cache', 'bool', 'false', 'Bypass the response cache for fresh data'],
+                  ['locale', 'string', '—', 'BCP-47 locale tag — generates locale-aware names, cities, phones (e.g. en-IN, ja-JP, de-DE)'],
                 ]}
               />
               <div className="mt-4">
@@ -398,6 +399,21 @@ curl "https://api.mockly.codes/products?q=phone&sort=price&order=asc&page=1&limi
                   </div>
                   <p className="text-xs text-slate-500 mb-3">Randomly returns 503 errors at the given probability. Test your retry logic.</p>
                   <CodeBlock code={`curl "https://api.mockly.codes/products?flakyRate=0.3"  # 30% chance of failure`} />
+                </div>
+
+                {/* Locale */}
+                <div className="bg-slate-900/40 border border-slate-700/60 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Globe className="w-4 h-4 text-emerald-400" />
+                    <span className="font-semibold text-white text-sm">Locale-Aware Data</span>
+                    <code className="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">?locale=BCP-47</code>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3">
+                    Generate locale-specific names, cities, phone numbers, and postal codes. Bypasses cache automatically.
+                    Supported: <code className="text-slate-400 font-mono">en-IN</code>, <code className="text-slate-400 font-mono">ja-JP</code>, <code className="text-slate-400 font-mono">de-DE</code>, <code className="text-slate-400 font-mono">fr-FR</code>, <code className="text-slate-400 font-mono">zh-CN</code>, <code className="text-slate-400 font-mono">pt-BR</code>, <code className="text-slate-400 font-mono">es-ES</code>, <code className="text-slate-400 font-mono">ko-KR</code>, <code className="text-slate-400 font-mono">ar-SA</code>, <code className="text-slate-400 font-mono">en-GB</code>.
+                  </p>
+                  <CodeBlock code={`curl "https://api.mockly.codes/users?locale=en-IN&limit=5"   # Indian users
+curl "https://api.mockly.codes/employees?locale=ja-JP&limit=10" # Japanese employees`} />
                 </div>
 
                 {/* Request headers */}

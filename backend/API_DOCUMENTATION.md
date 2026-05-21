@@ -17,6 +17,7 @@
   - [Search](#search)
   - [Filtering](#filtering)
   - [Field Selection](#field-selection)
+  - [Locale](#locale)
 - [Request Headers](#request-headers)
 - [Middleware Features](#middleware-features)
   - [Delay Simulation](#delay-simulation)
@@ -152,6 +153,7 @@ GET /{resource}
 - `search_fields` - Comma-separated fields to search in
 - `fields` - Comma-separated fields to return
 - `{field}={value}` - Filter by field value (see [Filtering](#filtering))
+- `locale` - BCP-47 locale tag for locale-aware data generation (e.g. `en-IN`, `ja-JP`)
 - `count` - Legacy parameter for item count (backwards compatibility)
 
 **Example:**
@@ -373,6 +375,7 @@ curl "https://api.mockly.codes/products?category=Electronics&sort=price&order=as
 - `fields` - Field selection
 - `count`, `nocache`, `fresh` - Legacy/cache control
 - `delay`, `flakyRate`, `skip_cache` - Middleware
+- `locale` - Locale-aware data generation
 
 ### Field Selection
 
@@ -403,6 +406,60 @@ curl "https://api.mockly.codes/products?fields=id,name&limit=50&sort=name"
     ...
   ],
   "pagination": {...}
+}
+```
+
+### Locale
+
+Generate locale-aware data for personal and location fields (names, cities, phone numbers, postal codes, etc.).
+
+**Parameter:** `locale` (string, BCP-47 tag)
+- Overrides `first_name`, `last_name`, `name`, `city`, `state`, `country`, `phone`, and `zip` generators
+- Bypasses cache automatically — always returns fresh data
+- Unsupported locale tags silently fall back to the default (English) generators
+
+**Supported Locales:**
+
+| Tag | Country |
+|---|---|
+| `en-IN` | India |
+| `ja-JP` | Japan |
+| `de-DE` | Germany |
+| `fr-FR` | France |
+| `zh-CN` | China |
+| `pt-BR` | Brazil |
+| `es-ES` | Spain |
+| `ko-KR` | South Korea |
+| `ar-SA` | Saudi Arabia |
+| `en-GB` | United Kingdom |
+
+**Examples:**
+
+```bash
+# Indian users
+curl "https://api.mockly.codes/users?locale=en-IN&limit=5"
+
+# Japanese employees
+curl "https://api.mockly.codes/employees?locale=ja-JP&limit=10"
+
+# German customers, sorted by name
+curl "https://api.mockly.codes/customers?locale=de-DE&sort=first_name&order=asc"
+
+# Works on any people resource
+curl "https://api.mockly.codes/contacts?locale=pt-BR&limit=20"
+```
+
+**Example response for `?locale=en-IN`:**
+```json
+{
+  "id": 4821,
+  "first_name": "Priya",
+  "last_name": "Sharma",
+  "email": "priya.sharma@example.com",
+  "phone": "+919876543210",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "country": "India"
 }
 ```
 

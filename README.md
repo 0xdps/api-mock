@@ -31,6 +31,7 @@
 - 🔍 **Full-text search** — `q` with optional `search_fields` targeting
 - 🎯 **Filtering** — Exact, range (`>`, `<`, `>=`, `<=`), and substring (`~contains`, `~startsWith`, `~endsWith`) operators
 - ✂️ **Field selection** — `fields=id,name,price`
+- 🌍 **Locale** — `?locale=en-IN` generates locale-aware names, cities, phones (10 locales)
 
 ### Middleware & Testing
 
