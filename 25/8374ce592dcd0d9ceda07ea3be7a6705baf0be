@@ -1,0 +1,31 @@
+README.md
+  s_0f9ef797610df4::t_d7d06db4c5d9ee 34
+frontend/app/docs/page.tsx
+  s_0f9ef797610df4::t_0e5bd641da8c57 404-417
+  s_0f9ef797610df4::t_cae5fa19e8e458 313
+backend/API_DOCUMENTATION.md
+  s_0f9ef797610df4::t_d7d06db4c5d9ee 20,156,378,412-462
+frontend/app/llms.txt/route.ts
+  s_0f9ef797610df4::t_cae5fa19e8e458 51-53,79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "258374ce592dcd0d9ceda07ea3be7a6705baf0be",
+  "prompts": {},
+  "humans": {
+    "h_7a2f4c8f0473b8": {
+      "author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0f9ef797610df4": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "caf027fe-f385-4c72-a59a-99592dd2d412",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Devendra Pratap Singh <dps.manit@gmail.com>"
+    }
+  }
+}
